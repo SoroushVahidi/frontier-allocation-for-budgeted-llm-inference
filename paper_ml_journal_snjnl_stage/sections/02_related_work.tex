@@ -1,28 +1,33 @@
 \section{Related Work}
 \label{sec:related_work}
 
-\paragraph{Reasoning-time sampling, search, and self-consistency.}
-Chain-of-thought prompting \citep{wei2022chain} and zero-shot chain-of-thought \citep{kojima2022large} showed that explicitly eliciting intermediate reasoning improves large-language-model performance on mathematical and symbolic tasks.
-Self-consistency extends this idea by sampling multiple reasoning paths and returning the most frequent final answer \citep{wang2023self}.
-Tree-structured reasoning methods, including Tree of Thoughts \citep{yao2023tree} and Graph of Thoughts \citep{besta2024graph}, further broaden inference-time exploration by organizing candidate reasoning paths into explicit search structures.
-Program-aided language-model reasoning similarly generates executable or semi-executable solution traces before extracting a final answer \citep{gao2023pal}.
-The present work is closest to this family in that it assumes multiple candidate answers and runtime traces are available, but it studies a different question: how to choose among already generated answers using gold-free execution metadata rather than selecting by raw frequency alone.
+\medskip\noindent\textbf{Ensembles and answer aggregation.}
+Classical ensemble methods show that simple aggregation rules can be strong baselines when component errors are at least partly decorrelated \citep{breiman1996bagging,freund1997decisiontheoretic,kittler1998combining,dietterich2000ensemble,zhou2012ensemble}.
+That perspective matters directly here: a pooled four-answer ensemble over frontier, L1, S1, and TALE is a meaningful comparator rather than a straw baseline.
+The paper therefore does not claim broad superiority over ensembling; instead, it asks whether interpretable trace-guided routing can be competitive with simple pooled aggregation under the same already-generated answer pool.
 
-\paragraph{Budgeted inference and test-time compute.}
-Recent work on test-time scaling studies how additional inference computation can improve reasoning accuracy \citep{snell2024scaling}.
-Budget-forcing methods such as s1 shape the amount of reasoning performed during generation by extending or truncating traces toward a target budget \citep{muennighoff2025s1}, while broader analyses of inference-time interventions compare sampling, voting, search, and allocation strategies under cost constraints \citep{wu2024inference}.
-Our experiments include prompt-budgeting and support-based answer-selection baselines as evaluated comparators; they are introduced in the experimental setup rather than treated as established prior work.
-The contribution here is therefore not a new generation-time scaling law; it is a post-generation answer-selection rule evaluated after candidate-producing methods have run under the same per-method budget cap.
+\medskip\noindent\textbf{Self-consistency and reasoning-time aggregation for LLMs.}
+Chain-of-thought prompting and zero-shot chain-of-thought showed that explicitly eliciting reasoning steps can improve mathematical and symbolic problem solving \citep{wei2022chain,kojima2022large}.
+Self-consistency then aggregates over multiple sampled reasoning paths by selecting the most frequent answer \citep{wang2023self}, with later work extending this idea to broader candidate pools \citep{chen2023universalselfconsistency}.
+Tree-structured and graph-structured reasoning methods broaden inference-time exploration further by organizing candidate traces into explicit search procedures \citep{yao2023tree,besta2024graph}, while program-aided reasoning couples generation to executable intermediate structure \citep{gao2023pal}.
+Failure-Trace Allocator is adjacent to this line of work but different in scope: it does not sample new reasoning paths at selection time and it does not choose by answer frequency alone.
+Instead, it selects among already generated answers using runtime-visible trace metadata plus external agreement signals.
 
-\paragraph{Verifier-guided reranking and answer selection.}
-A complementary line of work trains verifiers or reward models to rerank candidate solutions.
-For GSM8K, \citet{cobbe2021training} showed that an outcome verifier can substantially improve answer selection when trained on labeled solution data.
-Process reward models provide finer-grained supervision by scoring intermediate reasoning steps rather than only final answers \citep{lightman2024lets}.
-Lightweight supervised text-classification frameworks such as SetFit can also support task-specific reranking when suitable labels are available \citep{tunstall2022efficient}.
-In contrast, the policy studied here does not train a verifier and does not use correctness labels at decision time; it relies on runtime-visible frontier metadata and agreement patterns among independently generated candidate answers.
+\medskip\noindent\textbf{Verifier-based reranking and iterative correction.}
+Another line of work uses learned verifiers, reward models, or self-correction mechanisms to rerank or revise candidate solutions.
+For GSM8K, \citet{cobbe2021training} showed that an outcome verifier can materially improve answer selection when trained with correctness supervision.
+Process reward models refine this idea by scoring intermediate reasoning steps rather than only final answers \citep{lightman2024lets}.
+Related work on self-verification and iterative self-correction asks the model to critique or refine its own reasoning before committing to a final answer \citep{weng2023largelanguagemodelsbetter,madaan2023selfrefineiterativerefinementselffeedback}.
+The method studied here differs in two ways: it uses deterministic gold-free routing predicates rather than a learned verifier, and it does not invoke additional corrective generation after the candidate pool is available.
 
-\paragraph{Cost-aware routing, adaptive computation, and positioning.}
-Cost-aware routing systems such as FrugalGPT \citep{chen2023frugalgpt} and language-model cascades \citep{dohan2022language} reduce inference cost by deciding which model or stage to invoke for a given input.
-Adaptive computation methods make a related decision within a model or computation graph, allocating more processing to inputs that appear to require it \citep{graves2016adaptive}.
-The setting in this paper is different: the evaluated candidate-producing methods are compared under a matched per-method budget, and FIX-2+FIX-4 itself is a deterministic selection layer that issues no additional model calls once candidate answers and metadata are available.
-The resulting claim is intentionally narrow: on the tested Cohere/GSM8K setting, two runtime-legal signals---weak frontier traces and unanimous external disagreement---provide useful information for selecting among already generated answers.
+\medskip\noindent\textbf{Selective prediction, deferral, and calibration.}
+Selective prediction studies when a system should abstain, defer, or route away from its default prediction on subsets where reliability is lower \citep{geifman2017selectiveclassificationdeepneural,geifman2019selectivenet}.
+Calibration analyses are relevant because such routing decisions depend on whether confidence-like signals carry meaningful reliability information \citep{guo2017calibrationmodernneuralnetworks}.
+Failure-Trace Allocator is closer to this selective-routing perspective than to pure majority voting: the frontier answer remains the default on most examples, while LDG and ECO intervene only on a narrow runtime-identifiable subset.
+This framing also clarifies the paper's proposition-level claim: if a gold-free runtime signal isolates examples where an alternative selector is more reliable than the frontier default, then conditional deferral on that subset can improve overall accuracy.
+
+\medskip\noindent\textbf{Budgeted inference and test-time compute.}
+Recent work on test-time compute asks how additional inference effort should be allocated to improve reasoning accuracy \citep{snell2024scaling,wu2024inference}.
+Budget-forcing approaches such as s1 regulate the amount of reasoning performed during generation \citep{muennighoff2025s1}, while broader cost-aware systems such as FrugalGPT and language-model cascades study routing under resource constraints \citep{chen2023frugalgpt,dohan2022language}.
+Adaptive computation inside a model or computation graph provides a related perspective on conditional compute allocation \citep{graves2016adaptive}.
+The present paper addresses a narrower problem: after candidate-producing methods have already run under the same per-method budget cap, can a deterministic zero-extra-call selector use logged trace metadata to improve the final answer choice?

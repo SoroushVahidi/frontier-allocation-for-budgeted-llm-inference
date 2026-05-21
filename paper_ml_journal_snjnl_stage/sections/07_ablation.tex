@@ -1,48 +1,48 @@
-\subsection{Ablation Study and Non-Promoted Variants}
+\subsection{Ablation Study and Additional Variants}
 \label{sec:ablation}
 
-We evaluate ablation and extension variants to test whether the promoted two-gate
+We evaluate ablation and extension variants to test whether the final two-gate
 allocator can be improved by additional routing, extra-action, clustering, parsing,
 or pool-miss logic.
-Table~\ref{tab:ablation} summarizes the evaluated variants from FIX-1 through FIX-9.
+Table~\ref{tab:ablation} summarizes the evaluated variants; implementation labels are retained in the table for reproducibility.
 All variants were evaluated via postrun replay on existing candidate artifacts;
 no additional inference calls were issued for ablation purposes.
-None of the variants met promotion criteria beyond FIX-2+FIX-4, and they are
+None of the additional variants improved on Failure-Trace Allocator (FTA) with sufficient held-out evidence, and they are
 reported to delimit the supported claim.
 
-\paragraph{Promoted gate components.}
-FIX-2 alone achieves 80.00\% on Aggregate-720 ($+2.36$~pp over the frontier
+\medskip\noindent\textbf{Retained gate components.}
+Low-Depth Guard (LDG) alone achieves 80.00\% on Aggregate-720 ($+2.36$~pp over the frontier
 baseline), confirming that the Low-Depth Guard carries most of the combined gain.
-FIX-4 alone achieves 75.00\% on final-300---below FIX-2---but contributes an
-additional $+0.69$~pp when combined with FIX-2, reflecting its role in recovering
-cases where FIX-2 does not fire.
-FIX-3 (calibration on score-absent non-SWFB cases) was evaluated but applied to
+External-Consensus Fallback (ECO) alone achieves 75.00\% on final-300---below Low-Depth Guard (LDG)---but contributes an
+additional $+0.69$~pp when combined with Low-Depth Guard (LDG), reflecting its role in recovering
+cases where Low-Depth Guard (LDG) does not fire.
+A score-absence calibration variant was evaluated but applied to
 zero examples in the primary splits, contributing no accuracy change; it is
 excluded from the combined policy.
 
-\paragraph{Non-promoted variants.}
-FIX-5 (TALE-default router) produced zero switches on seeds~41 and~61,
+\medskip\noindent\textbf{Additional variants not included in the final policy.}
+A TALE-default router produced zero switches on seeds~41 and~61,
 equalling TALE performance on both splits, and only a marginal net positive
 switch on seed~71 ($+1$ example over TALE, final-300 78.67\% vs.\ 78.33\%).
-This outcome is $-8.00$~pp below FIX-2+FIX-4 on the same split.
-Note that the Aggregate-720 accuracy for FIX-5 (75.28\%) numerically coincides
+This outcome is $-8.00$~pp below Failure-Trace Allocator (FTA) on the same split.
+Note that the Aggregate-720 accuracy for this router (75.28\%) numerically coincides
 with that of the frontier baseline; this reflects the zero-switch behavior on
-seeds~41 and~61 (FIX-5 reverts to TALE, and TALE plus the single seed-71 switch
+seeds~41 and~61 (the router reverts to TALE, and TALE plus the single seed-71 switch
 happen to sum to the same total as the frontier), not an equivalence by design.
 The TALE-default design assumed a reliable agreement region that did not
 materialise consistently across evaluation seeds; see Section~\ref{sec:discussion}
 for interpretation.
-FIX-6 (LoVEC extra-action variant) showed a nonnegative pilot signal in the
-initial 40-case overlapping evaluation, but the independent 80-case Stage-2
-relaunch yielded net $-1$ for extra frontier actions and net $-4$ for extra TALE
-retries relative to FIX-2+FIX-4.
-Early-stage signal that fails to replicate on disjoint data is the standard
-non-promotion criterion.
-FIX-7 (cluster-level selector) achieved at most $+0.67$~pp in the best rule
-variant on final-300, below the promotion-meaningful threshold.
-FIX-8 (robust parser/canonicaliser) produced zero accuracy-changing switches on
+An extra-action variant showed a nonnegative pilot signal in the
+initial 40-case overlapping evaluation, but an independent 80-case follow-up
+yielded net $-1$ for extra frontier actions and net $-4$ for extra TALE
+retries relative to Failure-Trace Allocator (FTA).
+Early-stage signal that fails to replicate on disjoint data is not sufficient
+for inclusion in the final policy.
+A cluster-level selector achieved at most $+0.67$~pp in the best rule
+variant on final-300, below the threshold for inclusion in the main method.
+A robust parser variant produced zero accuracy-changing switches on
 both final-300 and Aggregate-720, indicating that parse-failure residuals are
 rare in this evaluation setting.
-FIX-9 (pool-miss detector) found 23 of 24 all-methods-wrong residuals to be
+A pool-miss diagnostic found 23 of 24 all-methods-wrong residuals to be
 generation-limited, with no selector-only remedy available; see the failure
 analysis in Section~\ref{sec:failure_analysis}.

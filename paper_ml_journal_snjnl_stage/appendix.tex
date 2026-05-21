@@ -2,19 +2,26 @@
 \section{Reproducibility and Supplementary Material}
 \label{sec:appendix_repro}
 This appendix collects reproducibility information, additional result decompositions,
-parameter grounding, runtime feature legality, and paper-facing name mappings.
+parameter grounding, runtime feature legality, and terminology-to-identifier mappings.
 
-\clearpage
 \input{tables/tableA1_reproducibility}
+
+\medskip\noindent\textbf{Reproducibility package contents.}
+The submission package is designed to include an anonymous reviewer-access archive
+for offline reproduction of the reported summaries. The package contents include
+a README or reviewer quickstart, environment or requirements specifications,
+configs and run manifests, processed per-example outputs, method summaries,
+bootstrap summaries, and scripts that regenerate the reported paper tables and
+metrics without new API calls. The package excludes API keys, secrets, \texttt{.env}
+files, private credentials, and unrelated local files.
 
 \clearpage
 \subsection*{Additional Result Decompositions}
 
 The following tables give the per-example win/loss/tie decomposition
-(Table~\ref{tab:wlt}) and claim language guidance for manuscript writing
+(Table~\ref{tab:wlt}) and claim-scope examples for manuscript wording
 (Table~\ref{tab:claim_language}).
 
-\clearpage
 \input{tables/tableA2_win_loss_tie}
 \input{tables/tableA3_safe_unsafe_claims}
 
@@ -22,43 +29,48 @@ The following tables give the per-example win/loss/tie decomposition
 \subsection*{Parameter Grounding and Sensitivity}
 
 Table~\ref{tab:param_sensitivity} documents the key parameters and design choices
-used in FIX-2+FIX-4, including their values, roles, and available robustness evidence.
+used in Failure-Trace Allocator (FTA), including their values, roles, and available robustness evidence.
 
-\clearpage
 \input{tables/tableA4_parameter_sensitivity}
 
 \clearpage
 \subsection*{Runtime Feature Legality}
 
-Table~\ref{tab:feature_legality} lists all features used by FIX-2+FIX-4 at
+Table~\ref{tab:feature_legality} lists all features used by Failure-Trace Allocator (FTA) at
 inference time and confirms their gold-free status.
 
-\clearpage
 \input{tables/tableA5_feature_legality}
 
 \clearpage
-\subsection*{Paper-Facing Name Mapping}
+\subsection*{Terminology and Identifier Mapping}
 
-Table~\ref{tab:name_mapping} maps paper-facing short names to their
+Table~\ref{tab:name_mapping} maps manuscript short names to their
 implementation identifiers, roles, runtime availability, and gold-free status.
 
-\clearpage
 \input{tables/tableA6_name_mapping}
 
 \section*{Data Availability}
 The GSM8K benchmark questions used for evaluation are available from the original source
-\citep{cobbe2021training}. A supplementary reproducibility package is included with this
-submission. Upon acceptance, the processed evaluation artifacts supporting the reported
-tables and figures will be made publicly available in a versioned repository, preferably
-with a persistent identifier such as a Zenodo DOI. Additional processed artifacts can be
-provided to reviewers upon request.
+\citep{cobbe2021training}. This submission is accompanied by a package designed for
+anonymous reviewer access and offline reproduction of the reported metrics, tables,
+and figures. The processed artifacts in that package include per-example records,
+experiment manifests, method summaries, bootstrap summaries, and paper-table
+generation outputs; these materials are sufficient to recompute the reported
+summary metrics without live model calls. A public archival release of the processed
+artifacts will be created upon publication, preferably in a versioned repository
+with a persistent identifier.
 
 \section*{Code Availability}
-The implementation of the proposed allocator and evaluation scripts will be made publicly
-available upon acceptance in a versioned repository, preferably with a persistent
-identifier such as a Zenodo DOI. The supplementary reproducibility package included with
-this submission contains the processed artifacts needed to inspect the reported results.
-Live reruns require provider API access to Cohere command-r-plus-08-2024.
+This submission is accompanied by a package designed to include the analysis code,
+table-generation scripts, and reproduction instructions needed to recompute the
+reported paper metrics from the processed artifacts offline. Full end-to-end
+regeneration of raw model outputs requires commercial provider credentials and live
+API access to Cohere command-r-plus-08-2024, and may vary because of provider-side
+nondeterminism, model/version changes, rate limits, or transient service failures.
+No API keys, secrets, \texttt{.env} files, private credentials, or unrelated local
+files are included in the reviewer package or any future public release. A public
+archival release of the code and processed artifacts will be created upon publication,
+preferably in a versioned repository with a persistent identifier.
 
 \section*{Funding}
 This work was supported by Cohere research API credits. No other specific grant

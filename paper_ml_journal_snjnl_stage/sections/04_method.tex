@@ -1,21 +1,32 @@
 \subsection{Method}
 \label{sec:method}
 
-The main method, which we term the \textbf{failure-trace-guided allocator} (FIX-2+FIX-4), is an answer-selection layer applied \emph{after} candidate generation (Figure~\ref{fig:method_overview}).  It does not generate new candidates and does not issue additional inference calls: it selects a final answer from already-produced frontier and external outputs generated under the same per-method budget cap.  Its two gates---the \textit{weak-frontier trigger} and the \textit{direct-agreement trigger}---fire in strict priority order; at most one gate acts per example.  All runtime decisions are gold-free: no \texttt{gold\_answer}, \texttt{exact\_match}, or correctness label is accessed.
+We study a broader class of \textbf{post-generation selective-deferral selectors}
+that operate after candidate generation is complete (Figure~\ref{fig:method_overview}).
+Such selectors do not generate new candidates and do not issue additional
+inference calls: they choose a final answer from already-produced outputs under
+the same per-method budget cap. The scientific object is therefore a routing
+problem over answer sources, not a new candidate-generation method.
 
-Throughout the paper we use short paper-facing names for readability.
-The combined FIX-2+FIX-4 policy is the \emph{failure-trace-guided allocator}.
+Failure-Trace Allocator (FTA) is the deterministic instantiation of that broader
+framework studied in this paper. Its two gates---the \textit{weak-frontier trigger}
+and the \textit{direct-agreement trigger}---fire in strict priority order; at
+most one gate acts per example. All runtime decisions are gold-free: no
+\texttt{gold\_answer}, \texttt{exact\_match}, or correctness label is accessed.
+
+Throughout the paper we use short manuscript names for readability.
+The combined Failure-Trace Allocator (FTA) policy is the \emph{failure-trace-guided allocator}.
 Its two internal conditions are the \emph{weak-frontier trigger} and the \emph{direct-agreement trigger}.
 The three external baselines are abbreviated \emph{L1}, \emph{S1}, and \emph{TALE}; the best-performing external on a given evaluation split is the \emph{best external}.
 Implementation-name mapping is retained in Table~\ref{tab:name_mapping} for reproducibility.
 
-At each example, the allocator consumes three classes of runtime-legal inputs:
-the frontier answer candidate, the three evaluated external-baseline answers, and
-failure-trace metadata emitted during normal frontier execution.
-The allocator output is a single final answer plus an explicit policy outcome
-(\texttt{fix2}, \texttt{fix4}, or frontier retained), so every decision can be
+At each example, the selector consumes three classes of runtime-legal inputs: the
+frontier answer candidate, the three evaluated external-baseline answers, and
+failure-trace metadata emitted during normal frontier execution. The output is a
+single final answer plus an explicit policy outcome
+(\texttt{fix2}, \texttt{fix4}, or frontier default), so every decision can be
 audited after the run using only logged runtime fields.
-This interface is intentionally narrow: the main method does not depend on
+This interface is intentionally narrow: the instantiated policy does not depend on
 learned scores or post-hoc labels.
 
 Conceptually, the allocator uses three abstract predicates.
@@ -25,25 +36,45 @@ or a single-branch selection.
 L1, S1, and TALE agree, with a deterministic fallback only when all three differ.
 \textsc{ExternalConsensusDisagree}$(x)$ is true when L1, S1, and TALE unanimously
 agree with one another and disagree with the frontier answer.
-The raw log strings in Algorithm~\ref{alg:fix24} and Table~\ref{tab:policy_rules}
+The raw log strings in Table~\ref{alg:fix24} and Table~\ref{tab:policy_rules}
 are implementation realizations of these predicates, not scientific assumptions
 tied to a private script.
 
-The weak-frontier trigger is motivated by a structural reliability pattern. In practice, branches and candidate groups are formed from the frontier's logged branch traces: each produced branch yields a parsed answer and is assigned to an answer group by normalized predicted text. Support counts are the integer counts of branches per answer-group (\texttt{answer\_group\_support\_counts}) observed in the trace; higher support indicates multiple independent branches converging on the same answer. The field \texttt{override\_reason} records the runtime decision pathway (for example, \texttt{single\_weak\_frontier\_branch} or \texttt{direct\_frontier\_agree}) and is emitted by the frontier when a guard or post-processing event signals limited search breadth or internal agreement. Weak-frontier traces are emitted when expansion depth or family diversity falls below configured thresholds; direct-frontier agreement is emitted when the frontier's reserve selection matches the incumbent. These metadata fields are runtime-visible and used only for gold-free decision predicates; they are not derived from gold labels or post-hoc scoring.
+The weak-frontier trigger is motivated by a structural reliability pattern. In practice, branches and candidate groups are formed from the frontier's logged branch traces: each produced branch yields a parsed answer and is assigned to an answer group by normalized predicted text. Support counts are the integer counts of branches per answer-group (\texttt{answer\_group\_support\_counts}) observed in the trace; higher support indicates multiple independent branches converging on the same answer. The field \texttt{override\_reason} records the runtime decision pathway (for example, \texttt{single\_weak\_frontier\_branch} or \texttt{direct\_frontier\_agree}) and is emitted by the frontier when a guard or post-processing event signals limited search breadth or internal agreement. Weak-frontier traces are emitted when expansion depth or family diversity falls below configured thresholds; direct-frontier agreement is emitted when the frontier's reserve selection matches the incumbent. These metadata fields are runtime-visible and used only for gold-free routing predicates; they are not derived from gold labels or post-hoc scoring.
 When the frontier trace indicates a single weak branch (for example, low-depth
 termination in the logged metadata), the resulting candidate is treated as
-evidence of under-exploration in this evaluated setting.
+evidence of under-exploration.
 In those cases, routing to an external majority answer provides an independent
 cross-policy signal without spending extra compute.
 
-The direct-agreement trigger addresses a complementary pattern.
+The direct-agreement trigger addresses a complementary pattern of selective
+deferral.
 If the frontier and its reserve agree internally, but all three external methods
 unanimously select a different answer, this unanimous disagreement is treated as
 high-confidence evidence that the frontier selection may be wrong under the
 matched-budget protocol.
 Partial external agreement (for example, only one or two externals disagreeing)
 is intentionally not used in the main method, because it is more ambiguous in
-this setting and did not provide promotion-grade evidence.
+this setting and did not provide validation-grade evidence.
+
+\medskip\noindent\textbf{Frontier metadata interface (runtime, gold-free).}
+The allocator consumes only fields produced during standard frontier execution:
+\begin{itemize}[nosep,leftmargin=1.5em]
+  \item \textbf{Candidate answer grouping:} parsed branch answers are canonicalized into answer groups (normalization/canonicalization details are implementation-level and documented in reproducibility artifacts).
+  \item \textbf{Support counts:} each answer group has an integer branch-support count; these counts define whether support is concentrated or dispersed.
+  \item \textbf{Logged pathway metadata:} \texttt{override\_reason} records the frontier selector pathway, including \texttt{single\_weak\_frontier\_branch} and \texttt{direct\_frontier\_agree}.
+  \item \textbf{Agreement flags:} direct-frontier agreement and external answer agreement are computed from already generated answers.
+\end{itemize}
+All of these are runtime-visible model-output artifacts; none require ground-truth answers.
+
+\medskip\noindent\textbf{Conditional-deferral proposition.}
+Let $S$ be a runtime-identifiable subset of examples. Let $e_F(S)$ be frontier error rate on $S$ and $e_M(S)$ be external-majority error rate on $S$. If $e_F(S) > e_M(S)$, then replacing frontier with external majority on $S$ improves expected accuracy by
+\[
+P(S)\,\big(e_F(S)-e_M(S)\big).
+\]
+Low-Depth Guard (LDG) and External-Consensus Fallback (ECO) are empirical,
+gold-free routing predicates intended to identify such subsets without using
+correctness labels at runtime.
 
 The control flow is a strict precedence chain (Figure~\ref{fig:method_overview},
 Table~\ref{tab:policy_rules}).
@@ -54,13 +85,13 @@ generation-quality warning: when exploration itself appears narrow, the policy
 does not also ask whether the frontier was internally self-consistent.
 If it does not fire, the policy checks the direct-agreement trigger; when that
 condition fires, the policy routes to the external unanimity answer.
-If neither trigger fires, the frontier answer is retained.
+If neither trigger fires, the frontier answer is kept.
 The default therefore preserves the original frontier method on all examples
 where neither high-confidence failure trace is present.
 Conflict handling is deterministic: at most one gate can act, and external
 majority ties are resolved by the fixed priority order documented in
 Table~\ref{tab:policy_rules}.
-That fallback is retained for reproducibility rather than claimed as optimal;
+That fallback is used for reproducibility rather than claimed as optimal;
 the sensitivity noted in Table~\ref{tab:param_sensitivity} shows that alternative
 tie orders change Aggregate-720 replay by less than one percentage point.
 
@@ -73,35 +104,35 @@ allowed inputs and explicitly excluded fields.
 This legality boundary is central to the method definition, not only a reporting
 constraint.
 
-Relative to L1, S1, TALE, and the frontier baseline, FIX-2+FIX-4 plays a different
+Relative to L1, S1, TALE, and the frontier baseline, Failure-Trace Allocator (FTA) plays a different
 role in the stack.
 L1, S1, TALE, and frontier each provide candidate answers under the same
-per-method matched budget; the failure-trace-guided allocator then decides whether to keep the
-frontier answer or override it using external agreement signals.
+per-method matched budget; the selector then decides whether to keep the
+frontier answer or defer to another answer source using trace and agreement signals.
 This separation between candidate generation and final allocation is what allows the
 policy to improve selection quality without additional model calls.
 Observed gains come from switching the final answer on a small trace-identified
 subset of examples rather than from increasing inference budget.
-Table~\ref{tab:name_mapping} provides the paper-facing to implementation-name mapping.
+Table~\ref{tab:name_mapping} provides the manuscript-to-implementation name mapping.
 
-\subsection{Low-Depth Guard (FIX-2)}
+\subsection{Low-Depth Guard (LDG)}
 \label{sec:fix2}
 
-The Low-Depth Guard detects frontier answers arising from structurally weak search branches and replaces them with an external majority vote.  The trigger relies exclusively on fields logged during the frontier run: the override reason string and the candidate-pool group count.
+The Low-Depth Guard detects frontier answers arising from structurally weak search branches and defers to an external majority vote. The trigger relies exclusively on fields logged during the frontier run: the override reason string and the candidate-pool group count.
 
-\subsection{External-Consensus Fallback (FIX-4)}
+\subsection{External-Consensus Fallback (ECO)}
 \label{sec:fix4}
 
-The External-Consensus Fallback identifies examples where the direct-agreement trigger fires---meaning the frontier agreed with its own internal reserve selection---yet all three external baselines unanimously chose a different answer.  When this unanimous disagreement holds, the policy substitutes the external consensus answer.
+The External-Consensus Fallback identifies examples where the direct-agreement trigger fires---meaning the frontier agreed with its own internal reserve selection---yet all three external baselines unanimously chose a different answer. When this unanimous disagreement holds, the policy defers to the external consensus answer.
 
-\subsection{Combined Policy Algorithm}
+\subsection{Combined Policy Summary}
 \label{sec:fix24_algorithm}
 
-Algorithm~\ref{alg:fix24} gives the complete pseudocode using exact runtime field names.  Parameter settings and implementation-name mapping are documented in the appendix reproducibility tables.
+Table~\ref{alg:fix24} gives the complete pseudocode using exact runtime field names. Parameter settings and implementation-name mapping are documented in the appendix reproducibility tables.
 
 \begin{table}[t]
 \centering
-\caption{Algorithm 1: Combined Failure-Trace-Guided Allocator (FIX-2+FIX-4). All inputs are gold-free runtime fields. Named constants and name mapping are documented in the appendix reproducibility tables.}
+\caption{Policy summary for the Failure-Trace Allocator. All inputs are gold-free runtime fields. Named constants and name mapping are documented in the appendix reproducibility tables.}
 \label{alg:fix24}
 \scriptsize
 \begin{tabular}{p{0.06\textwidth} p{0.88\textwidth}}
@@ -113,7 +144,7 @@ Algorithm~\ref{alg:fix24} gives the complete pseudocode using exact runtime fiel
 & \texttt{l1\_answer}, \texttt{s1\_answer}, \texttt{tale\_answer} (external baseline outputs) \\
 & \texttt{override\_reason}, \texttt{frontier\_support} $\in \mathbb{Z}_{\geq 0}$, \texttt{candidate\_pool\_answer\_group\_count} $\in \mathbb{Z}_{>0}$ \\
 \midrule
-\multicolumn{2}{l}{\textit{Step 1 ---Low-Depth Guard (FIX-2)}} \\
+\multicolumn{2}{l}{\textit{Step 1 ---Low-Depth Guard (LDG)}} \\
 1a & \textbf{if} \texttt{override\_reason} contains \texttt{"single\_weak\_frontier\_branch"} \\
    & \quad \textbf{or} (\texttt{frontier\_support} $= 0$ \textbf{and} \texttt{candidate\_pool\_answer\_group\_count} $\geq 2$) \\
    & \textbf{then:} \\
@@ -122,7 +153,7 @@ Algorithm~\ref{alg:fix24} gives the complete pseudocode using exact runtime fiel
 1c & \quad \textbf{if} \texttt{ext} exists \textbf{and} \texttt{ext} $\neq$ \texttt{frontier\_answer}: \\
    & \quad\quad \textbf{return} \texttt{ext}, \texttt{policy} $\leftarrow$ \texttt{fix2} \quad\quad \textit{(guard fires; stop)} \\
 \midrule
-\multicolumn{2}{l}{\textit{Step 2 ---External-Consensus Fallback (FIX-4)}} \\
+\multicolumn{2}{l}{\textit{Step 2 ---External-Consensus Fallback (ECO)}} \\
 2a & \textbf{if} \texttt{override\_reason} $=$ \texttt{"direct\_frontier\_agree"} \\
    & \quad \textbf{and} \texttt{l1\_answer} $=$ \texttt{s1\_answer} $=$ \texttt{tale\_answer} \\
    & \quad \textbf{and} \texttt{l1\_answer} $\neq$ \texttt{frontier\_answer} \\
