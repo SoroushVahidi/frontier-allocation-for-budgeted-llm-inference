@@ -57,10 +57,8 @@ Springer Machine Learning Journal. Do not include this file in the compiled PDF.
 - [x] besta2024graph: AAAI 2024 (updated)
 - [x] chen2023frugalgpt: TMLR 2024 (updated)
 - [x] cobbe2021training: arXiv 2110.14168 (no published proceedings — correct)
-- [ ] Check whether snell2024scaling (arXiv 2408.03314) has been published in
-  a venue by submission time; update bib entry if so.
-- [ ] Check whether muennighoff2025s1 (arXiv 2501.19393) has been published in
-  a venue by submission time; update bib entry if so.
+- [x] snell2024scaling verified as ICLR 2025 Oral (OpenReview: 4FWAwZtd2n).
+- [x] muennighoff2025s1 verified as EMNLP 2025 main (ACL Anthology: 2025.emnlp-main.1025).
 
 ---
 
