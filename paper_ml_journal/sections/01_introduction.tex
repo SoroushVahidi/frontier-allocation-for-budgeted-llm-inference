@@ -42,6 +42,9 @@ FIX-2+FIX-4 achieves 80.69\% accuracy versus 77.64\% (L1), 77.08\% (S1), and
 Source-stratified 95\% bootstrap confidence intervals are strictly positive for all
 four pairwise comparisons, including versus the source-local best external
 (CI lower bound $+1.11$~pp).
+We also report a stronger pooled-answer ensemble baseline over frontier, L1, S1,
+and TALE; FIX-2+FIX-4 remains ahead by point estimate on Final-300 and
+Aggregate-720, but that comparison is not statistically separated.
 All claims are explicitly scoped to the tested provider and benchmark; we make no
 universal generalization claims.
 
@@ -58,6 +61,6 @@ Section~\ref{sec:method} specifies FIX-2+FIX-4 precisely, including exact trigge
 conditions and pseudocode.
 Sections~\ref{sec:experiments} and~\ref{sec:results} describe the evaluation
 protocol and report results with full confidence intervals.
-Section~\ref{sec:ablation} summarizes the prototype development trajectory.
+Section~\ref{sec:ablation} summarizes ablation variants and non-promoted outcomes.
 Sections~\ref{sec:discussion}--\ref{sec:conclusion} discuss implications,
 limitations, and directions for future work.

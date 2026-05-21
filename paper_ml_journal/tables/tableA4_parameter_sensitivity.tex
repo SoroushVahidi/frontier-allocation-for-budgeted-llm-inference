@@ -63,6 +63,12 @@ Provider / model \newline \textit{(Cohere command-r-plus-08-2024)} &
   Chosen for API availability and run stability during the experiment period. &
   All compared methods use the same provider/model. &
   Provider-specific; generalization not established. \\
+\addlinespace
+External tie fallback \newline \textit{(TALE$\succ$S1$\succ$L1)} &
+  Deterministic gold-free fallback when L1, S1, and TALE all disagree.
+  Retained as the fixed promoted-policy convention rather than optimized on Aggregate720. &
+  Alternative FIX-2-only replays on Aggregate720 give 80.14\% for S1-first and 80.42\% for L1-first; frontier fallback on all-different external ties gives 80.83\%. &
+  Tie order is not separately validated as an optimal policy. \\
 \bottomrule
 \end{tabular}}
 \end{table*}

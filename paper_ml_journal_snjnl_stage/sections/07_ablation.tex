@@ -1,11 +1,14 @@
-\subsection{Ablation and Policy Evolution}
+\subsection{Ablation Study and Non-Promoted Variants}
 \label{sec:ablation}
 
-Table~\ref{tab:ablation} traces the complete development trajectory from the initial
-FIX-1 support-aware selector through FIX-9.
+We evaluate ablation and extension variants to test whether the promoted two-gate
+allocator can be improved by additional routing, extra-action, clustering, parsing,
+or pool-miss logic.
+Table~\ref{tab:ablation} summarizes the evaluated variants from FIX-1 through FIX-9.
 All variants were evaluated via postrun replay on existing candidate artifacts;
 no additional inference calls were issued for ablation purposes.
-FIX-2+FIX-4 is the sole promoted policy.
+None of the variants met promotion criteria beyond FIX-2+FIX-4, and they are
+reported to delimit the supported claim.
 
 \paragraph{Promoted gate components.}
 FIX-2 alone achieves 80.00\% on Aggregate-720 ($+2.36$~pp over the frontier
@@ -17,7 +20,7 @@ FIX-3 (calibration on score-absent non-SWFB cases) was evaluated but applied to
 zero examples in the primary splits, contributing no accuracy change; it is
 excluded from the combined policy.
 
-\paragraph{Non-promoted follow-up prototypes.}
+\paragraph{Non-promoted variants.}
 FIX-5 (TALE-default router) produced zero switches on seeds~41 and~61,
 equalling TALE performance on both splits, and only a marginal net positive
 switch on seed~71 ($+1$ example over TALE, final-300 78.67\% vs.\ 78.33\%).
@@ -29,11 +32,11 @@ happen to sum to the same total as the frontier), not an equivalence by design.
 The TALE-default design assumed a reliable agreement region that did not
 materialise consistently across evaluation seeds; see Section~\ref{sec:discussion}
 for interpretation.
-FIX-6 (LoVEC extra-action pilot) showed a nonnegative pilot signal in the
+FIX-6 (LoVEC extra-action variant) showed a nonnegative pilot signal in the
 initial 40-case overlapping evaluation, but the independent 80-case Stage-2
 relaunch yielded net $-1$ for extra frontier actions and net $-4$ for extra TALE
 retries relative to FIX-2+FIX-4.
-Pilot-stage signal that fails to replicate on disjoint data is the standard
+Early-stage signal that fails to replicate on disjoint data is the standard
 non-promotion criterion.
 FIX-7 (cluster-level selector) achieved at most $+0.67$~pp in the best rule
 variant on final-300, below the promotion-meaningful threshold.

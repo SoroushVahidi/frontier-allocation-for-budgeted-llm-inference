@@ -12,9 +12,9 @@ and TALE 78.33\% (235/300).
 Paired bootstrap 95\% confidence intervals (5\,000 resamples) for FIX-2+FIX-4
 minus each baseline on this split:
 \begin{itemize}[nosep,leftmargin=1.5em]
-  \item vs.\ L1: $+3.67$ pp, 95\% CI $[+0.33,\;+7.00]$, $p(\Delta>0)=0.983$
-  \item vs.\ S1: $+4.67$ pp, 95\% CI $[+1.00,\;+8.33]$, $p(\Delta>0)=0.993$
-  \item vs.\ TALE: $+8.33$ pp, 95\% CI $[+5.00,\;+12.00]$, $p(\Delta>0)=1.000$
+  \item vs.\ L1: $+3.67$ pp, 95\% CI $[+0.33,\;+7.00]$, bootstrap positive-delta fraction $0.983$
+  \item vs.\ S1: $+4.67$ pp, 95\% CI $[+1.00,\;+8.33]$, bootstrap positive-delta fraction $0.993$
+  \item vs.\ TALE: $+8.33$ pp, 95\% CI $[+5.00,\;+12.00]$, bootstrap positive-delta fraction $1.000$
 \end{itemize}
 All three CI lower bounds are strictly positive on this split.
 
@@ -26,14 +26,38 @@ FIX-2+FIX-4 reaches \textbf{80.69\%} (581/720), versus L1 77.64\% (559/720),
 S1 77.08\% (555/720), and TALE 75.14\% (541/720).
 Source-stratified bootstrap 95\% confidence intervals (5\,000 resamples):
 \begin{itemize}[nosep,leftmargin=1.5em]
-  \item vs.\ L1: $+3.06$ pp, 95\% CI $[+0.83,\;+5.42]$, $p(\Delta>0)=0.995$
-  \item vs.\ S1: $+3.61$ pp, 95\% CI $[+1.39,\;+5.69]$, $p(\Delta>0)=0.999$
-  \item vs.\ TALE: $+5.56$ pp, 95\% CI $[+3.61,\;+7.50]$, $p(\Delta>0)=1.000$
+  \item vs.\ L1: $+3.06$ pp, 95\% CI $[+0.83,\;+5.42]$, bootstrap positive-delta fraction $0.995$
+  \item vs.\ S1: $+3.61$ pp, 95\% CI $[+1.39,\;+5.69]$, bootstrap positive-delta fraction $0.999$
+  \item vs.\ TALE: $+5.56$ pp, 95\% CI $[+3.61,\;+7.50]$, bootstrap positive-delta fraction $1.000$
   \item vs.\ source-local best external: $+3.06$ pp, 95\% CI $[+1.11,\;+5.00]$,
-        $p(\Delta>0)=0.999$
+        bootstrap positive-delta fraction $0.999$
 \end{itemize}
 All aggregate source-stratified CI lower bounds are strictly above zero.
 The margin vs.\ best external exceeds 1 pp even at the lower CI bound.
+
+\paragraph{Pooled ensemble baseline.}
+We also evaluate a simple pooled answer ensemble over the four already-generated
+answers: frontier, L1, S1, and TALE (Table~\ref{tab:pooled_ensemble}).
+The primary pooled baseline uses strict majority vote over the four answers and
+falls back to the frontier answer for 2--2 ties or all-different cases; this
+tie-breaker is deterministic and gold-free.
+On Final-300, this Pooled-4 baseline reaches 84.33\% (253/300), while FIX-2+FIX-4
+reaches 86.67\% (260/300), a $+2.33$ pp difference with paired bootstrap 95\% CI
+$[-0.67,\,+5.67]$.
+On Aggregate-720, Pooled-4 reaches 79.86\% (575/720), while FIX-2+FIX-4 reaches
+80.69\% (581/720), a $+0.83$ pp difference with source-stratified 95\% CI
+$[-1.11,\,+2.78]$.
+An external-only L1/S1/TALE majority baseline is even closer: 85.33\% on Final-300
+and 80.28\% on Aggregate-720.
+Thus, FIX-2+FIX-4 remains ahead by point estimate, but the pooled-ensemble
+comparison is not statistically separated and is treated as a robustness check
+rather than a promoted superiority claim.
+The external fallback order used by FIX-2 is deterministic and fixed for
+reproducibility; it is not presented as an optimized learned ranker.  A replay
+sensitivity check over alternative external tie orders changes Aggregate-720
+FIX-2-only accuracy from 80.00\% to 80.42\%, with frontier fallback on
+all-different external ties reaching 80.83\%; these variants are reported only as
+sensitivity because they were not the promoted policy.
 
 \paragraph{Source-by-source breakdown.}
 Table~\ref{tab:source_by_source} gives the per-source accuracy for all evaluated methods.
@@ -41,6 +65,15 @@ Estimates are consistent across sources: FIX-2+FIX-4 leads by point estimate in 
 individual source split, with seed-41 showing the smallest advantage
 (83.33\% vs.\ 80.33\% for all three baselines) and seed-71 showing the largest
 (86.67\% vs.\ 83.00\% for L1).
+The seed-61 source is substantially harder in absolute terms: frontier, L1, S1,
+and TALE all fall to 57.50\%, 57.50\%, 56.67\%, and 54.17\%, respectively.
+The provider/model/budget configuration is unchanged, and the mean question length
+is only modestly higher than the other sources (48.5 words vs.\ 46.1 for seed~41
+and 44.6 for seed~71).
+The available evidence therefore points to source-sample difficulty rather than a
+method-specific run configuration change.
+FIX-2+FIX-4 still leads the best external on seed~61 by $+1.67$ pp, and the
+source-stratified aggregate confidence interval accounts for this source variation.
 
 \paragraph{Win/loss/tie decomposition.}
 Appendix Table~\ref{tab:wlt} gives the per-example win/loss/tie counts versus each baseline
@@ -49,6 +82,16 @@ On the Final-300 evaluation, FIX-2+FIX-4 wins on 19 examples vs.\ L1 (losses: 8,
 23 examples vs.\ S1 (losses: 9, ties: 268), and 27 examples vs.\ TALE (losses: 2, ties: 271).
 The extremely low loss counts vs.\ TALE confirm that the policy's recoveries
 substantially outweigh its regressions on this evaluation.
+
+\paragraph{Gate-action decomposition.}
+Table~\ref{tab:gate_actions} decomposes the promoted policy into gate actions.
+Across Aggregate-720, FIX-2 fires on 122 examples, FIX-4 fires on 5 examples after
+FIX-2 does not fire, and no gate fires on 593 examples.
+The FIX-4 actions are rare but positive in this artifact: before FIX-4, the
+frontier answer is incorrect on all five; after FIX-4, all five are correct.
+The same pattern holds on Final-300, where FIX-4 fires on three examples and
+contributes three wins, zero losses, and zero ties relative to the frontier answer
+and to FIX-2-only replay.
 
 \paragraph{Sensitivity set (supporting diagnostic only).}
 Table~\ref{tab:source_by_source} includes a row for a 100-example set (seed~31,

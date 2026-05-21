@@ -16,6 +16,9 @@ This document is the canonical single-page record of the most recent empirical r
   - validation root: `outputs/final_fix24_all_external_validation_20260519_20260520T000902Z/`
   - postrun root: `outputs/final_fix24_all_external_postrun_20260520_20260520T025349Z/`
 - Safe current claim: FIX-2+FIX-4 is ahead by point estimate on final-300 and aggregate-720, with positive stratified CI lower bounds vs L1/S1/TALE/best-external.
+- New reviewer-risk baseline: a four-answer pooled ensemble (frontier + L1 + S1 + TALE, strict majority with frontier tie-break) reaches 253/300 = 84.33% on Final-300 and 575/720 = 79.86% on Aggregate-720. FIX-2+FIX-4 remains ahead by point estimate (260/300 = 86.67%; 581/720 = 80.69%), but the paired/bootstrap CI vs this pooled ensemble includes zero (Final-300 delta +2.33pp CI [-0.67, +5.67]; Aggregate-720 delta +0.83pp CI [-1.11, +2.78]). Do not claim statistically separated superiority over pooled ensembles.
+- Budget-accounting boundary: the matched-budget claim is a per-method evaluation contract (`B=6` logical calls per candidate-producing method). FIX-2+FIX-4 is a post-generation selector and adds no model calls after candidate answers and frontier metadata are available. Do not claim that generating the full frontier/L1/S1/TALE pool from scratch costs only one six-call run.
+- Tie-breaker boundary: the TALE > S1 > L1 external fallback is a fixed deterministic convention for all-different external answers, not an optimized learned ranking. Aggregate-720 FIX-2-only sensitivity gives 80.00% under TALE-first, 80.14% under S1-first, 80.42% under L1-first, and 80.83% under frontier fallback for all-different external ties.
 - Unsafe current claim: do not extrapolate beyond this benchmark setting without additional independent runs.
 
 ---
@@ -42,10 +45,19 @@ FIX-2+FIX-4 paired deltas (bootstrap 95% CI, 5000 resamples):
 - vs `external_l1_max`: `+3.67pp` `[+0.33, +7.00]`, wins/losses/ties `19/8/273`
 - vs `external_s1_budget_forcing`: `+4.67pp` `[+1.00, +8.33]`, wins/losses/ties `23/9/268`
 - vs `external_tale_prompt_budgeting`: `+8.33pp` `[+5.00, +12.00]`, wins/losses/ties `27/2/271`
+- vs pooled four-answer ensemble: `+2.33pp` `[-0.67, +5.67]`, wins/losses/ties `16/9/275`
+- vs external-only L1/S1/TALE majority: `+1.33pp` `[-1.00, +3.67]`, wins/losses/ties `8/4/288`
 
 Interpretation:
 - FIX-2+FIX-4 is best by point estimate on the final unbiased 300-example run.
 - On this run, CI lower bounds are positive vs all external baselines.
+- The pooled-ensemble baselines are closer than individual external baselines; report them as robustness checks, not as statistically separated wins.
+
+### Gate-action decomposition
+
+Inside the combined FIX-2+FIX-4 policy:
+- Final-300: FIX-2 fires on 63 examples, FIX-4 fires on 3 examples after FIX-2 does not fire, and no gate fires on 234 examples. FIX-4 changes 3 originally wrong frontier answers into 3 correct final answers, with 0 losses.
+- Aggregate-720: FIX-2 fires on 122 examples, FIX-4 fires on 5 examples after FIX-2 does not fire, and no gate fires on 593 examples. FIX-4 changes 5 originally wrong frontier answers into 5 correct final answers, with 0 losses.
 
 ---
 
@@ -470,10 +482,10 @@ Aggregate accuracy (`N = 720`):
 - `external_tale_prompt_budgeting`: `541/720 = 75.14%`
 
 Paired deltas (FIX-2+FIX-4 minus external; source-stratified bootstrap, 5000 resamples):
-- vs `external_l1_max`: `+3.06pp`, 95% CI `[+0.83, +5.42]`, `p(delta>0)=0.995`
-- vs `external_s1_budget_forcing`: `+3.61pp`, 95% CI `[+1.39, +5.69]`, `p(delta>0)=0.999`
-- vs `external_tale_prompt_budgeting`: `+5.56pp`, 95% CI `[+3.61, +7.50]`, `p(delta>0)=1.000`
-- vs source-local best external: `+3.06pp`, 95% CI `[+1.11, +5.00]`, `p(delta>0)=0.999`
+- vs `external_l1_max`: `+3.06pp`, 95% CI `[+0.83, +5.42]`, bootstrap positive-delta fraction `0.995`
+- vs `external_s1_budget_forcing`: `+3.61pp`, 95% CI `[+1.39, +5.69]`, bootstrap positive-delta fraction `0.999`
+- vs `external_tale_prompt_budgeting`: `+5.56pp`, 95% CI `[+3.61, +7.50]`, bootstrap positive-delta fraction `1.000`
+- vs source-local best external: `+3.06pp`, 95% CI `[+1.11, +5.00]`, bootstrap positive-delta fraction `0.999`
 
 Sensitivity-only include (add prior 100-example seed-31 set, `N = 820`):
 - vs L1: `+3.06pp -> +3.41pp` (shift `+0.36pp`)

@@ -62,4 +62,13 @@ The promoted findings are scoped to the tested evaluation setting.
 What this evidence does \emph{not} establish is generalization beyond that scope:
 whether the same failure-trace signals are informative on other providers,
 benchmarks, or budget levels is an open empirical question.
+Existing repository artifacts include earlier MATH-500, AIME, OpenAI/Cohere, and
+budget-sweep outputs, but these do not contain the same four-method per-example
+records and frontier trace metadata needed to replay FIX-2+FIX-4 under the current
+protocol.
+They are therefore unsuitable as a clean second benchmark/provider/budget result
+for this manuscript without new matched-budget generation.
+The most efficient next replication would be a second GSM8K provider run or a
+same-provider second benchmark with the identical frontier, L1, S1, and TALE
+logging contract.
 Section~\ref{sec:limitations} enumerates the scope boundaries explicitly.

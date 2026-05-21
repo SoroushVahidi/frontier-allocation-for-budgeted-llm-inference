@@ -1,6 +1,6 @@
 \begin{table*}[t]
 \centering
-\caption{Ablation and prototype trajectory. Bold denotes the strongest promoted-policy result in the main comparison block.}
+\caption{Ablation variants and non-promoted policy outcomes. Bold denotes the strongest promoted-policy result in the main comparison block.}
 \label{tab:ablation}
 \scriptsize
 \resizebox{\textwidth}{!}{%
@@ -16,7 +16,7 @@ FIX-4 consensus gate & direct-frontier-agree + unanimous external disagreement &
 \textbf{FIX-2+FIX-4} & low-depth + external-consensus & final300=86.67\%; agg720=80.69\% & \textbf{yes} \\
 FIX-1+2+3+4 & combined heuristic stack & 81.00\% & no \\
 FIX-5 TALE-default router & agreement-region switching & overnight300=80.33\%; final300=78.67\% & no \\
-FIX-6 LoVEC pilot & residual errors needing extra action & net vs FIX-2+FIX-4: frontier $-1$, TALE $-4$ & no \\
+FIX-6 LoVEC extra-action & residual errors needing extra action & net vs FIX-2+FIX-4: frontier $-1$, TALE $-4$ & no \\
 FIX-7 cluster selector & cluster-level reranking / parser guards & best-rule local delta vs FIX-2+FIX-4: $+0.67$~pp & no \\
 FIX-8 robust parser & parser/canonicalization errors & final300 delta $+0.00$~pp; agg720 $+0.00$~pp & no \\
 FIX-9 pool-miss detector & generation-limited residuals & 23/24 all-methods wrong generation-likely; 0 rule opportunities & no \\

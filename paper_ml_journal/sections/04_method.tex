@@ -1,13 +1,13 @@
 \subsection{Method}
 \label{sec:method}
 
-The promoted method, which we term the \textbf{failure-trace-guided allocator} (FIX-2+FIX-4), is a deterministic precedence policy applied at inference time (Figure~\ref{fig:method_overview}).  Its two gates---the \textit{weak-frontier trigger} and the \textit{direct-agreement trigger}---fire in strict priority order; at most one gate acts per example.  All runtime decisions are gold-free: no \texttt{gold\_answer}, \texttt{exact\_match}, or correctness label is accessed.
+The promoted method, which we term the \textbf{failure-trace-guided allocator} (FIX-2+FIX-4), is an answer-selection layer applied \emph{after} candidate generation (Figure~\ref{fig:method_overview}).  It does not generate new candidates and does not issue additional inference calls: it selects a final answer from already-produced frontier and external outputs generated under the same per-method budget cap.  Its two gates---the \textit{weak-frontier trigger} and the \textit{direct-agreement trigger}---fire in strict priority order; at most one gate acts per example.  All runtime decisions are gold-free: no \texttt{gold\_answer}, \texttt{exact\_match}, or correctness label is accessed.
 
 Throughout the paper we use short paper-facing names for readability.
 The combined FIX-2+FIX-4 policy is the \emph{failure-trace-guided allocator}.
 Its two internal conditions are the \emph{weak-frontier trigger} and the \emph{direct-agreement trigger}.
 The three external baselines are abbreviated \emph{L1}, \emph{S1}, and \emph{TALE}; the best-performing external on a given evaluation split is the \emph{best external}.
-Implementation identifiers are retained in the algorithm (Algorithm~\ref{alg:fix24}) and the name-mapping table (Table~\ref{tab:name_mapping}) for reproducibility.
+Implementation-name mapping is retained in Table~\ref{tab:name_mapping} for reproducibility.
 
 At each example, the allocator consumes three classes of runtime-legal inputs:
 the frontier answer candidate, the three evaluated external-baseline answers, and
@@ -18,15 +18,51 @@ audited after the run using only logged runtime fields.
 This interface is intentionally narrow: the promoted policy does not depend on
 learned scores or post-hoc labels.
 
+Conceptually, the allocator uses three abstract predicates.
+\textsc{WeakFrontier}$(x)$ is true when the frontier trace indicates low support
+or a single-branch selection.
+\textsc{ExternalMajority}$(x)$ returns an external answer when at least two of
+L1, S1, and TALE agree, with a deterministic fallback only when all three differ.
+\textsc{ExternalConsensusDisagree}$(x)$ is true when L1, S1, and TALE unanimously
+agree with one another and disagree with the frontier answer.
+The raw log strings in Algorithm~\ref{alg:fix24} and Table~\ref{tab:policy_rules}
+are implementation realizations of these predicates, not scientific assumptions
+tied to a private script.
+
+The weak-frontier trigger is motivated by a structural reliability pattern.
+When the frontier trace indicates a single weak branch (for example, low-depth
+termination in the logged metadata), the resulting candidate is treated as
+evidence of under-exploration in this evaluated setting.
+In those cases, routing to an external majority answer provides an independent
+cross-policy signal without spending extra compute.
+
+The direct-agreement trigger addresses a complementary pattern.
+If the frontier and its reserve agree internally, but all three external methods
+unanimously select a different answer, this unanimous disagreement is treated as
+high-confidence evidence that the frontier selection may be wrong under the
+matched-budget protocol.
+Partial external agreement (for example, only one or two externals disagreeing)
+is intentionally not used in the promoted policy, because it is more ambiguous in
+this setting and did not provide promotion-grade evidence.
+
 The control flow is a strict precedence chain (Figure~\ref{fig:method_overview},
 Table~\ref{tab:policy_rules}).
 The weak-frontier trigger is checked first; when it fires, the policy routes to an
 external majority answer and stops.
+This priority reflects the interpretation of the weak-frontier trace as a
+generation-quality warning: when exploration itself appears narrow, the policy
+does not also ask whether the frontier was internally self-consistent.
 If it does not fire, the policy checks the direct-agreement trigger; when that
 condition fires, the policy routes to the external unanimity answer.
 If neither trigger fires, the frontier answer is retained.
-Conflict handling is deterministic: at most one gate can act, and majority ties are
-resolved by the fixed priority order documented in Table~\ref{tab:policy_rules}.
+The default therefore preserves the original frontier method on all examples
+where neither high-confidence failure trace is present.
+Conflict handling is deterministic: at most one gate can act, and external
+majority ties are resolved by the fixed priority order documented in
+Table~\ref{tab:policy_rules}.
+That fallback is retained for reproducibility rather than claimed as optimal;
+the sensitivity noted in Table~\ref{tab:param_sensitivity} shows that alternative
+tie orders change Aggregate-720 replay by less than one percentage point.
 
 All trigger features are runtime-legal and gold-free by construction.
 They are computed only from model outputs and frontier trace metadata that are
@@ -39,11 +75,13 @@ constraint.
 
 Relative to L1, S1, TALE, and the frontier baseline, FIX-2+FIX-4 plays a different
 role in the stack.
-L1, S1, TALE, and frontier each provide candidate answers under the same matched
-budget; the failure-trace-guided allocator then decides whether to keep the
+L1, S1, TALE, and frontier each provide candidate answers under the same
+per-method matched budget; the failure-trace-guided allocator then decides whether to keep the
 frontier answer or override it using external agreement signals.
 This separation between candidate generation and final allocation is what allows the
 policy to improve selection quality without additional model calls.
+Observed gains come from switching the final answer on a small trace-identified
+subset of examples rather than from increasing inference budget.
 Table~\ref{tab:name_mapping} provides the paper-facing to implementation-name mapping.
 
 \subsection{Low-Depth Guard (FIX-2)}
@@ -59,11 +97,11 @@ The External-Consensus Fallback identifies examples where the direct-agreement t
 \subsection{Combined Policy Algorithm}
 \label{sec:fix24_algorithm}
 
-Algorithm~\ref{alg:fix24} gives the complete pseudocode using exact runtime field names.  Named implementation constants refer to values in \texttt{experiments/support\_aware\_selector.py}.
+Algorithm~\ref{alg:fix24} gives the complete pseudocode using exact runtime field names.  Parameter settings and implementation-name mapping are documented in the appendix reproducibility tables.
 
 \begin{table}[t]
 \centering
-\caption{Algorithm: Combined Failure-Trace-Guided Allocator (FIX-2+FIX-4). All inputs are gold-free runtime fields. Named constants are defined in \texttt{experiments/support\_aware\_selector.py}.}
+\caption{Algorithm: Combined Failure-Trace-Guided Allocator (FIX-2+FIX-4). All inputs are gold-free runtime fields. Named constants and name mapping are documented in the appendix reproducibility tables.}
 \label{alg:fix24}
 \scriptsize
 \begin{tabular}{p{0.06\textwidth} p{0.88\textwidth}}

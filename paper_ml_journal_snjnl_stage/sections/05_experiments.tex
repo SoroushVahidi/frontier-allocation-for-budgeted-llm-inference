@@ -2,15 +2,21 @@
 \label{sec:experiments}
 
 \subsection{Data, model, and protocol}
-All promoted comparisons are conducted on \textbf{Cohere command-r-plus-08-2024} with a fixed budget of $B = 6$ logical API calls per example.  The dataset is \texttt{openai/gsm8k}.  Evaluation conditions are matched across all compared methods: every method operates under the same budget cap, provider, and model, so accuracy differences are not confounded by unequal compute.
+All promoted comparisons are conducted on \textbf{Cohere command-r-plus-08-2024} with a fixed per-method budget cap of $B = 6$ logical API calls per example.  The dataset is \texttt{openai/gsm8k}.  Evaluation conditions are matched across all compared candidate-producing methods: every method operates under the same budget cap, provider, and model, so accuracy differences are not confounded by unequal per-method compute.
 
-\paragraph{Matched-budget definition.} A comparison is \emph{matched-budget} if and only if every compared method is subject to the same maximum logical API call count $B$ per example, with the same provider and model.  No method in the promoted comparison receives extra calls or a different model.
+\paragraph{Matched-budget definition.} A comparison is \emph{matched-budget} if and only if every compared candidate-producing method is subject to the same maximum logical API call count $B$ per example, with the same provider and model.  No method in the promoted comparison receives extra calls or a different model.  FIX-2+FIX-4 is then applied as a post-generation selection policy over the logged candidate answers and frontier metadata.
 
 \subsection{Cost and resource usage}
 \label{sec:cost}
 
 Table~\ref{tab:cost_budget} reports per-method resource usage measured from logged Aggregate720 runs on Cohere command-r-plus-08-2024. Reported metrics include average logical API calls, average input tokens, average output tokens, and average latency in seconds.  Total tokens (input + output) can be derived by summing the respective columns.  Budget parameter $B = 6$ is shown for completeness.
 
+FIX-2+FIX-4 adds negligible selection overhead once candidate answers and frontier
+metadata are available, but the main deployment cost is candidate-pool construction.
+If a deployment must generate frontier, L1, S1, and TALE outputs from scratch, total
+wall-clock and API cost depends on which candidate producers are executed and may
+exceed a single method's $B=6$ run.  In the logged Aggregate720 runs, the frontier
+method has higher average latency than L1, S1, or TALE.
 We report cost in logical calls, tokens, and latency; monetary cost depends on provider pricing and is not used as the primary comparison metric.  Dollar-normalized cost analysis, latency percentile distributions, and multi-provider token cost benchmarks are identified as future work (Section~\ref{sec:limitations}).
 
 \subsection{Parameter grounding}
@@ -22,4 +28,4 @@ Table~\ref{tab:param_sensitivity} (Appendix) documents the key parameters and de
 The primary aggregate (Aggregate720) is formed from three disjoint sources: seed41 main300, seed61 independent120, seed71 final300.  Cross-source overlap checks confirm zero shared example IDs and zero shared question hashes, ensuring that the aggregate evidence is drawn from non-overlapping subpopulations.
 
 \subsection{Statistics}
-We report paired bootstrap confidence intervals \citep{efron1993bootstrap} ($n = 5{,}000$ resamples) on final300 and source-stratified aggregate confidence intervals on Aggregate720.  The bootstrap resample count of 5,000 is standard for stable CI estimation at the sample sizes used.  All confidence intervals are two-sided at the 95\% level.  We also report $p(\Delta>0)$, defined as the fraction of bootstrap resamples in which the FIX-2+FIX-4 delta is positive; this is a bootstrap-based probability estimate and should not be interpreted as a classical frequentist $p$-value.
+We report paired bootstrap confidence intervals \citep{efron1993bootstrap} ($n = 5{,}000$ resamples) on final300 and source-stratified aggregate confidence intervals on Aggregate720.  The bootstrap resample count of 5,000 is standard for stable CI estimation at the sample sizes used.  All confidence intervals are two-sided at the 95\% level.  When shown, the \emph{bootstrap positive-delta fraction} is the fraction of bootstrap resamples in which the FIX-2+FIX-4 delta is positive; it is a descriptive bootstrap summary and should not be interpreted as a classical frequentist $p$-value.
