@@ -3,7 +3,7 @@
 ## Main Evidence
 - [x] Report final300 and aggregate720 method accuracies.
 - [x] Report paired deltas and confidence intervals vs L1/S1/TALE/best-external.
-- [x] Mark promoted policy (FIX-2+FIX-4) and non-promoted prototypes.
+- [x] Mark main method (FIX-2+FIX-4) and not retained prototypes.
 
 ## Policy Definition & Reproducibility
 - [x] Provide exact FIX-2, FIX-4, and combined precedence rules.

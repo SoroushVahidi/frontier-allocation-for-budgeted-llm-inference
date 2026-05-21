@@ -3,7 +3,7 @@
 This directory is a GitHub/Overleaf-ready LaTeX skeleton for the validated result package:
 
 - Source of truth: `outputs/machine_learning_journal_result_package_20260520_20260520T035127Z/`
-- Promoted policy: `FIX-2+FIX-4`
+- Main method: `FIX-2+FIX-4`
 - Claim scope: Cohere command-r-plus-08-2024, matched budget (`budget=6`) evaluations.
 
 ## Structure
@@ -29,5 +29,5 @@ make pdf
 
 ## Important constraints
 - Do not expand claims beyond validated evidence.
-- Non-promoted prototypes (FIX-5/6/7/8/9) must remain clearly marked as non-promoted.
+- Ablation variants (e.g., FIX-5/6/7/8/9) must remain clearly marked as not retained.
 - Cost claims must stay aligned with measured tokens/calls/latency fields only.

@@ -4,7 +4,7 @@ Dear Editor,
 
 Please consider our manuscript, *Failure-Trace-Guided Answer Allocation for Budgeted LLM Reasoning*, for publication in *Machine Learning*.
 
-The manuscript studies matched-budget answer selection for GSM8K under Cohere command-r-plus-08-2024. Its promoted policy, FIX-2+FIX-4, is a deterministic gold-free gate that uses runtime failure-trace metadata and external consensus signals.
+The manuscript studies matched-budget answer selection for GSM8K under Cohere command-r-plus-08-2024. Its main method, FIX-2+FIX-4, is a deterministic gold-free gate that uses runtime failure-trace metadata and external consensus signals.
 
 On Final-300, FIX-2+FIX-4 achieves 260/300 = 86.67%. On the disjoint Aggregate-720 evaluation, it achieves 581/720 = 80.69%. Source-stratified bootstrap confidence intervals are positive versus L1, S1, TALE, and the source-local best external baseline.
 

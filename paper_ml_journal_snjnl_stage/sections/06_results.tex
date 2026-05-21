@@ -2,7 +2,7 @@
 \label{sec:results}
 
 Main results are listed in Table~\ref{tab:main_results} and Figure~\ref{fig:accuracy_ci}.
-FIX-2+FIX-4 is the promoted policy; all other FIX variants were evaluated and not promoted
+FIX-2+FIX-4 is the main method; all other FIX variants were evaluated and not promoted
 (see Section~\ref{sec:ablation} and Table~\ref{tab:negative_results}).
 
 \paragraph{Final-300.}
@@ -57,7 +57,7 @@ reproducibility; it is not presented as an optimized learned ranker.  A replay
 sensitivity check over alternative external tie orders changes Aggregate-720
 FIX-2-only accuracy from 80.00\% to 80.42\%, with frontier fallback on
 all-different external ties reaching 80.83\%; these variants are reported only as
-sensitivity because they were not the promoted policy.
+sensitivity because they were not the main method.
 
 \paragraph{Source-by-source breakdown.}
 Table~\ref{tab:source_by_source} gives the per-source accuracy for all evaluated methods.
@@ -84,7 +84,7 @@ The extremely low loss counts vs.\ TALE confirm that the policy's recoveries
 substantially outweigh its regressions on this evaluation.
 
 \paragraph{Gate-action decomposition.}
-Table~\ref{tab:gate_actions} decomposes the promoted policy into gate actions.
+Table~\ref{tab:gate_actions} decomposes the main method into gate actions.
 Across Aggregate-720, FIX-2 fires on 122 examples, FIX-4 fires on 5 examples after
 FIX-2 does not fire, and no gate fires on 593 examples.
 The FIX-4 actions are rare but positive in this artifact: before FIX-4, the

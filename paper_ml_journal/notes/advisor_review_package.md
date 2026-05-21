@@ -7,7 +7,7 @@
 - Figure 1, Figure 2, and Figure 3 are integrated in `main.tex`.
 - The manuscript builds successfully with `make pdf` in `paper_ml_journal/`.
 - The promoted claim remains FIX-2+FIX-4 on Final-300 and Aggregate-720, consistent with `docs/LATEST_RESULTS_AND_CLAIMS.md`.
-- FIX-5/6/7/8/9 remain non-promoted and are described as negative or insufficient results.
+- FIX-5/6/7/8/9 remain not retained and are described as negative or insufficient results.
 
 ## What to review
 
