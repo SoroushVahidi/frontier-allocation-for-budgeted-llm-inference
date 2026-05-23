@@ -61,6 +61,33 @@ This index separates current interpretation documents from diagnostic and histor
 | `docs/VERIFIER_RERANKING_CLAIM_ARTIFACT_TABLE_20260517.md` | Claim-to-artifact table: each reranking claim mapped to scripts, artifact paths, commits, and results. |
 | `docs/VERIFIER_RERANKING_REPRODUCIBILITY_APPENDIX_20260517.md` | Reproducibility appendix for verifier-guided reranking artifacts. |
 
+## Frozen agreement-only validation and transfer diagnostics
+
+| Document | Role |
+|---|---|
+| `docs/FROZEN_AGREEMENT_ONLY_2OF3_VALIDATION_PLAN_20260523.md` | Frozen GSM8K/MATH validation pre-registration for the zero-extra-call agreement policy. |
+| `docs/LIVE_VALIDATION_HARDENING_FOR_FROZEN_AGREEMENT_POLICY_20260523.md` | Pre-live hardening note for the detached Cohere validation runner. |
+| `docs/MATH500_FTA_TRANSFER_DIAGNOSTIC_20260523.md` | Offline MATH-500 transfer diagnostic for FIX-2+FIX-4 and fallback behavior. |
+| `docs/TWO_STAGE_DEFERRAL_TARGET_ANALYSIS_20260523.md` | Offline trigger-vs-target transfer analysis for deferral behavior. |
+| `docs/OFFLINE_POLICY_SEARCH_FOR_IMPROVED_DEFERRAL_20260523.md` | Offline policy search summary that selected the frozen agreement-only policy. |
+
+## 2026-05-23 live validation and selector diagnostics
+
+| Document | Role |
+|---|---|
+| `docs/COHERE_CANONICAL_FINAL300_FROZEN_AGREEMENT_LIVE_RESULT_20260523.md` | Cohere canonical Final-300 (contract-matched): integrity PASS, exact 300-ID match, per-method accuracies, pooled-4=85.67%, bootstrap CIs, old vs new comparison, algorithm recommendation. |
+| `docs/MISTRAL_GSM8K_FROZEN_AGREEMENT_RESULT_20260523.md` | Mistral GSM8K Final-300 frozen agreement-only and pooled-4 live results; S1=89.67% best. |
+| `docs/MISTRAL_S1_DOMINANCE_DIAGNOSTIC_20260523.md` | S1 dominance diagnostic for Mistral: source accuracy heterogeneity as root cause. |
+| `docs/MISTRAL_S1_ALGORITHM_IMPROVEMENT_DIAGNOSTIC_20260523.md` | Mistral-derived correlation-aware rule evaluation and algorithm improvement candidates. |
+| `docs/MISTRAL_CASE_ANALYSIS_AGREEMENT_LOSES_TO_S1_20260523.md` | Case-level analysis: examples where agreement-only loses to S1 on Mistral. |
+| `docs/MISTRAL_L1_TALE_CORRELATED_ERROR_DIAGNOSTIC_20260523.md` | L1+TALE correlated error analysis on Mistral: bad majority patterns and independence tests. |
+| `docs/CORRELATION_AWARE_TRANSFER_RISK_DIAGNOSTIC_20260523.md` | Transfer-risk evaluation: Mistral-derived correlation-aware rules applied to Cohere canonical. |
+| `docs/ERROR_CORRELATION_AND_ENSEMBLE_DIVERSITY_DIAGNOSTIC_20260523.md` | Pairwise phi/Q/double-fault matrices; pooled-4 mechanism explanation; weighted voting variants; algorithm candidate decision table. |
+| `docs/COHERE_CEREBRAS_HEALTH_STATUS_20260523.md` | Non-invasive health check for Cohere canonical and Cerebras validation jobs on 2026-05-23. |
+
+**Output bundles:**
+`outputs/cohere_canonical_final300_frozen_agreement_live_result_20260523/` · `outputs/mistral_gsm8k_frozen_agreement_result_20260523/` · `outputs/mistral_s1_dominance_diagnostic_20260523/` · `outputs/mistral_algorithm_improvement_diagnostic_20260523/` · `outputs/mistral_cases_where_agreement_loses_to_s1_20260523/` · `outputs/mistral_l1_tale_correlation_diagnostic_20260523/` · `outputs/correlation_aware_transfer_risk_diagnostic_20260523/` · `outputs/error_correlation_and_ensemble_diversity_diagnostic_20260523/` · `outputs/cohere_cerebras_health_status_20260523/`
+
 ## Current selector evidence artifacts
 
 Use these as engineering artifacts, not paper-facing claims by themselves.

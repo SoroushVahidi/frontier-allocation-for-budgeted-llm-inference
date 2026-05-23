@@ -30,6 +30,8 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 
 **Stage-2 calibrated gate:** [`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`](docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md) · [`docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md`](docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md) · [`docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md`](docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md)
 
+**Frozen agreement-only validation:** [`docs/FROZEN_AGREEMENT_ONLY_2OF3_VALIDATION_PLAN_20260523.md`](docs/FROZEN_AGREEMENT_ONLY_2OF3_VALIDATION_PLAN_20260523.md) · [`docs/LIVE_VALIDATION_HARDENING_FOR_FROZEN_AGREEMENT_POLICY_20260523.md`](docs/LIVE_VALIDATION_HARDENING_FOR_FROZEN_AGREEMENT_POLICY_20260523.md) · [`docs/OFFLINE_POLICY_SEARCH_FOR_IMPROVED_DEFERRAL_20260523.md`](docs/OFFLINE_POLICY_SEARCH_FOR_IMPROVED_DEFERRAL_20260523.md)
+
 **Current Stage-2 checkpoint:** see [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md) and [`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`](docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md). **FIX-2+FIX-4 is the promoted policy.** Calibrated gate was evaluated and not promoted (safe-gate holdout gain neutral).
 
 **Current operational policy checkpoint (2026-05-20):**
@@ -40,6 +42,35 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 - **FIX-6 / LoVEC extra-action**: not promoted after independent stage-2 relaunch (net negative).
 - **FIX-7** (cluster selector): offline prototype only, not promoted.
 - **FIX-8** (robust parser): 0 recoveries on both final-300 and aggregate-720, not promoted.
+
+---
+
+## Recent validation and diagnostics (2026-05-23)
+
+**Current state summary:**
+
+- **Cohere canonical Final-300 (contract-matched):** Integrity PASS. Exact 300-ID match to `canonical_final300_exact_cases.jsonl`. Pooled-4 with fallback is strongest at **257/300 = 85.67%**; agreement-only = 247/300 = 82.33%; pooled-4 beats agreement-only by +3.33 pp (bootstrap CI [+0.0133, +0.0533], significant).
+- **Mistral GSM8K Final-300:** S1 dominates at **269/300 = 89.67%**. Agreement-only = 256/300 = 85.33%. Pooled-4 = 251/300 = 83.67%. S1 superiority is explained by extreme competence heterogeneity (S1=89.7%, TALE=63.0%), not L1+TALE correlation.
+- **Correlation/diversity analysis:** Pairwise phi coefficients are higher on Cohere than Mistral across all source pairs. The correct explanation is competence balance on Cohere vs competence heterogeneity on Mistral. `provider_prior_selector_cv5fold` matches the best-per-provider outcome on both (Cohere=85.67%, Mistral=89.67%).
+- **Algorithmic insight — regime-dependent selection:**
+  - Near-peer regime (balanced source accuracies) → pooled-4 dominates
+  - Dominant-source regime (one source far above others) → provider-prior / best-source
+  - Correlated-family regime → source-family voting or correlation-discounted weighting
+- **Cerebras:** job (PID 2195513) was active at last check; left untouched.
+
+**Key reports:**
+
+| Document | Summary |
+|---|---|
+| [`docs/COHERE_CANONICAL_FINAL300_FROZEN_AGREEMENT_LIVE_RESULT_20260523.md`](docs/COHERE_CANONICAL_FINAL300_FROZEN_AGREEMENT_LIVE_RESULT_20260523.md) | Cohere canonical Final-300 integrity, exact ID match, full accuracy table, pooled-4 result, bootstrap CIs, old vs new comparison, algorithm recommendation |
+| [`docs/ERROR_CORRELATION_AND_ENSEMBLE_DIVERSITY_DIAGNOSTIC_20260523.md`](docs/ERROR_CORRELATION_AND_ENSEMBLE_DIVERSITY_DIAGNOSTIC_20260523.md) | Pairwise phi/Q/double-fault matrices for both providers; why pooled-4 works on Cohere; why S1 dominates on Mistral; weighted voting variant evaluation; algorithm candidate decision table |
+| [`docs/MISTRAL_GSM8K_FROZEN_AGREEMENT_RESULT_20260523.md`](docs/MISTRAL_GSM8K_FROZEN_AGREEMENT_RESULT_20260523.md) | Mistral final-300 frozen agreement-only and pooled-4 live results |
+| [`docs/MISTRAL_S1_DOMINANCE_DIAGNOSTIC_20260523.md`](docs/MISTRAL_S1_DOMINANCE_DIAGNOSTIC_20260523.md) | Why S1 dominates on Mistral; source accuracy heterogeneity analysis |
+| [`docs/MISTRAL_S1_ALGORITHM_IMPROVEMENT_DIAGNOSTIC_20260523.md`](docs/MISTRAL_S1_ALGORITHM_IMPROVEMENT_DIAGNOSTIC_20260523.md) | Mistral-derived correlation-aware rules and algorithm improvement candidates |
+| [`docs/MISTRAL_CASE_ANALYSIS_AGREEMENT_LOSES_TO_S1_20260523.md`](docs/MISTRAL_CASE_ANALYSIS_AGREEMENT_LOSES_TO_S1_20260523.md) | Case-level analysis of examples where agreement-only loses to S1 on Mistral |
+| [`docs/MISTRAL_L1_TALE_CORRELATED_ERROR_DIAGNOSTIC_20260523.md`](docs/MISTRAL_L1_TALE_CORRELATED_ERROR_DIAGNOSTIC_20260523.md) | L1+TALE correlated error analysis: bad majority patterns, independence tests |
+| [`docs/CORRELATION_AWARE_TRANSFER_RISK_DIAGNOSTIC_20260523.md`](docs/CORRELATION_AWARE_TRANSFER_RISK_DIAGNOSTIC_20260523.md) | Transfer-risk evaluation of Mistral-derived correlation-aware rules on Cohere |
+| [`docs/COHERE_CEREBRAS_HEALTH_STATUS_20260523.md`](docs/COHERE_CEREBRAS_HEALTH_STATUS_20260523.md) | Non-invasive health check for both active jobs on 2026-05-23 |
 
 **Paper claim rules:** [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md) · [`docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
 

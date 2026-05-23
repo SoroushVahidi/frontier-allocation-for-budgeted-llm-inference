@@ -1,0 +1,2 @@
+example_id,oracle_correct,support_only_pred,support_only_correct,consistency_penalized_pred,consistency_penalized_correct,unified_confidence_pred,unified_confidence_correct,hybrid_pred,hybrid_correct
+e1,1,9,0,9,0,9,0,9,0

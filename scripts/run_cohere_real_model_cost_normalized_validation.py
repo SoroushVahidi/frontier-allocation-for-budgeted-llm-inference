@@ -11,6 +11,7 @@ import random
 import subprocess
 import sys
 import time
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -234,6 +235,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--provider", default="", help="Deprecated alias for single-provider runs.")
     p.add_argument("--cohere-model", default="command-r-plus-08-2024")
     p.add_argument("--openai-model", default="gpt-4o-mini")
+    p.add_argument("--mistral-model", default="mistral-small-latest")
     p.add_argument("--cerebras-model", default="llama3.1-8b")
     p.add_argument("--datasets", default=DEFAULT_DATASETS)
     p.add_argument("--budgets", default=DEFAULT_BUDGETS)
@@ -279,6 +281,13 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--validate-exact-cases-only", action="store_true", help="Validate exact-case JSONL and method resolution without API calls, then exit.")
     p.add_argument("--expected-exact-case-count", type=int, default=0, help="Optional expected number of cases for --validate-exact-cases-only.")
     p.add_argument("--dry-run-call-plan", action="store_true", help="Emit planned case count after filtering and exit without API calls.")
+    p.add_argument("--dry-run-plan-json", default="", help="Optional explicit path for structured dry-run call plan JSON.")
+    p.add_argument("--max-recovery-passes", type=int, default=2, help="Retry unresolved method-example rows up to this many additional passes.")
+    p.add_argument("--api-retry-max-attempts", type=int, default=5, help="Max attempts per logical API call (includes the first attempt).")
+    p.add_argument("--api-retry-base-delay-seconds", type=float, default=1.0, help="Initial retry delay for retryable API failures.")
+    p.add_argument("--api-retry-backoff-multiplier", type=float, default=2.0, help="Exponential retry multiplier.")
+    p.add_argument("--api-retry-max-delay-seconds", type=float, default=20.0, help="Max retry sleep per attempt.")
+    p.add_argument("--api-retry-jitter-seconds", type=float, default=0.5, help="Uniform jitter added to retry sleeps.")
     p.add_argument(
         "--max-total-api-calls",
         type=int,
@@ -307,7 +316,7 @@ def validate_methods_only(args: argparse.Namespace, providers: list[str], budget
                 budget,
                 [1],
                 rng,
-                use_openai_api=(provider == "openai"),
+                use_openai_api=(provider in {"openai", "mistral"}),
                 include_broad_diversity_aggregation_methods=True,
                 include_external_l1_baseline=True,
                 include_external_s1_baseline=True,
@@ -406,13 +415,104 @@ def classify_failure(error_text: str) -> str:
     return "other"
 
 
+def estimate_logical_calls_upper_bound_per_example(method: str, budget: int) -> int:
+    m = str(method).strip()
+    if m in {"external_l1_max"}:
+        return 2
+    if m in {"self_consistency_3"}:
+        return 4
+    if "external_s1" in m or "external_tale" in m:
+        return max(3, int(budget))
+    return max(3, int(budget))
+
+
+def classify_failure_taxonomy_row(row: dict[str, Any]) -> str:
+    status = str(row.get("status") or "").lower()
+    err = str(row.get("error") or "").strip().lower()
+    failure_tag = str(row.get("failure_tag") or "").strip().lower()
+    parse_fail = int(row.get("parse_extraction_failure", 0) or 0) == 1
+    final_can = str(row.get("final_answer_canonical") or "").strip()
+    final_raw = str(row.get("final_answer_raw") or "").strip()
+
+    if "httperror 500" in err or " http 500" in err or "http 500" in err:
+        return "HTTP 500"
+    if "timed out" in err or "timeout" in err or "read timeout" in err:
+        return "timeout"
+    if "429" in err or "rate limit" in err or "too many requests" in err:
+        return "rate limit"
+    if "parse" in err or "jsondecodeerror" in err or "json parse" in err:
+        return "parse failure"
+    if parse_fail or "parse/extraction failure" in failure_tag:
+        return "parse failure"
+    if status == "scored" and final_raw and not final_can:
+        return "unparseable answer"
+    if "returned no text output" in err or "provider response" in err or "empty response" in err:
+        return "provider response error"
+    if "missing output" in err or ("no text output" in err and "returned no text output" not in err):
+        return "missing output"
+    return "unknown"
+
+
+def build_failure_taxonomy_outputs(
+    *,
+    records: list[dict[str, Any]],
+    failures: list[dict[str, Any]],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    per_category = Counter()
+    per_dataset_method_category: dict[tuple[str, str, str], int] = defaultdict(int)
+    per_category_example_ids: dict[str, set[str]] = defaultdict(set)
+
+    # Include hard runtime failures and scored rows with parse/unparseable outcomes.
+    source_rows = list(failures)
+    source_rows.extend(
+        r
+        for r in records
+        if int(r.get("scored", 0)) == 1
+        and (
+            int(r.get("parse_extraction_failure", 0)) == 1
+            or (str(r.get("final_answer_raw") or "").strip() and not str(r.get("final_answer_canonical") or "").strip())
+        )
+    )
+    for row in source_rows:
+        cat = classify_failure_taxonomy_row(row)
+        dataset = str(row.get("dataset") or "")
+        method = str(row.get("method") or "")
+        example_id = str(row.get("example_id") or "")
+        per_category[cat] += 1
+        per_dataset_method_category[(dataset, method, cat)] += 1
+        if example_id:
+            per_category_example_ids[cat].add(example_id)
+
+    csv_rows: list[dict[str, Any]] = []
+    for (dataset, method, cat), n in sorted(per_dataset_method_category.items()):
+        csv_rows.append(
+            {
+                "dataset": dataset,
+                "method": method,
+                "failure_category": cat,
+                "count": int(n),
+                "example_ids_json": json.dumps(sorted(per_category_example_ids.get(cat, set())), ensure_ascii=False),
+            }
+        )
+    out_json = {
+        "total_failures_considered": int(sum(per_category.values())),
+        "counts_by_category": {k: int(v) for k, v in sorted(per_category.items())},
+        "counts_by_dataset_method_category": [
+            {"dataset": d, "method": m, "failure_category": c, "count": int(n)}
+            for (d, m, c), n in sorted(per_dataset_method_category.items())
+        ],
+        "example_ids_by_category": {k: sorted(v) for k, v in sorted(per_category_example_ids.items())},
+    }
+    return out_json, csv_rows
+
+
 def normalize_providers(args: argparse.Namespace) -> list[str]:
     if args.provider:
         providers = [args.provider]
     else:
         providers = parse_csv_list(args.providers)
     normed = [p.strip().lower() for p in providers if p.strip()]
-    allowed = {"cohere", "openai", "cerebras"}
+    allowed = {"cohere", "openai", "cerebras", "mistral"}
     bad = [p for p in normed if p not in allowed]
     if bad:
         raise ValueError(f"Unsupported provider(s): {bad}; allowed={sorted(allowed)}")
@@ -531,7 +631,7 @@ def validate_exact_cases_only(args: argparse.Namespace, providers: list[str], da
                 budget,
                 [1],
                 rng,
-                use_openai_api=(provider == "openai"),
+                use_openai_api=(provider in {"openai", "mistral"}),
                 include_broad_diversity_aggregation_methods=True,
                 include_external_l1_baseline=True,
                 include_external_s1_baseline=True,
@@ -1164,11 +1264,14 @@ def main() -> None:
     model_by_provider = {
         "cohere": args.cohere_model,
         "openai": args.openai_model,
+        "mistral": args.mistral_model,
         "cerebras": args.cerebras_model,
     }
     provider_status: dict[str, dict[str, str]] = {}
     if args.summarize_only:
         provider_status = {p: {"ready": "1", "reason": "summarize_only"} for p in providers}
+    elif args.dry_run_call_plan:
+        provider_status = {p: {"ready": "1", "reason": "dry_run_call_plan_offline_no_readiness_probe"} for p in providers}
     else:
         for provider in providers:
             if provider == "cohere":
@@ -1176,6 +1279,9 @@ def main() -> None:
             elif provider == "cerebras":
                 # Basic readiness check: API key present
                 ok = bool(os.getenv("CEREBRAS_API_KEY", ""))
+                reason = "api_key_present" if ok else "api_key_missing"
+            elif provider == "mistral":
+                ok = bool(os.getenv("MISTRAL_API_KEY", ""))
                 reason = "api_key_present" if ok else "api_key_missing"
             else:
                 ok, reason = ensure_openai_readiness(timestamp=args.timestamp)
@@ -1190,12 +1296,25 @@ def main() -> None:
     progress_path = out_dir / "progress_heartbeat.jsonl"
 
     existing = load_existing_records(per_example_path) if (args.resume or args.summarize_only) else []
-    seen = {to_case_key(r) for r in existing}
     records = list(existing)
+    seen_scored = {to_case_key(r) for r in existing if int(r.get("scored", 0)) == 1}
+    existing_failures = load_existing_records(raw_dir / "failures.jsonl") if (args.resume or args.summarize_only) else []
+    failure_rows = list(existing_failures)
+    planned_case_ids_by_slice: dict[tuple[str, str, int, int, str], list[str]] = {}
+    planned_output_paths = {
+        "run_output_dir": str(out_dir),
+        "per_example_records_jsonl": str(per_example_path),
+        "progress_heartbeat_jsonl": str(progress_path),
+        "slice_summary_csv": str(out_dir / "slice_summary.csv"),
+        "failure_taxonomy_summary_json": str(out_dir / "failure_taxonomy_summary.json"),
+        "failure_taxonomy_summary_csv": str(out_dir / "failure_taxonomy_summary.csv"),
+        "completion_summary_json": str(out_dir / "completion_summary.json"),
+    }
 
     api_keys = {
         "cohere": os.getenv("COHERE_API_KEY", "") or os.getenv("CO_API_KEY", ""),
         "openai": os.getenv("OPENAI_API_KEY", ""),
+        "mistral": os.getenv("MISTRAL_API_KEY", ""),
         "cerebras": os.getenv("CEREBRAS_API_KEY", ""),
     }
     ov_verifier_env = {
@@ -1269,6 +1388,11 @@ def main() -> None:
                                     max_tokens=args.max_output_tokens,
                                     timeout_seconds=args.timeout_seconds,
                                     expand_prompt_variant="default",
+                                    retry_max_attempts=args.api_retry_max_attempts,
+                                    retry_base_delay_seconds=args.api_retry_base_delay_seconds,
+                                    retry_backoff_multiplier=args.api_retry_backoff_multiplier,
+                                    retry_max_delay_seconds=args.api_retry_max_delay_seconds,
+                                    retry_jitter_seconds=args.api_retry_jitter_seconds,
                                 )
                             )
 
@@ -1282,6 +1406,11 @@ def main() -> None:
                                     max_tokens=args.max_output_tokens,
                                     timeout_seconds=args.timeout_seconds,
                                     expand_prompt_variant="numeric_leaf",
+                                    retry_max_attempts=args.api_retry_max_attempts,
+                                    retry_base_delay_seconds=args.api_retry_base_delay_seconds,
+                                    retry_backoff_multiplier=args.api_retry_backoff_multiplier,
+                                    retry_max_delay_seconds=args.api_retry_max_delay_seconds,
+                                    retry_jitter_seconds=args.api_retry_jitter_seconds,
                                 )
                             )
 
@@ -1290,7 +1419,7 @@ def main() -> None:
                             budget,
                             [1],
                             rng,
-                            use_openai_api=(provider == "openai"),
+                            use_openai_api=(provider in {"openai", "mistral"}),
                             include_broad_diversity_aggregation_methods=True,
                             include_external_l1_baseline=True,
                             include_external_s1_baseline=True,
@@ -1311,21 +1440,7 @@ def main() -> None:
                                 continue
                             attempted = 0
                             scored = 0
-                            planned_case_count = len(method_allowed_ids) if method_allowed_cases is not None else len(examples)
-                            if args.dry_run_call_plan:
-                                append_progress(
-                                    progress_path,
-                                    {
-                                        "event": "dry_run_plan",
-                                        "provider": provider,
-                                        "dataset": dataset,
-                                        "seed": seed,
-                                        "budget": budget,
-                                        "method": method,
-                                        "planned_cases": planned_case_count,
-                                    },
-                                )
-                                continue
+                            method_examples: list[PilotExample] = []
                             for ex in examples:
                                 if method_allowed_cases is not None and str(ex.example_id) not in method_allowed_ids:
                                     continue
@@ -1347,11 +1462,36 @@ def main() -> None:
                                             "allowed-example-id question mismatch for "
                                             f"{ex.example_id}; refusing API run because example_id is not stable for this dataset loader"
                                         )
-                                if attempted >= max_attempt or scored >= target_n:
-                                    break
+                                method_examples.append(ex)
+                            planned_examples = method_examples[:max_attempt]
+                            planned_case_ids = [str(ex.example_id) for ex in planned_examples]
+                            planned_case_count = len(planned_examples)
+                            planned_case_ids_by_slice[(provider, dataset, seed, budget, method)] = list(planned_case_ids)
+                            if args.dry_run_call_plan:
+                                est_calls = estimate_logical_calls_upper_bound_per_example(method, budget) * planned_case_count
+                                append_progress(
+                                    progress_path,
+                                    {
+                                        "event": "dry_run_plan",
+                                        "provider": provider,
+                                        "dataset": dataset,
+                                        "seed": seed,
+                                        "budget": budget,
+                                        "method": method,
+                                        "planned_cases": planned_case_count,
+                                        "planned_example_ids": planned_case_ids,
+                                        "estimated_logical_calls_upper_bound": est_calls,
+                                    },
+                                )
+                                continue
+
+                            def _run_one_example(ex: PilotExample, pass_index: int) -> None:
+                                nonlocal attempted, scored
+                                if scored >= target_n:
+                                    return
                                 ck = CaseKey(dataset=dataset, seed=seed, budget=budget, method=f"{provider}:{method}", example_id=str(ex.example_id))
-                                if ck in seen:
-                                    continue
+                                if ck in seen_scored:
+                                    return
                                 attempted += 1
                                 append_progress(
                                     progress_path,
@@ -1367,21 +1507,19 @@ def main() -> None:
                                         "attempted_so_far": attempted,
                                         "scored_so_far": scored,
                                         "target_scored": target_n,
+                                        "recovery_pass_index": int(pass_index),
                                     },
                                 )
                                 t0 = time.perf_counter()
                                 controller = specs[runtime]
                                 if args.save_branch_traces:
                                     setattr(controller, "emit_full_traces", True)
-                                # If running exact-case JSONL mode, attach per-example metadata so downstream
-                                # diagnostics (e.g. domain-aware anchor prioritization) can use explicit labels.
                                 if args.exact_cases_jsonl and dataset in exact_case_meta_by_dataset:
                                     try:
                                         row_meta = exact_case_meta_by_dataset.get(dataset, {}).get(str(ex.example_id), {})
                                         setattr(controller, "current_example_id", str(ex.example_id))
                                         setattr(controller, "current_exact_case_metadata", dict(row_meta) if isinstance(row_meta, dict) else {})
                                     except Exception:
-                                        # Best-effort only: never block the run on metadata plumbing.
                                         setattr(controller, "current_example_id", str(ex.example_id))
                                         setattr(controller, "current_exact_case_metadata", {})
                                 if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "reset_usage_counters"):
@@ -1477,6 +1615,7 @@ def main() -> None:
                                             )
                                         )
                                     scored += 1
+                                    seen_scored.add(ck)
                                     if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "snapshot_usage_counters"):
                                         usage = controller.generator.base.snapshot_usage_counters()
                                         in_tok = int(usage.get("input_tokens", 0))
@@ -1533,6 +1672,7 @@ def main() -> None:
                                     "prm_step_verifier_backend_env": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_BACKEND"] or "unset",
                                     "prm_step_verifier_model_env": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL"] or "unset",
                                     "cohere_api_key_present": ov_verifier_env["COHERE_API_KEY_present"],
+                                    "recovery_pass_index": int(pass_index),
                                 }
                                 try:
                                     row.update(
@@ -1553,7 +1693,6 @@ def main() -> None:
                                     }
                                 append_jsonl(per_example_path, row)
                                 records.append(row)
-                                seen.add(ck)
                                 append_progress(
                                     progress_path,
                                     {
@@ -1570,18 +1709,102 @@ def main() -> None:
                                         "attempted_so_far": attempted,
                                         "scored_so_far": scored,
                                         "target_scored": target_n,
+                                        "recovery_pass_index": int(pass_index),
                                     },
                                 )
                                 print(
                                     f"[progress] provider={provider} dataset={dataset} seed={seed} "
                                     f"budget={budget} method={method} attempted={attempted} "
-                                    f"scored={scored} status={status} example_id={ex.example_id}",
+                                    f"scored={scored} status={status} recovery_pass={pass_index} example_id={ex.example_id}",
                                     flush=True,
                                 )
                                 if status == "failed":
                                     append_jsonl(raw_dir / "failures.jsonl", row)
+                                    failure_rows.append(row)
+
+                            for ex in planned_examples:
+                                if scored >= target_n:
+                                    break
+                                _run_one_example(ex, 0)
+
+                            for recovery_pass in range(1, max(0, int(args.max_recovery_passes)) + 1):
+                                if scored >= target_n:
+                                    break
+                                unresolved = [
+                                    ex for ex in planned_examples
+                                    if CaseKey(dataset=dataset, seed=seed, budget=budget, method=f"{provider}:{method}", example_id=str(ex.example_id)) not in seen_scored
+                                ]
+                                if not unresolved:
+                                    break
+                                append_progress(
+                                    progress_path,
+                                    {
+                                        "event": "recovery_pass_start",
+                                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                                        "provider": provider,
+                                        "dataset": dataset,
+                                        "seed": seed,
+                                        "budget": budget,
+                                        "method": method,
+                                        "recovery_pass_index": int(recovery_pass),
+                                        "unresolved_rows": len(unresolved),
+                                        "scored_so_far": scored,
+                                        "target_scored": target_n,
+                                    },
+                                )
+                                for ex in unresolved:
+                                    if scored >= target_n:
+                                        break
+                                    _run_one_example(ex, recovery_pass)
     if args.dry_run_call_plan:
+        dry_rows: list[dict[str, Any]] = []
+        total_estimated_calls_upper_bound = 0
+        for (provider, dataset, seed, budget, method), ids in sorted(planned_case_ids_by_slice.items()):
+            est_per_case = estimate_logical_calls_upper_bound_per_example(method, budget)
+            est_total = int(est_per_case * len(ids))
+            total_estimated_calls_upper_bound += est_total
+            dry_rows.append(
+                {
+                    "provider": provider,
+                    "dataset": dataset,
+                    "seed": seed,
+                    "budget": budget,
+                    "method": method,
+                    "planned_case_count": len(ids),
+                    "planned_example_ids": ids,
+                    "estimated_logical_calls_upper_bound_per_example": est_per_case,
+                    "estimated_logical_calls_upper_bound_total": est_total,
+                }
+            )
+        dry_plan = {
+            "mode": "dry_run_call_plan",
+            "timestamp": args.timestamp,
+            "providers": providers,
+            "datasets": datasets,
+            "seeds": seeds,
+            "budgets": budgets,
+            "methods": methods,
+            "target_scored_per_slice": int(args.target_scored_per_slice),
+            "max_examples": int(args.max_examples),
+            "provider_status": provider_status,
+            "retry_policy": {
+                "api_retry_max_attempts": int(args.api_retry_max_attempts),
+                "api_retry_base_delay_seconds": float(args.api_retry_base_delay_seconds),
+                "api_retry_backoff_multiplier": float(args.api_retry_backoff_multiplier),
+                "api_retry_max_delay_seconds": float(args.api_retry_max_delay_seconds),
+                "api_retry_jitter_seconds": float(args.api_retry_jitter_seconds),
+            },
+            "max_recovery_passes": int(args.max_recovery_passes),
+            "planned_rows": dry_rows,
+            "total_planned_case_rows": int(sum(len(r["planned_example_ids"]) for r in dry_rows)),
+            "estimated_logical_calls_upper_bound_total": int(total_estimated_calls_upper_bound),
+            "output_paths": planned_output_paths,
+        }
+        dry_plan_path = Path(args.dry_run_plan_json) if args.dry_run_plan_json else (out_dir / "dry_run_call_plan.json")
+        dry_plan_path.parent.mkdir(parents=True, exist_ok=True)
+        dry_plan_path.write_text(json.dumps(dry_plan, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"dry-run-call-plan written: {progress_path}")
+        print(f"dry-run structured plan: {dry_plan_path}")
         raise SystemExit(0)
 
     slices: dict[tuple[str, str, int, int, str], list[dict[str, Any]]] = {}
@@ -1692,6 +1915,104 @@ def main() -> None:
     write_csv(out_dir / "method_summary.csv", method_rows)
     write_csv(out_dir / "cost_normalized_summary.csv", cost_rows)
     write_csv(out_dir / "incomplete_slices.csv", incomplete_rows, fieldnames=list(slice_rows[0].keys()) if slice_rows else None)
+
+    rows_by_case_key: dict[CaseKey, list[dict[str, Any]]] = defaultdict(list)
+    for r in records:
+        rows_by_case_key[to_case_key(r)].append(r)
+
+    planned_case_keys: list[CaseKey] = []
+    for (provider, dataset, seed, budget, method), ids in planned_case_ids_by_slice.items():
+        for eid in ids:
+            planned_case_keys.append(
+                CaseKey(
+                    dataset=dataset,
+                    seed=seed,
+                    budget=budget,
+                    method=f"{provider}:{method}",
+                    example_id=str(eid),
+                )
+            )
+    scored_case_keys = {k for k, rows in rows_by_case_key.items() if any(int(r.get("scored", 0)) == 1 for r in rows)}
+    planned_scored = [k for k in planned_case_keys if k in scored_case_keys]
+    planned_failed = [
+        k for k in planned_case_keys
+        if (k not in scored_case_keys) and any(int(r.get("failed", 0)) == 1 for r in rows_by_case_key.get(k, []))
+    ]
+    planned_missing = [k for k in planned_case_keys if k not in scored_case_keys and not rows_by_case_key.get(k)]
+    duplicate_rows = sum(max(0, len(rows_by_case_key.get(k, [])) - 1) for k in planned_case_keys)
+    per_method_completion: list[dict[str, Any]] = []
+    for (provider, dataset, seed, budget, method), ids in sorted(planned_case_ids_by_slice.items()):
+        target_rows = len(ids)
+        scoped_method = f"{provider}:{method}"
+        method_keys = [
+            CaseKey(dataset=dataset, seed=seed, budget=budget, method=scoped_method, example_id=str(eid))
+            for eid in ids
+        ]
+        scored_n = sum(1 for ck in method_keys if ck in scored_case_keys)
+        failed_n = sum(
+            1
+            for ck in method_keys
+            if (ck not in scored_case_keys) and any(int(r.get("failed", 0)) == 1 for r in rows_by_case_key.get(ck, []))
+        )
+        missing_n = sum(1 for ck in method_keys if ck not in scored_case_keys)
+        per_method_completion.append(
+            {
+                "provider": provider,
+                "dataset": dataset,
+                "seed": seed,
+                "budget": budget,
+                "method": method,
+                "target_rows": int(target_rows),
+                "scored_rows": int(scored_n),
+                "missing_rows": int(missing_n),
+                "failed_rows": int(failed_n),
+            }
+        )
+    per_example_expected_methods: dict[tuple[str, int, int, str], int] = defaultdict(int)
+    per_example_scored_methods: dict[tuple[str, int, int, str], int] = defaultdict(int)
+    for (provider, dataset, seed, budget, method), ids in planned_case_ids_by_slice.items():
+        for eid in ids:
+            ekey = (dataset, seed, budget, str(eid))
+            per_example_expected_methods[ekey] += 1
+            ck = CaseKey(dataset=dataset, seed=seed, budget=budget, method=f"{provider}:{method}", example_id=str(eid))
+            if ck in scored_case_keys:
+                per_example_scored_methods[ekey] += 1
+    per_example_completeness = [
+        {
+            "dataset": dataset,
+            "seed": seed,
+            "budget": budget,
+            "example_id": example_id,
+            "expected_methods": int(per_example_expected_methods[(dataset, seed, budget, example_id)]),
+            "scored_methods": int(per_example_scored_methods.get((dataset, seed, budget, example_id), 0)),
+            "is_complete": int(
+                per_example_scored_methods.get((dataset, seed, budget, example_id), 0)
+                == per_example_expected_methods[(dataset, seed, budget, example_id)]
+            ),
+        }
+        for (dataset, seed, budget, example_id) in sorted(per_example_expected_methods.keys())
+    ]
+    completion_summary = {
+        "target_rows": int(len(planned_case_keys)),
+        "scored_rows": int(len(planned_scored)),
+        "missing_rows": int(len([k for k in planned_case_keys if k not in scored_case_keys])),
+        "failed_rows": int(len(planned_failed)),
+        "never_attempted_missing_rows": int(len(planned_missing)),
+        "duplicate_rows": int(duplicate_rows),
+        "per_method_completion_counts": per_method_completion,
+        "per_example_completeness_counts": {
+            "total_examples": int(len(per_example_completeness)),
+            "fully_complete_examples": int(sum(int(x["is_complete"]) for x in per_example_completeness)),
+            "incomplete_examples": int(len(per_example_completeness) - sum(int(x["is_complete"]) for x in per_example_completeness)),
+        },
+    }
+    (out_dir / "completion_summary.json").write_text(json.dumps(completion_summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    write_csv(out_dir / "completion_per_method.csv", per_method_completion)
+    write_csv(out_dir / "completion_per_example.csv", per_example_completeness)
+
+    failure_tax_json, failure_tax_rows = build_failure_taxonomy_outputs(records=records, failures=failure_rows)
+    (out_dir / "failure_taxonomy_summary.json").write_text(json.dumps(failure_tax_json, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    write_csv(out_dir / "failure_taxonomy_summary.csv", failure_tax_rows, fieldnames=["dataset", "method", "failure_category", "count", "example_ids_json"])
 
     per_group: dict[tuple[str, str, int, int, str], dict[str, int]] = {}
     for r in records:
@@ -1881,6 +2202,14 @@ def main() -> None:
         },
         "branch_trace_stats": trace_stats,
         "max_total_api_calls": int(getattr(args, "max_total_api_calls", 0) or 0),
+        "retry_policy": {
+            "api_retry_max_attempts": int(args.api_retry_max_attempts),
+            "api_retry_base_delay_seconds": float(args.api_retry_base_delay_seconds),
+            "api_retry_backoff_multiplier": float(args.api_retry_backoff_multiplier),
+            "api_retry_max_delay_seconds": float(args.api_retry_max_delay_seconds),
+            "api_retry_jitter_seconds": float(args.api_retry_jitter_seconds),
+        },
+        "max_recovery_passes": int(args.max_recovery_passes),
         "outputs": [
             "manifest.json",
             "slice_summary.csv",
@@ -1888,6 +2217,11 @@ def main() -> None:
             "cost_normalized_summary.csv",
             "pairwise_comparisons.csv",
             "incomplete_slices.csv",
+            "completion_summary.json",
+            "completion_per_method.csv",
+            "completion_per_example.csv",
+            "failure_taxonomy_summary.json",
+            "failure_taxonomy_summary.csv",
             "claim_safety_table.csv",
             "per_example_records.jsonl",
             "progress_heartbeat.jsonl",
@@ -1937,6 +2271,12 @@ def main() -> None:
         ]
     )
     claim_lines = "\n".join([f"- {r['question']} **{r['answer']}** ({r['evidence']})" for r in claim_rows])
+    failure_tax_table = "\n".join(
+        [
+            f"- {cat}: {cnt}"
+            for cat, cnt in sorted((failure_tax_json.get("counts_by_category") or {}).items(), key=lambda kv: (-int(kv[1]), str(kv[0])))
+        ]
+    )
     doc_lines = [
         "# COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION",
         "",
@@ -1955,6 +2295,7 @@ def main() -> None:
         f"- Completed slices: `{completed}`",
         f"- Incomplete slices: `{total_expected - completed}`",
         f"- Zero-record slices: `{zero_records}`",
+        f"- Completion summary: target_rows={completion_summary['target_rows']} scored_rows={completion_summary['scored_rows']} missing_rows={completion_summary['missing_rows']} failed_rows={completion_summary['failed_rows']} duplicate_rows={completion_summary['duplicate_rows']}",
         "- Per-provider completion counts:",
         *[f"  - {p}: {c['completed']}/{c['expected']}" for p, c in sorted(by_provider_counts.items())],
         "- Per-method completion counts:",
@@ -1982,6 +2323,10 @@ def main() -> None:
         "",
         "## Clear answers",
         claim_lines,
+        "",
+        "## Failure taxonomy (summary only)",
+        failure_tax_table or "- (no failures captured)",
+        "- Detailed machine-readable outputs are in `failure_taxonomy_summary.json` and `failure_taxonomy_summary.csv`.",
         "",
         "## Manuscript-safe wording",
         "- Treat Cohere evidence as bounded external-validity evidence under this matched setup.",

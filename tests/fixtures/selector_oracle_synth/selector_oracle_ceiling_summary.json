@@ -1,0 +1,25 @@
+{
+  "total_scored_examples": 3,
+  "l1_accuracy": 1.0,
+  "dr_v2_accuracy": 0.0,
+  "ov_accuracy": 0.0,
+  "prm_accuracy": 0.0,
+  "candidate_count_mean": 1.6666666666666667,
+  "candidate_count_median": 2,
+  "candidate_count_max": 2,
+  "answer_group_count_mean": 1.6666666666666667,
+  "answer_group_count_median": 2,
+  "answer_group_count_max": 2,
+  "gold_present_rate": 0.6666666666666666,
+  "oracle_selector_accuracy": 0.6666666666666666,
+  "selector_gap": 0.6666666666666666,
+  "selector_gap_by_method": {
+    "direct_reserve_semantic_frontier_v2": 0.6666666666666666,
+    "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1": null,
+    "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1": null
+  },
+  "l1_correct_ours_wrong_gold_present": 2,
+  "l1_correct_ours_wrong_gold_absent": 1,
+  "present_not_selected_loss_count": 2,
+  "absent_from_pool_loss_count": 1
+}

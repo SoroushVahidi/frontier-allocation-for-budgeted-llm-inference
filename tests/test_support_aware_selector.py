@@ -43,6 +43,7 @@ from experiments.support_aware_selector import (
     apply_fix4_to_row,
     apply_combined_fix24_to_row,
     apply_combined_fix1234_to_row,
+    agreement_only_2of3_against_frontier,
     external_agreement_signature,
     is_tale_isolated,
     frontier_agrees_with_external_majority,
@@ -57,6 +58,7 @@ from experiments.support_aware_selector import (
     FIX4_POLICY_NAME,
     COMBINED_FIX24_POLICY_NAME,
     COMBINED_FIX1234_POLICY_NAME,
+    AGREEMENT_ONLY_2OF3_POLICY_NAME,
     FIX5_POLICY_NAME,
 )
 
@@ -792,6 +794,102 @@ def test_fix4_policy_names_stable():
     assert "external_consensus_gate" in FIX4_POLICY_NAME
     assert "lowdepth_external_consensus" in COMBINED_FIX24_POLICY_NAME
     assert "support_lowdepth_calibrated_consensus" in COMBINED_FIX1234_POLICY_NAME
+
+
+# ─── Frozen agreement-only 2-of-3 selector tests ─────────────────────────────
+
+
+def test_agreement_only_2of3_defers_when_two_externals_agree_against_frontier():
+    selected, meta = agreement_only_2of3_against_frontier(
+        frontier_answer="19",
+        l1_answer="42",
+        s1_answer="42",
+        tale_answer="7",
+    )
+    assert selected == "42"
+    assert meta["deferred"] is True
+    assert meta["selected_source"] == "external_2of3_majority"
+    assert meta["agreement_pattern"] == "l1=s1!=tale"
+    assert meta["reason"] == "defer_external_2of3_agree_against_frontier"
+
+
+def test_agreement_only_2of3_defers_when_all_three_externals_agree_against_frontier():
+    selected, meta = agreement_only_2of3_against_frontier(
+        frontier_answer="10",
+        l1_answer="20",
+        s1_answer="20",
+        tale_answer="20",
+    )
+    assert selected == "20"
+    assert meta["deferred"] is True
+    assert meta["agreement_pattern"] == "l1=s1=tale"
+
+
+def test_agreement_only_2of3_keeps_frontier_when_two_externals_agree_with_frontier():
+    selected, meta = agreement_only_2of3_against_frontier(
+        frontier_answer="42",
+        l1_answer="42",
+        s1_answer="42",
+        tale_answer="7",
+    )
+    assert selected == "42"
+    assert meta["deferred"] is False
+    assert meta["reason"] == "keep_frontier_external_2of3_agree_with_frontier"
+
+
+def test_agreement_only_2of3_keeps_frontier_when_all_externals_different():
+    selected, meta = agreement_only_2of3_against_frontier(
+        frontier_answer="10",
+        l1_answer="20",
+        s1_answer="30",
+        tale_answer="40",
+    )
+    assert selected == "10"
+    assert meta["deferred"] is False
+    assert meta["agreement_pattern"] == "all_different"
+    assert meta["reason"] == "keep_frontier_no_external_2of3_agreement"
+
+
+def test_agreement_only_2of3_conservative_on_missing_or_unparseable_external():
+    selected, meta = agreement_only_2of3_against_frontier(
+        frontier_answer="10",
+        l1_answer="20",
+        s1_answer="20",
+        tale_answer="",  # missing / unparseable
+    )
+    assert selected == "10"
+    assert meta["deferred"] is False
+    assert meta["agreement_pattern"] == "missing_external_answer"
+    assert meta["reason"] == "keep_frontier_missing_or_unparseable_external"
+
+
+def test_agreement_only_2of3_normalized_equivalence_keeps_frontier():
+    selected, meta = agreement_only_2of3_against_frontier(
+        frontier_answer="\\boxed{$42}",
+        l1_answer="42.0",
+        s1_answer="$42",
+        tale_answer="41",
+    )
+    assert selected == "42"
+    assert meta["deferred"] is False
+    assert meta["frontier_answer_normalized"] == "42"
+    assert meta["external_majority_answer"] == "42"
+    assert meta["reason"] == "keep_frontier_external_2of3_agree_with_frontier"
+
+
+def test_agreement_only_2of3_does_not_depend_on_gold_or_correctness_inputs():
+    selected, meta = agreement_only_2of3_against_frontier(
+        frontier_answer="19",
+        l1_answer="7",
+        s1_answer="7",
+        tale_answer="5",
+    )
+    assert selected == "7"
+    assert meta["deferred"] is True
+    assert meta["policy"] == AGREEMENT_ONLY_2OF3_POLICY_NAME
+    assert "gold" not in meta
+    assert "exact_match" not in meta
+    assert "correctness" not in meta
 
 
 # ─── FIX-5 tests ──────────────────────────────────────────────────────────────

@@ -688,6 +688,14 @@ COMBINED_FIX1234_POLICY_DESCRIPTION = (
     "FIX-4 (external unanimous consensus). Applied in precedence order; only one fires."
 )
 
+AGREEMENT_ONLY_2OF3_POLICY_NAME = "agreement_only_2of3_against_frontier"
+AGREEMENT_ONLY_2OF3_POLICY_VERSION = "1.0"
+AGREEMENT_ONLY_2OF3_POLICY_DESCRIPTION = (
+    "Frozen zero-extra-call selector: keep frontier by default; "
+    "defer only when at least 2 of {L1,S1,TALE} agree on a normalized answer "
+    "that differs from normalized frontier."
+)
+
 # ─── FIX-5: TALE-default conservative agreement-region router ───────────────
 #
 # Goal: use TALE as the default answer, and only switch to a frontier-derived
@@ -961,6 +969,87 @@ def external_agreement_signature(external_answers: dict[str, Any]) -> str:
     if s1 == tale != l1:
         return "s1=tale!=l1"
     return "all_different"
+
+
+def agreement_only_2of3_against_frontier(
+    *,
+    frontier_answer: Any,
+    l1_answer: Any,
+    s1_answer: Any,
+    tale_answer: Any,
+) -> tuple[str | None, dict[str, Any]]:
+    """Frozen selector: defer only on 2-of-3 external agreement against frontier.
+
+    Runtime-legal inputs only: frontier, L1, S1, TALE answers.
+    No gold/exact/correctness/example-id fields are used.
+
+    Conservative behavior:
+    - if any external answer is missing/unparseable, keep frontier.
+    - if externals are all different, keep frontier.
+    """
+    from collections import Counter
+
+    frontier_norm = _normalize_answer(frontier_answer)
+    l1_norm = _normalize_answer(l1_answer)
+    s1_norm = _normalize_answer(s1_answer)
+    tale_norm = _normalize_answer(tale_answer)
+
+    external_norm = {
+        "l1": l1_norm,
+        "s1": s1_norm,
+        "tale": tale_norm,
+    }
+    missing = [k for k, v in external_norm.items() if not v]
+
+    agreement_pattern = (
+        "missing_external_answer"
+        if missing
+        else external_agreement_signature(
+            {
+                "external_l1_max": l1_norm,
+                "external_s1_budget_forcing": s1_norm,
+                "external_tale_prompt_budgeting": tale_norm,
+            }
+        )
+    )
+
+    metadata: dict[str, Any] = {
+        "policy": AGREEMENT_ONLY_2OF3_POLICY_NAME,
+        "policy_version": AGREEMENT_ONLY_2OF3_POLICY_VERSION,
+        "deferred": False,
+        "agreement_pattern": agreement_pattern,
+        "selected_action": "keep_frontier",
+        "selected_source": "frontier",
+        "reason": "keep_frontier_default",
+        "frontier_answer_normalized": frontier_norm,
+        "l1_answer_normalized": l1_norm,
+        "s1_answer_normalized": s1_norm,
+        "tale_answer_normalized": tale_norm,
+        "external_majority_answer": None,
+    }
+
+    if missing:
+        metadata["reason"] = "keep_frontier_missing_or_unparseable_external"
+        return frontier_norm, metadata
+
+    counts = Counter([l1_norm, s1_norm, tale_norm])
+    external_majority_answer, vote_count = counts.most_common(1)[0]
+    metadata["external_majority_answer"] = external_majority_answer
+    metadata["external_majority_vote_count"] = int(vote_count)
+
+    if vote_count < 2:
+        metadata["reason"] = "keep_frontier_no_external_2of3_agreement"
+        return frontier_norm, metadata
+
+    if frontier_norm and external_majority_answer == frontier_norm:
+        metadata["reason"] = "keep_frontier_external_2of3_agree_with_frontier"
+        return frontier_norm, metadata
+
+    metadata["deferred"] = True
+    metadata["selected_action"] = "defer_to_external_2of3_majority"
+    metadata["selected_source"] = "external_2of3_majority"
+    metadata["reason"] = "defer_external_2of3_agree_against_frontier"
+    return external_majority_answer, metadata
 
 
 def is_tale_isolated(external_answers: dict[str, Any]) -> bool:

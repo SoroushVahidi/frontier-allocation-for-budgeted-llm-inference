@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 import json
 import random
 import re
+import socket
 import time
 from typing import Any, Optional
 from urllib import error, request
@@ -267,6 +268,11 @@ class APIBranchGenerator:
         provider: str = "openai",
         *,
         expand_prompt_variant: str = "default",
+        retry_max_attempts: int = 4,
+        retry_base_delay_seconds: float = 1.25,
+        retry_backoff_multiplier: float = 2.0,
+        retry_max_delay_seconds: float = 20.0,
+        retry_jitter_seconds: float = 0.35,
     ) -> None:
         self.provider = provider.strip().lower()
         self.api_key = api_key
@@ -276,6 +282,8 @@ class APIBranchGenerator:
             default_base_url = "https://api.cohere.com/v2"
         elif self.provider == "cerebras":
             default_base_url = "https://api.cerebras.ai/v1"
+        elif self.provider == "mistral":
+            default_base_url = "https://api.mistral.ai/v1"
         elif self.provider == "groq":
             default_base_url = "https://api.groq.com/openai/v1"
         else:
@@ -296,6 +304,11 @@ class APIBranchGenerator:
         self.last_expand_answer_extraction_source: str = ""
         self.last_verify_answer_extraction_source: str = ""
         self.expand_prompt_variant = str(expand_prompt_variant or "default").strip().lower()
+        self.retry_max_attempts = max(1, int(retry_max_attempts))
+        self.retry_base_delay_seconds = max(0.01, float(retry_base_delay_seconds))
+        self.retry_backoff_multiplier = max(1.0, float(retry_backoff_multiplier))
+        self.retry_max_delay_seconds = max(0.01, float(retry_max_delay_seconds))
+        self.retry_jitter_seconds = max(0.0, float(retry_jitter_seconds))
 
     def reset_usage_counters(self) -> None:
         self.total_input_tokens = 0
@@ -445,9 +458,33 @@ class APIBranchGenerator:
             return self._call_cohere_chat_api(prompt)
         if self.provider == "cerebras":
             return self._call_cerebras_chat_api(prompt)
+        if self.provider == "mistral":
+            return self._call_mistral_chat_api(prompt)
         if self.provider == "groq":
             return self._call_groq_chat_api(prompt)
         return self._call_responses_api(payload)
+
+    def _compute_retry_delay_seconds(self, attempt_idx: int, *, retry_after_hint_seconds: float = 0.0) -> float:
+        # attempt_idx is zero-based. Retry waits are exponential and bounded.
+        base = self.retry_base_delay_seconds * (self.retry_backoff_multiplier ** max(0, attempt_idx))
+        bounded = min(self.retry_max_delay_seconds, base)
+        jitter = random.uniform(0.0, self.retry_jitter_seconds) if self.retry_jitter_seconds > 0 else 0.0
+        return float(max(bounded + jitter, float(retry_after_hint_seconds)))
+
+    def _log_retry_attempt(
+        self,
+        *,
+        provider: str,
+        attempt_number: int,
+        max_attempts: int,
+        reason: str,
+        wait_seconds: float,
+    ) -> None:
+        print(
+            f"[api-retry] provider={provider} attempt={attempt_number}/{max_attempts} "
+            f"wait_seconds={wait_seconds:.3f} reason={reason}",
+            flush=True,
+        )
 
     def _call_cohere_chat_api(self, prompt: str) -> str:
         headers = {"Content-Type": "application/json"}
@@ -462,7 +499,7 @@ class APIBranchGenerator:
             "response_format": {"type": "json_object"},
         }
 
-        retry_attempts = 4
+        retry_attempts = self.retry_max_attempts
         body: dict | None = None
         for attempt in range(retry_attempts):
             req = request.Request(
@@ -499,14 +536,44 @@ class APIBranchGenerator:
                 break
             except error.HTTPError as exc:  # pragma: no cover - network path
                 err_body = exc.read().decode("utf-8", errors="ignore")
-                if exc.code in {408, 429, 500, 502, 503, 504} and attempt < retry_attempts - 1:
-                    time.sleep(1.25 * (attempt + 1))
+                is_retryable = exc.code in {408, 409, 425, 429, 500, 502, 503, 504}
+                if is_retryable and attempt < retry_attempts - 1:
+                    retry_after_seconds = 0.0
+                    if exc.code == 429:
+                        try:
+                            retry_after_raw = str(exc.headers.get("Retry-After", "0") or "0").strip()
+                            retry_after_seconds = float(retry_after_raw) if retry_after_raw else 0.0
+                        except Exception:
+                            retry_after_seconds = 0.0
+                    wait_seconds = self._compute_retry_delay_seconds(attempt, retry_after_hint_seconds=retry_after_seconds)
+                    self._log_retry_attempt(
+                        provider=self.provider,
+                        attempt_number=int(attempt + 1),
+                        max_attempts=int(retry_attempts),
+                        reason=f"http_{exc.code}",
+                        wait_seconds=wait_seconds,
+                    )
+                    time.sleep(wait_seconds)
                     continue
                 raise RuntimeError(f"Cohere API HTTPError {exc.code}: {err_body[:500]}") from exc
             except Exception as exc:  # pragma: no cover - network path
                 if attempt < retry_attempts - 1:
-                    time.sleep(1.25 * (attempt + 1))
-                    continue
+                    retryable = isinstance(exc, (TimeoutError, socket.timeout, error.URLError, ConnectionError))
+                    exc_text = str(exc).lower()
+                    if (not retryable) and ("timed out" in exc_text or "timeout" in exc_text or "temporar" in exc_text):
+                        retryable = True
+                    if retryable:
+                        wait_seconds = self._compute_retry_delay_seconds(attempt)
+                        self._log_retry_attempt(
+                            provider=self.provider,
+                            attempt_number=int(attempt + 1),
+                            max_attempts=int(retry_attempts),
+                            reason=type(exc).__name__,
+                            wait_seconds=wait_seconds,
+                        )
+                        time.sleep(wait_seconds)
+                        continue
+                    raise RuntimeError(f"Cohere API request failed (non-retryable): {exc}") from exc
                 raise RuntimeError(f"Cohere API request failed: {exc}") from exc
         if body is None:  # pragma: no cover - defensive
             raise RuntimeError("Cohere API request failed after retries.")
@@ -581,6 +648,102 @@ class APIBranchGenerator:
             if isinstance(content, str) and content.strip():
                 return content
         raise RuntimeError("Cerebras API returned no text output.")
+
+    def _call_mistral_chat_api(self, prompt: str) -> str:
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": "Return only valid JSON matching the requested schema."},
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+        }
+
+        retry_attempts = self.retry_max_attempts
+        body: dict | None = None
+        for attempt in range(retry_attempts):
+            req = request.Request(
+                f"{self.base_url}/chat/completions",
+                data=json.dumps(payload).encode("utf-8"),
+                headers=headers,
+                method="POST",
+            )
+            try:
+                with request.urlopen(req, timeout=self.timeout_seconds) as resp:
+                    body = json.loads(resp.read().decode("utf-8"))
+                    usage = body.get("usage", {}) if isinstance(body, dict) else {}
+                    prompt_tokens = 0
+                    completion_tokens = 0
+                    if isinstance(usage, dict):
+                        prompt_tokens = int(usage.get("prompt_tokens", 0) or 0)
+                        completion_tokens = int(usage.get("completion_tokens", 0) or 0)
+                    self.total_input_tokens += prompt_tokens
+                    self.total_output_tokens += completion_tokens
+                    self.total_api_calls += 1
+                    self.total_retry_attempts += int(attempt)
+                    self.last_request_meta = {
+                        "attempts": int(attempt + 1),
+                        "input_tokens": int(prompt_tokens),
+                        "output_tokens": int(completion_tokens),
+                    }
+                break
+            except error.HTTPError as exc:  # pragma: no cover - network path
+                err_body = exc.read().decode("utf-8", errors="ignore")
+                is_retryable = exc.code in {408, 409, 425, 429, 500, 502, 503, 504}
+                if is_retryable and attempt < retry_attempts - 1:
+                    retry_after_seconds = 0.0
+                    if exc.code == 429:
+                        try:
+                            retry_after_raw = str(exc.headers.get("Retry-After", "0") or "0").strip()
+                            retry_after_seconds = float(retry_after_raw) if retry_after_raw else 0.0
+                        except Exception:
+                            retry_after_seconds = 0.0
+                    wait_seconds = self._compute_retry_delay_seconds(attempt, retry_after_hint_seconds=retry_after_seconds)
+                    self._log_retry_attempt(
+                        provider=self.provider,
+                        attempt_number=int(attempt + 1),
+                        max_attempts=int(retry_attempts),
+                        reason=f"http_{exc.code}",
+                        wait_seconds=wait_seconds,
+                    )
+                    time.sleep(wait_seconds)
+                    continue
+                raise RuntimeError(f"Mistral API HTTPError {exc.code}: {err_body[:500]}") from exc
+            except Exception as exc:  # pragma: no cover - network path
+                if attempt < retry_attempts - 1:
+                    retryable = isinstance(exc, (TimeoutError, socket.timeout, error.URLError, ConnectionError))
+                    exc_text = str(exc).lower()
+                    if (not retryable) and ("timed out" in exc_text or "timeout" in exc_text or "temporar" in exc_text):
+                        retryable = True
+                    if retryable:
+                        wait_seconds = self._compute_retry_delay_seconds(attempt)
+                        self._log_retry_attempt(
+                            provider=self.provider,
+                            attempt_number=int(attempt + 1),
+                            max_attempts=int(retry_attempts),
+                            reason=type(exc).__name__,
+                            wait_seconds=wait_seconds,
+                        )
+                        time.sleep(wait_seconds)
+                        continue
+                    raise RuntimeError(f"Mistral API request failed (non-retryable): {exc}") from exc
+                raise RuntimeError(f"Mistral API request failed: {exc}") from exc
+
+        if body is None:  # pragma: no cover - defensive
+            raise RuntimeError("Mistral API request failed after retries.")
+
+        choices = body.get("choices", []) if isinstance(body, dict) else []
+        if choices:
+            message = choices[0].get("message", {})
+            content = message.get("content")
+            if isinstance(content, str) and content.strip():
+                return content
+        raise RuntimeError("Mistral API returned no text output.")
 
     def _call_groq_chat_api(self, prompt: str) -> str:
         headers = {"Content-Type": "application/json"}

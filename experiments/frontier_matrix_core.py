@@ -82,6 +82,8 @@ def resolve_api_key_for_provider(provider: str) -> str | None:
     p = provider.strip().lower()
     if p == "openai":
         return os.getenv("OPENAI_API_KEY")
+    if p == "mistral":
+        return os.getenv("MISTRAL_API_KEY")
     if p == "cohere":
         # Prefer COHERE_API_KEY; CO_API_KEY is accepted only as a compatibility fallback (some shells/docs).
         return os.getenv("COHERE_API_KEY") or os.getenv("CO_API_KEY")
