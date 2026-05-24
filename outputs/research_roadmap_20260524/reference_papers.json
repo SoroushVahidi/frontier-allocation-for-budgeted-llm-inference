@@ -1,0 +1,172 @@
+{
+  "references": [
+    {
+      "title": "Self-Consistency Improves Chain of Thought Reasoning in Language Models",
+      "authors": "Wang et al.",
+      "category": "llm_ensemble_voting",
+      "url": "https://arxiv.org/abs/2203.11171",
+      "relevance": "majority-over-reasoning-path baseline for pooled selection",
+      "supports": ["algorithm", "baseline"]
+    },
+    {
+      "title": "Consistent Estimators for Learning to Defer to an Expert",
+      "authors": "Mozannar and Sontag",
+      "category": "learning_to_defer",
+      "url": "https://arxiv.org/abs/2006.01862",
+      "relevance": "formal defer/routing framework under heterogeneous expert quality",
+      "supports": ["theory", "algorithm"]
+    },
+    {
+      "title": "Predict Responsibly: Improving Fairness and Accuracy by Learning to Defer",
+      "authors": "Madras et al.",
+      "category": "learning_to_defer",
+      "url": "https://papers.nips.cc/paper_files/paper/2018/hash/09d37c08f7b129e96277388757530c72-Abstract.html",
+      "relevance": "practical defer objective and operating-point tradeoffs",
+      "supports": ["theory", "algorithm"]
+    },
+    {
+      "title": "Selective Classification for Deep Neural Networks",
+      "authors": "Geifman and El-Yaniv",
+      "category": "selective_prediction",
+      "url": "https://arxiv.org/abs/1705.08500",
+      "relevance": "risk-coverage style framing for calibrated fallback",
+      "supports": ["theory", "metrics"]
+    },
+    {
+      "title": "Measures of Diversity in Classifier Ensembles and Their Relationship with Ensemble Accuracy",
+      "authors": "Kuncheva and Whitaker",
+      "category": "ensemble_diversity",
+      "url": "https://link.springer.com/article/10.1023/A:1022859003006",
+      "relevance": "Q/disagreement/double-fault metrics for mechanism diagnostics",
+      "supports": ["metrics", "validation"]
+    },
+    {
+      "title": "Combining Pattern Classifiers: Methods and Algorithms",
+      "authors": "Kuncheva",
+      "category": "ensemble_methods",
+      "url": "https://onlinelibrary.wiley.com/doi/book/10.1002/9781118914564",
+      "relevance": "ensemble weighting and combination foundations",
+      "supports": ["theory", "algorithm"]
+    },
+    {
+      "title": "DESlib: A Dynamic Ensemble Selection Library in Python",
+      "authors": "Cruz et al.",
+      "category": "dynamic_ensemble_selection",
+      "url": "https://jmlr.org/papers/v21/18-144.html",
+      "relevance": "dynamic-selection taxonomy and implementation reference",
+      "supports": ["algorithm", "validation"]
+    },
+    {
+      "title": "Dynamic Classifier Selection: Recent Advances and Perspectives",
+      "authors": "Cruz et al.",
+      "category": "dynamic_selection_survey",
+      "url": "https://www.sciencedirect.com/science/article/pii/S1566253520303772",
+      "relevance": "survey-level framing for regime-aware selector families",
+      "supports": ["theory", "algorithm"]
+    },
+    {
+      "title": "Adaptive Mixtures of Local Experts",
+      "authors": "Jacobs et al.",
+      "category": "mixture_of_experts",
+      "url": "https://direct.mit.edu/neco/article/3/1/79/5560/Adaptive-Mixtures-of-Local-Experts",
+      "relevance": "gating model perspective for learned reliability routers",
+      "supports": ["theory", "algorithm"]
+    },
+    {
+      "title": "Outrageously Large Neural Networks",
+      "authors": "Shazeer et al.",
+      "category": "sparse_moe",
+      "url": "https://arxiv.org/abs/1701.06538",
+      "relevance": "conditional routing inspiration at scale",
+      "supports": ["theory"]
+    },
+    {
+      "title": "Ensemble Methods in Machine Learning",
+      "authors": "Dietterich",
+      "category": "ensemble_foundations",
+      "url": "https://link.springer.com/chapter/10.1007/3-540-45014-9_1",
+      "relevance": "classical ensemble principles",
+      "supports": ["theory"]
+    },
+    {
+      "title": "Neural Network Ensembles, Cross Validation, and Active Learning",
+      "authors": "Krogh and Vedelsby",
+      "category": "ensemble_theory",
+      "url": "https://papers.nips.cc/paper_files/paper/1994/hash/b8c37e33defde51cf91e1e03e51657da-Abstract.html",
+      "relevance": "ambiguity decomposition for ensemble gains",
+      "supports": ["theory"]
+    },
+    {
+      "title": "Harnessing the Power of Multiple Minds: Lessons Learned from LLM Routing",
+      "authors": "Unknown",
+      "category": "llm_routing",
+      "url": null,
+      "relevance": "empirical routing lessons across model pools",
+      "supports": ["algorithm", "validation"]
+    },
+    {
+      "title": "Efficient Contextual LLM Cascades through Budget-Aware Prompting and Model Selection (TREACLE)",
+      "authors": "Unknown",
+      "category": "llm_routing_budget_aware",
+      "url": null,
+      "relevance": "contextual budget-aware routing formulation",
+      "supports": ["algorithm", "validation"]
+    },
+    {
+      "title": "Adaptive LLM Routing Under Budget Constraints",
+      "authors": "Unknown",
+      "category": "llm_routing_budget_aware",
+      "url": null,
+      "relevance": "directly aligned with budget-constrained selector routing",
+      "supports": ["algorithm", "validation"]
+    },
+    {
+      "title": "Universal Model Routing for Efficient LLM Inference",
+      "authors": "Unknown",
+      "category": "llm_routing",
+      "url": null,
+      "relevance": "general routing abstraction for efficient inference",
+      "supports": ["theory", "algorithm"]
+    },
+    {
+      "title": "Training Verifiers to Solve Math Word Problems",
+      "authors": "Cobbe et al.",
+      "category": "verifier_reranking",
+      "url": "https://arxiv.org/abs/2110.14168",
+      "relevance": "verifier-guided answer selection precedent",
+      "supports": ["algorithm", "validation"]
+    },
+    {
+      "title": "Let's Verify Step by Step",
+      "authors": "Lightman et al.",
+      "category": "verifier_reranking",
+      "url": "https://arxiv.org/abs/2305.20050",
+      "relevance": "process verification signals for reliability modeling",
+      "supports": ["algorithm"]
+    },
+    {
+      "title": "LLM-Blender",
+      "authors": "Jiang et al.",
+      "category": "llm_blending",
+      "url": "https://arxiv.org/abs/2306.02561",
+      "relevance": "model blending and reranking templates",
+      "supports": ["algorithm", "validation"]
+    },
+    {
+      "title": "Beta-binomial and empirical Bayes references",
+      "authors": "Multiple",
+      "category": "empirical_bayes_shrinkage",
+      "url": null,
+      "relevance": "uncertainty-aware source competence shrinkage",
+      "supports": ["theory", "algorithm"]
+    },
+    {
+      "title": "McNemar test and paired evaluation references",
+      "authors": "Multiple",
+      "category": "statistical_evaluation",
+      "url": null,
+      "relevance": "paired significance protocol for selector comparisons",
+      "supports": ["validation", "metrics"]
+    }
+  ]
+}

@@ -58,6 +58,10 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
   - Correlated-family regime → source-family voting or correlation-discounted weighting
 - **Cerebras:** job (PID 2195513) was active at last check; left untouched.
 
+**Research roadmap/manuscript framing:** [`docs/REGIME_AWARE_FIXED_POOL_SELECTION_RESEARCH_ROADMAP_20260524.md`](docs/REGIME_AWARE_FIXED_POOL_SELECTION_RESEARCH_ROADMAP_20260524.md)
+
+Current direction is **regime-aware fixed-pool answer selection under matched inference budgets**: choose among precomputed frontier/L1/S1/TALE candidates with zero extra calls, then route by reliability regime (near-peer vs dominant-source vs no-majority fallback). Cohere/Mistral repair outputs and Cerebras live status are still operationally pending; final policy conclusions from those reruns wait for merge + integrity checks + selector replay.
+
 **Key reports:**
 
 | Document | Summary |

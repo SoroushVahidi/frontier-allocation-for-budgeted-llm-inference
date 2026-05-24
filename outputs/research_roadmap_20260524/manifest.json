@@ -1,0 +1,17 @@
+{
+  "artifact": "research_roadmap_20260524",
+  "created_utc": "2026-05-24T00:00:00Z",
+  "purpose": "Machine-readable mirror of the regime-aware fixed-pool selection research roadmap.",
+  "source_doc": "docs/REGIME_AWARE_FIXED_POOL_SELECTION_RESEARCH_ROADMAP_20260524.md",
+  "scope": {
+    "task_type": "repository hygiene and research-roadmap documentation",
+    "api_calls_launched": false,
+    "new_experiments_launched": false,
+    "job_intervention_performed": false
+  },
+  "files": [
+    "outputs/research_roadmap_20260524/algorithm_ideas_status.json",
+    "outputs/research_roadmap_20260524/reference_papers.json",
+    "outputs/research_roadmap_20260524/next_actions_checklist.json"
+  ]
+}

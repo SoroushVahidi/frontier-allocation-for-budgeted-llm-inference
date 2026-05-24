@@ -1,0 +1,116 @@
+{
+  "problem_framing": {
+    "title": "Regime-aware fixed-pool answer selection under matched inference budgets",
+    "candidate_sources": [
+      "frontier/default",
+      "external_l1_max",
+      "external_s1_budget_forcing",
+      "external_tale_prompt_budgeting"
+    ],
+    "selector_constraint": "zero_extra_model_calls",
+    "objective": [
+      "maximize_accuracy",
+      "minimize_oracle_regret"
+    ]
+  },
+  "ideas_tried": [
+    {
+      "idea": "agreement_only_2of3_against_frontier",
+      "motivation": "conservative override only when external majority agrees",
+      "helped": "reduces risky switching in some slices",
+      "failed": "no-majority fallback keeps wrong frontier",
+      "status": "diagnostic"
+    },
+    {
+      "idea": "pooled_4_with_fallback",
+      "motivation": "aggregate all four fixed-pool answers",
+      "helped": "strong on cohere near-peer regime",
+      "failed": "underweights dominant source on mistral",
+      "status": "keep_regime_conditional"
+    },
+    {
+      "idea": "always_s1",
+      "motivation": "use strongest single source when dominant",
+      "helped": "best on mistral original 300",
+      "failed": "harms cohere",
+      "status": "reject_global_keep_dominant_branch"
+    },
+    {
+      "idea": "provider_prior_selector",
+      "motivation": "route by provider-level reliability profile",
+      "helped": "matches best behavior in diagnostics",
+      "failed": "coarse routing",
+      "status": "keep_baseline"
+    },
+    {
+      "idea": "regime_selector_accuracy_spread",
+      "motivation": "detect competence heterogeneity",
+      "helped": "captures near-peer vs dominant contrast",
+      "failed": "requires uncertainty-aware thresholding",
+      "status": "validate_next"
+    },
+    {
+      "idea": "frontier_fallback_calibrated",
+      "motivation": "improve no-majority branch",
+      "helped": "addresses known agreement-only weakness",
+      "failed": "not fully validated on merged complete reruns",
+      "status": "validate_next"
+    },
+    {
+      "idea": "dominant_source_veto",
+      "motivation": "protect against weak majorities in dominant regime",
+      "helped": "improves logic in mistral-like slices",
+      "failed": "can over-trigger with noisy dominance estimates",
+      "status": "validate_next"
+    },
+    {
+      "idea": "majority_requires_dominant_source_when_dominant",
+      "motivation": "enforce dominant-source consistency",
+      "helped": "aligns with observed dominant-source behavior",
+      "failed": "needs confidence intervals/shrinkage",
+      "status": "validate_next"
+    },
+    {
+      "idea": "source_family_discount_l1_tale",
+      "motivation": "discount correlated families",
+      "helped": "useful for diagnostics",
+      "failed": "did not clearly fix mistral gap alone",
+      "status": "diagnostic"
+    },
+    {
+      "idea": "log_odds_weighted_vote",
+      "motivation": "weight vote by source reliability",
+      "helped": "unified scoring surface",
+      "failed": "unstable calibration on small slices",
+      "status": "diagnostic_validate_next"
+    },
+    {
+      "idea": "targeted_failure_case_reruns",
+      "motivation": "fast hypothesis testing",
+      "helped": "generated useful candidate rules",
+      "failed": "biased for promotion claims",
+      "status": "hypothesis_generation_only"
+    },
+    {
+      "idea": "error_correlation_double_fault_diagnostics",
+      "motivation": "understand voting mechanisms",
+      "helped": "clarified competence heterogeneity mechanism",
+      "failed": "correlation-only explanation was incomplete",
+      "status": "keep_analysis_tool"
+    }
+  ],
+  "supported_hypotheses": [
+    "near_peer_strengths_imply_pooled_voting_advantage",
+    "dominant_source_regime_implies_best_source_or_provider_prior_advantage",
+    "no_majority_cases_need_calibrated_fallback_not_hard_frontier_fallback",
+    "all_sources_wrong_cases_require_generation_improvements_not_selection_tuning",
+    "competence_heterogeneity_explains_cohere_mistral_contrast_better_than_raw_pairwise_correlation"
+  ],
+  "next_algorithm_family": [
+    "raw_spread_regime_selector",
+    "beta_binomial_shrinkage_regime_selector",
+    "calibrated_no_majority_fallback_branch",
+    "correlation_or_family_discount_branch",
+    "learned_reliability_router_extension"
+  ]
+}

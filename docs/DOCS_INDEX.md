@@ -88,6 +88,24 @@ This index separates current interpretation documents from diagnostic and histor
 **Output bundles:**
 `outputs/cohere_canonical_final300_frozen_agreement_live_result_20260523/` · `outputs/mistral_gsm8k_frozen_agreement_result_20260523/` · `outputs/mistral_s1_dominance_diagnostic_20260523/` · `outputs/mistral_algorithm_improvement_diagnostic_20260523/` · `outputs/mistral_cases_where_agreement_loses_to_s1_20260523/` · `outputs/mistral_l1_tale_correlation_diagnostic_20260523/` · `outputs/correlation_aware_transfer_risk_diagnostic_20260523/` · `outputs/error_correlation_and_ensemble_diversity_diagnostic_20260523/` · `outputs/cohere_cerebras_health_status_20260523/`
 
+## Research roadmap and manuscript framing
+
+| Document | Role |
+|---|---|
+| `docs/REGIME_AWARE_FIXED_POOL_SELECTION_RESEARCH_ROADMAP_20260524.md` | Central manuscript-facing roadmap: tried ideas, what worked/failed, supported hypotheses, algorithm family, validation protocol, and reference literature map for regime-aware fixed-pool selection. |
+
+## 2026-05-24 repair and operational status
+
+| Document | Role |
+|---|---|
+| `docs/REPAIR_INCOMPLETE_COHERE_MISTRAL_RUNS_20260524.md` | Root-cause diagnosis and repair launch plan for incomplete Cohere/Mistral runs. |
+| `docs/REPAIR_JOBS_STATUS_20260524.md` | Job-level completion/progress snapshot for Cohere/Mistral repairs and Cerebras monitoring. |
+| `docs/CURRENT_EXPERIMENT_STATUS_20260524.md` | Current operational state snapshot and pre-interpretation checklist (merge + integrity + replay). |
+| `docs/ACTIVE_VALIDATION_JOBS_STATUS_20260523.md` | Read-only process snapshot for active validation jobs. |
+| `docs/CEREBRAS_HEALTH_STATUS_20260523.md` | Cerebras non-invasive health status and stall-risk notes. |
+| `docs/COHERE_TARGETED_NO_MAJORITY_FALLBACK_RERUN_20260523.md` | Cohere targeted rerun setup and completion context. |
+| `docs/MISTRAL_FULL300_REGIME_SELECTOR_VALIDATION_20260523.md` | Mistral full-300 rerun setup and completion context. |
+
 ## Current selector evidence artifacts
 
 Use these as engineering artifacts, not paper-facing claims by themselves.

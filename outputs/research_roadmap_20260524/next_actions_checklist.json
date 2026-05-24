@@ -1,0 +1,44 @@
+{
+  "next_actions": [
+    {
+      "id": "confirm_mistral_repair_completion",
+      "description": "Confirm Mistral missing-method repair completion and preserve non-invasive status records.",
+      "status": "done_on_disk"
+    },
+    {
+      "id": "merge_cohere_original_plus_repair",
+      "description": "Merge Cohere original targeted frontier rows with missing-method repair rows.",
+      "status": "pending"
+    },
+    {
+      "id": "merge_mistral_original_plus_repair",
+      "description": "Merge Mistral original frontier rows with missing-method repair rows.",
+      "status": "pending"
+    },
+    {
+      "id": "run_integrity_and_dedup_checks",
+      "description": "Verify expected rows, all methods present, and deduplicate Mistral duplicate key row.",
+      "status": "pending"
+    },
+    {
+      "id": "replay_selectors_on_merged_artifacts",
+      "description": "Replay selector variants only after merged completeness checks pass.",
+      "status": "pending"
+    },
+    {
+      "id": "evaluate_beta_shrinkage_selector",
+      "description": "Run beta-binomial shrinkage regime selector as next algorithm candidate.",
+      "status": "pending"
+    },
+    {
+      "id": "decide_full_cohere_validation",
+      "description": "Decide whether calibrated no-majority fallback needs a full Cohere validation rerun.",
+      "status": "pending"
+    },
+    {
+      "id": "classify_cerebras_regime",
+      "description": "Classify Cerebras reliability regime once Cerebras run is complete.",
+      "status": "blocked_on_active_run_completion"
+    }
+  ]
+}
