@@ -1,6 +1,6 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-24 (FTA/LDG/ECO terminology adopted in paper draft; XGB53 parallel router track validated; Cohere MATH aux generation in progress)
+**Last updated:** 2026-05-25 (regime-learning checkpoint: six providers protocol-ready; Azure/Cloudrift GSM8K running; Cohere MATH-500 pool-failure analysis complete)
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
 
@@ -42,6 +42,45 @@ These are active research tracks that are **NOT paper-facing end-to-end accuracy
 - **Goal:** 200 non-official MATH-500 examples × 4 methods = 800 Cohere calls
 - **Purpose:** Expand router training data to address MATH-domain weakness in XGB53
 - **Status:** Running (~83/800 scored as of last check)
+
+## 0C. Regime Learning Checkpoint (2026-05-25)
+
+**This section records exploratory/regime-learning work. Nothing here changes canonical paper claims.**
+
+### Provider matrix expansion
+
+Six providers have passed the 1-example × 4-method protocol smoke test and are READY_NOW
+for multi-provider generation: **Cohere, Cerebras, Mistral AI, Azure OpenAI, Fireworks, Cloudrift AI**.
+Modal remains UNSUITABLE_OR_UNKNOWN. See `docs/PROVIDER_READINESS_20260525.md`.
+
+- Azure GSM8K 300 and Cloudrift GSM8K 300 are running in tmux (as of 2026-05-25).
+- Cerebras GSM8K is running (slow throughput).
+- Azure MATH-500 and Cloudrift MATH-500 will follow after their respective GSM8K jobs complete.
+
+### Cohere MATH-500 pool failure analysis
+
+- Agreement-only accuracy: **33.0%** (99/300). Oracle ceiling (Cohere-only pool): **~46.3%** (139/300).
+- True all-sources-wrong: **~161/300 = 53.7%** — pool failure dominates, not selector failure.
+- Stronger normalization: rescued ~4 normalization-fixable cases (+1.3pp oracle ceiling lift). **Promoted for scoring layer.**
+- Symbolic agreement selector: net −3 (9 regressions, 6 recoveries). **Not promoted.**
+- Learned meta-router: deferred (N=300 too small; no better fallback for predicted-failure cases).
+- SymPy offline validation (Phase 1): 0 genuine rescues — wrong answers are genuinely wrong; Variant A (normalize existing) not justified.
+- **Do not claim selector improvement on MATH-500 until multi-provider pool is collected.**
+
+### Data artifact warning (downstream ML)
+
+10 Cohere MATH-500 case IDs have a construction inconsistency (`frontier_answer` in CSV ≠ authoritative JSONL extraction): `_11, _193, _222, _236, _251, _255, _256, _258, _287, _297`. Must be flagged before any ML training.
+
+### Canonical FTA paper claims — UNCHANGED
+
+- Final-300 = **260/300 = 86.67%**
+- Aggregate-720 = **581/720 = 80.69%**
+- All aggregate source-stratified CI lower bounds strictly above zero vs L1/S1/TALE/best-external.
+
+### XGB53 learned router — parallel track, not paper-facing
+
+- Repeated CV: 83.21% ± 0.26%; all audits pass. Not comparable to FTA Final-300/Aggregate-720 numbers.
+- A separate held-out end-to-end validation run is required before any paper claim update.
 
 ---
 
