@@ -1,8 +1,8 @@
 method,n_cases,mean_accuracy,avg_actions,delta_vs_self_consistency_3,pvalue_vs_self_consistency_3
-strict_f3_anti_collapse_weak_v1,300,0.633333,5.283333,0.03,0.501125
-strict_f3,300,0.63,5.223333,,
-self_consistency_3,300,0.603333,5.916667,,
-strict_gate1_cap_k6,300,0.576667,5.153333,,
-self_consistency_5,300,0.56,6.0,,
-external_s1_budget_forcing,300,0.473333,3.393333,,
-external_l1_max,300,0.45,2.053333,,
+strict_f3,32,0.65625,4.5,0.03125,1.0
+self_consistency_3,32,0.625,5.0,,
+strict_f3_anti_collapse_weak_v1,32,0.59375,4.125,,
+strict_gate1_cap_k6,32,0.5,4.375,,
+external_s1_budget_forcing,32,0.4375,3.15625,,
+self_consistency_5,32,0.4375,5.0,,
+external_l1_max,32,0.34375,2.21875,,
