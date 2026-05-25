@@ -239,6 +239,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--cerebras-model", default="llama3.1-8b")
     p.add_argument("--azure-model", default=os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4.1-mini"),
                    help="Azure OpenAI deployment name (default: AZURE_OPENAI_DEPLOYMENT env var).")
+    p.add_argument("--fireworks-model", default="accounts/fireworks/models/deepseek-v4-pro",
+                   help="Fireworks model ID (default: accounts/fireworks/models/deepseek-v4-pro).")
+    p.add_argument("--cloudrift-model", default="Qwen/Qwen3.6-35B-A3B-FP8",
+                   help="Cloudrift AI model ID (default: Qwen/Qwen3.6-35B-A3B-FP8).")
     p.add_argument("--datasets", default=DEFAULT_DATASETS)
     p.add_argument("--budgets", default=DEFAULT_BUDGETS)
     p.add_argument("--seeds", default=DEFAULT_SEEDS)
@@ -514,7 +518,7 @@ def normalize_providers(args: argparse.Namespace) -> list[str]:
     else:
         providers = parse_csv_list(args.providers)
     normed = [p.strip().lower() for p in providers if p.strip()]
-    allowed = {"cohere", "openai", "cerebras", "mistral", "azure_openai"}
+    allowed = {"cohere", "openai", "cerebras", "mistral", "azure_openai", "fireworks", "cloudrift_ai"}
     bad = [p for p in normed if p not in allowed]
     if bad:
         raise ValueError(f"Unsupported provider(s): {bad}; allowed={sorted(allowed)}")
@@ -1269,6 +1273,8 @@ def main() -> None:
         "mistral": args.mistral_model,
         "cerebras": args.cerebras_model,
         "azure_openai": args.azure_model,
+        "fireworks": args.fireworks_model,
+        "cloudrift_ai": args.cloudrift_model,
     }
     provider_status: dict[str, dict[str, str]] = {}
     if args.summarize_only:
@@ -1297,6 +1303,12 @@ def main() -> None:
                     if not os.getenv("AZURE_OPENAI_ENDPOINT"):
                         missing.append("AZURE_OPENAI_ENDPOINT")
                     reason = f"azure_openai_missing_env_vars:{','.join(missing)}"
+            elif provider == "fireworks":
+                ok = bool(os.getenv("FIREWORKS_API_KEY", ""))
+                reason = "api_key_present" if ok else "api_key_missing"
+            elif provider == "cloudrift_ai":
+                ok = bool(os.getenv("CLOUDRIFT_API_KEY", "") or os.getenv("RIFT_API_KEY", ""))
+                reason = "api_key_present" if ok else "api_key_missing"
             else:
                 ok, reason = ensure_openai_readiness(timestamp=args.timestamp)
             provider_status[provider] = {"ready": "1" if ok else "0", "reason": reason}
@@ -1331,6 +1343,8 @@ def main() -> None:
         "mistral": os.getenv("MISTRAL_API_KEY", ""),
         "cerebras": os.getenv("CEREBRAS_API_KEY", ""),
         "azure_openai": os.getenv("AZURE_OPENAI_API_KEY", ""),
+        "fireworks": os.getenv("FIREWORKS_API_KEY", ""),
+        "cloudrift_ai": os.getenv("CLOUDRIFT_API_KEY", "") or os.getenv("RIFT_API_KEY", ""),
     }
     ov_verifier_env = {
         "DR_V2_OV_RERANK_VERIFIER_BACKEND": os.getenv("DR_V2_OV_RERANK_VERIFIER_BACKEND", ""),

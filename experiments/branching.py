@@ -289,6 +289,10 @@ class APIBranchGenerator:
             default_base_url = "https://api.groq.com/openai/v1"
         elif self.provider == "azure_openai":
             default_base_url = os.environ.get("AZURE_OPENAI_ENDPOINT", "https://api.openai.com/v1")
+        elif self.provider == "fireworks":
+            default_base_url = os.environ.get("FIREWORKS_BASE_URL", "https://api.fireworks.ai/inference/v1")
+        elif self.provider == "cloudrift_ai":
+            default_base_url = os.environ.get("CLOUDRIFT_BASE_URL", "https://inference.cloudrift.ai/v1")
         else:
             default_base_url = "https://api.openai.com/v1"
         self.base_url = (base_url or default_base_url).rstrip("/")
@@ -467,6 +471,8 @@ class APIBranchGenerator:
             return self._call_groq_chat_api(prompt)
         if self.provider == "azure_openai":
             return self._call_azure_chat_api(prompt)
+        if self.provider in {"fireworks", "cloudrift_ai"}:
+            return self._call_openai_compatible_chat_api(prompt)
         return self._call_responses_api(payload)
 
     def _compute_retry_delay_seconds(self, attempt_idx: int, *, retry_after_hint_seconds: float = 0.0) -> float:
@@ -881,6 +887,101 @@ class APIBranchGenerator:
             if isinstance(content, str) and content.strip():
                 return content
         raise RuntimeError("Azure OpenAI API returned no text output.")
+
+    def _call_openai_compatible_chat_api(self, prompt: str) -> str:
+        """Generic OpenAI-compatible /v1/chat/completions call (Fireworks, Cloudrift AI, etc.)."""
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": "Return only valid JSON matching the requested schema."},
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+        }
+
+        retry_attempts = self.retry_max_attempts
+        body: dict | None = None
+        for attempt in range(retry_attempts):
+            req = request.Request(
+                f"{self.base_url}/chat/completions",
+                data=json.dumps(payload).encode("utf-8"),
+                headers=headers,
+                method="POST",
+            )
+            try:
+                with request.urlopen(req, timeout=self.timeout_seconds) as resp:
+                    body = json.loads(resp.read().decode("utf-8"))
+                    usage = body.get("usage", {}) if isinstance(body, dict) else {}
+                    prompt_tokens = int((usage.get("prompt_tokens") or 0)) if isinstance(usage, dict) else 0
+                    completion_tokens = int((usage.get("completion_tokens") or 0)) if isinstance(usage, dict) else 0
+                    self.total_input_tokens += prompt_tokens
+                    self.total_output_tokens += completion_tokens
+                    self.total_api_calls += 1
+                    self.total_retry_attempts += int(attempt)
+                    self.last_request_meta = {
+                        "attempts": int(attempt + 1),
+                        "input_tokens": int(prompt_tokens),
+                        "output_tokens": int(completion_tokens),
+                    }
+                break
+            except error.HTTPError as exc:
+                err_body = exc.read().decode("utf-8", errors="ignore")
+                is_retryable = exc.code in {408, 409, 425, 429, 500, 502, 503, 504}
+                if is_retryable and attempt < retry_attempts - 1:
+                    retry_after_seconds = 0.0
+                    try:
+                        retry_after_seconds = float(exc.headers.get("Retry-After", "0") or "0")
+                    except Exception:
+                        retry_after_seconds = 0.0
+                    wait_seconds = self._compute_retry_delay_seconds(
+                        attempt, retry_after_hint_seconds=retry_after_seconds
+                    )
+                    self._log_retry_attempt(
+                        provider=self.provider,
+                        attempt_number=attempt + 1,
+                        max_attempts=retry_attempts,
+                        reason=f"http_{exc.code}",
+                        wait_seconds=wait_seconds,
+                    )
+                    time.sleep(wait_seconds)
+                    continue
+                raise RuntimeError(
+                    f"{self.provider} API request failed (http {exc.code}): {err_body[:400]}"
+                ) from exc
+            except Exception as exc:
+                if attempt < retry_attempts - 1:
+                    wait_seconds = self._compute_retry_delay_seconds(attempt)
+                    self._log_retry_attempt(
+                        provider=self.provider,
+                        attempt_number=attempt + 1,
+                        max_attempts=retry_attempts,
+                        reason=f"{type(exc).__name__}",
+                        wait_seconds=wait_seconds,
+                    )
+                    time.sleep(wait_seconds)
+                    continue
+                raise RuntimeError(f"{self.provider} API request failed: {exc}") from exc
+
+        if body is None:
+            raise RuntimeError(f"{self.provider} API request failed after retries.")
+
+        choices = body.get("choices", []) if isinstance(body, dict) else []
+        if choices:
+            message = choices[0].get("message", {})
+            content = message.get("content")
+            if isinstance(content, str) and content.strip():
+                return content
+            # Reasoning/thinking models (e.g. Cloudrift Qwen3) return content=null
+            # and put the actual output in message.reasoning instead.
+            reasoning = message.get("reasoning")
+            if isinstance(reasoning, str) and reasoning.strip():
+                return reasoning
+        raise RuntimeError(f"{self.provider} API returned no text output.")
 
     def _call_responses_api(self, payload: dict) -> str:
         headers = {"Content-Type": "application/json"}
