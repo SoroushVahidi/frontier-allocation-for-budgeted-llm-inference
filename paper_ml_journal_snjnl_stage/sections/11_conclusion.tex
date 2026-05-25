@@ -1,31 +1,39 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented FIX-2+FIX-4, a deterministic gold-free policy gating method for
-matched-budget LLM reasoning.
+We presented Failure-Trace Allocator (FTA) as a deterministic selective-deferral
+policy for matched-budget LLM answer selection.
 On a disjoint 720-example aggregate evaluation (three independent seeds, zero overlap),
-FIX-2+FIX-4 achieves 80.69\% (581/720) versus L1 77.64\%, S1 77.08\%, and TALE 75.14\%.
+Failure-Trace Allocator (FTA) achieves 80.69\% (581/720) versus L1 77.64\%, S1 77.08\%, and TALE 75.14\%.
 Source-stratified 95\% bootstrap confidence intervals are strictly positive for all four
 baseline comparisons, with the lower bound vs.\ best external at $+1.11$ pp.
-On the Final-300 evaluation (seed 71, budget 6), FIX-2+FIX-4 reaches 86.67\% (260/300),
+On the Final-300 evaluation (seed 71, budget 6), Failure-Trace Allocator (FTA) reaches 86.67\% (260/300),
 compared to 83.00\% for L1, 82.00\% for S1, and 78.33\% for TALE.
+Against the pooled four-answer ensemble, Failure-Trace Allocator remains ahead by point estimate but is not statistically separated, so the relevant conclusion is competitiveness with strong aggregation baselines rather than broad superiority over ensembling.
 
-The policy consists of two rule-based gates applied in strict priority order.
-The Low-Depth Guard (FIX-2) detects structurally weak frontier search branches using the
+The broader contribution is the framing of post-generation answer selection as a
+matched-budget selective-deferral problem over answer sources. FTA is one
+deterministic instantiation of that framework, consisting of two rule-based gates
+applied in strict priority order.
+The Low-Depth Guard (LDG) detects structurally weak frontier search branches using the
 logged \texttt{override\_reason} field and substitutes the external majority vote.
-The External-Consensus Fallback (FIX-4) identifies cases where all three external
+The External-Consensus Fallback (ECO) identifies cases where all three external
 baselines unanimously disagree with the frontier's selection, overriding to the
 consensus answer.
 Both gates are gold-free: no correctness labels, example identifiers, or artifact
 paths are accessed at runtime.
 The rules, trigger conditions, and exact field names are fully specified in
-Table~\ref{tab:policy_rules} and Algorithm~\ref{alg:fix24}.
+Table~\ref{tab:policy_rules} and Table~\ref{alg:fix24}, with reproducibility
+details documented in the appendix and submission package.
 
-Further accuracy gains in this setting will most likely require advances in candidate
-generation rather than selection policy.
+The evidence remains bounded to one tested provider/benchmark/budget setting, so
+the paper should be read as an answer-selection and selective-routing study rather
+than as a claim of a generally superior end-to-end solver. Further accuracy gains
+in this setting may require advances in candidate generation rather than selection
+policy.
 Failure analysis of the 40 residual errors on Final-300 shows that 24 (60\%) are
 \textit{all-methods-wrong} cases in which no evaluated method produced the correct answer;
 the dominant subtype is multi-step composition traps (10/24) where the error is
 embedded in intermediate reasoning rather than in the final answer selection step.
-Addressing this residual category requires either stronger base generators or
+Addressing this residual category may require either stronger base generators or
 training-time interventions that improve coverage of hard compositional patterns.

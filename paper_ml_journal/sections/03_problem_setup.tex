@@ -14,7 +14,7 @@ paper treats those metadata as diagnostics, not as correctness labels.
 Two \texttt{override\_reason} values are central. The value
 \texttt{single\_weak\_frontier\_branch} is emitted when the selected frontier
 answer is supported by a narrow or weak frontier trace, which suggests limited
-exploration of alternative answer groups in this evaluated setting. The value
+exploration of alternative answer groups. The value
 \texttt{direct\_frontier\_agree} is emitted when the direct-reserve and frontier
 answers agree internally. Both fields are produced before any comparison to the
 gold answer; they are therefore runtime-visible and gold-free.
@@ -44,6 +44,6 @@ Where helpful for readability, we use short paper-facing names and keep the corr
   \item[Matched budget] All compared candidate-producing methods operate under the same per-method budget cap $B$, ensuring that accuracy differences are not confounded by unequal per-method computational limits. If a deployment generates frontier, L1, S1, and TALE outputs from scratch, its total wall-clock and API cost depends on which producers are executed.
   \item[Postrun replay] Offline re-evaluation of a previously generated run artifact using a policy rule without issuing new provider API calls. Postrun replay is used to compute policy-specific accuracy from existing logs.
   \item[Gold-free runtime feature] Any input to a policy decision rule that is derived solely from model outputs, run metadata, or structural properties of the candidate pool---never from gold labels, exact-match signals, or correctness indicators.
-  \item[Promotion-grade evidence] Evidence collected on held-out evaluation sets that were not used during rule development, meeting the disjointness, seed-independence, and aggregate scale criteria documented in Section~\ref{sec:experiments}.
+  \item[Validation-grade evidence] Evidence collected on held-out evaluation sets that were not used during rule development, meeting the disjointness, seed-independence, and aggregate scale criteria documented in Section~\ref{sec:experiments}.
   \item[Provider-specific evidence] Results obtained from a particular provider--model pairing (here, Cohere command-r-plus-08-2024). Claims are explicitly scoped to this setting and do not generalize beyond it without additional replication.
 \end{description}

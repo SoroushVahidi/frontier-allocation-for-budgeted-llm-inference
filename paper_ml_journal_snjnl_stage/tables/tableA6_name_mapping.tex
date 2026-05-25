@@ -1,16 +1,16 @@
 \begin{table*}[t]
 \centering
-\caption{Paper-facing name mapping. Short names used throughout the manuscript and their implementation identifiers, roles, runtime availability, and gold-free status. Raw identifiers are retained in Algorithm~\ref{alg:fix24}, Table~\ref{tab:policy_rules}, and Table~\ref{tab:feature_legality}.}
+\caption{Terminology and identifier mapping. Short names used throughout the manuscript and their implementation identifiers, roles, runtime availability, and gold-free status. Raw identifiers remain visible in Table~\ref{alg:fix24}, Table~\ref{tab:policy_rules}, and Table~\ref{tab:feature_legality}.}
 \label{tab:name_mapping}
 \footnotesize
 \resizebox{\textwidth}{!}{%
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}X c c}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.19\textwidth}>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedright\arraybackslash}Xcc@{}}
 \toprule
-Paper-facing name & Implementation identifier & Role & Used at runtime? & Gold-free? \\
+Journal-facing name & Implementation identifier & Role & Used at runtime? & Gold-free? \\
 \midrule
 failure-trace-guided allocator
   & \texttt{FIX-2+FIX-4}
-  & Promoted two-gate policy
+  & Main two-gate policy
   & Yes & Yes \\[2pt]
 weak-frontier trigger
   & \texttt{single\allowbreak\_weak\allowbreak\_frontier\allowbreak\_branch}

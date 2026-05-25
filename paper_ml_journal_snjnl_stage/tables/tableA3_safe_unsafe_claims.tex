@@ -1,21 +1,23 @@
-\begin{table*}[!ht]
+\begin{table*}[t]
 \centering
-\caption{Claim language guidance for manuscript writing.}
+\caption{Examples of safe and unsafe claim formulations for this manuscript.}
 \label{tab:claim_language}
 \small
 \begin{tabular}{lp{0.80\textwidth}}
 \toprule
 Type & Claim statement \\
 \midrule
-Safe & FIX-2+FIX-4 outperforms L1/S1/TALE and best-external on aggregate720 (matched budget), with positive source-stratified bootstrap CI lower bounds for all baseline comparisons. \\
-Safe & FIX-2+FIX-4 is ahead of pooled-answer ensemble baselines by point estimate on Final-300 and Aggregate-720, but the confidence intervals include zero. \\
+Safe & Failure-Trace Allocator (FTA) outperforms L1/S1/TALE and best-external on aggregate720 (matched budget), with positive source-stratified bootstrap CI lower bounds for all baseline comparisons. \\
+Safe & Failure-Trace Allocator (FTA) is ahead of pooled-answer ensemble baselines by point estimate on Final-300 and Aggregate-720, but the confidence intervals include zero. \\
 Safe & Failure-trace-guided gold-free rules recover low-depth and external-consensus failure modes. \\
-Safe & FIX-5/6/7/8/9 are not promoted due to insufficient or negative evidence. \\
+Safe & Additional development variants summarized in Table~\ref{tab:negative_results} do not provide sufficient evidence for inclusion in the final policy. \\
+Safe & The reported metrics and paper tables are reproducible offline from processed artifacts in the submission package; exact live reruns require commercial API access and may differ. \\
 Unsafe & Universal superiority over all reasoning methods. \\
 Unsafe & Statistically separated superiority over pooled-answer ensemble baselines. \\
 Unsafe & Universal gains across all math datasets/providers. \\
-Unsafe & Promoted gains from FIX-7/FIX-8/FIX-9. \\
+Unsafe & Reliable gains from the cluster-selector, parser, or pool-miss variants beyond the reported final policy. \\
 Unsafe & Dollar/latency savings without direct measurement. \\
+Unsafe & Exact live regeneration is guaranteed from the submission package alone. \\
 \bottomrule
 \end{tabular}
 \end{table*}

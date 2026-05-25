@@ -3,24 +3,28 @@
 \caption{Reproducibility checklist.}
 \label{tab:repro_checklist}
 \scriptsize
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{p{0.16\textwidth}p{0.09\textwidth}p{0.35\textwidth}p{0.30\textwidth}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.08\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.28\textwidth}@{}}
 \toprule
 Item & Status & Value & Artifact/reference \\
 \midrule
-Dataset & complete & \texttt{openai/gsm8k} primary subsets (300+120+300) & manifests + \texttt{aggregate\allowbreak\_with\allowbreak\_prior\allowbreak\_validation.csv} \\
-Provider / model & complete & Cohere / command-r-plus-08-2024 & \texttt{validation\allowbreak\_manifest.json} \\
-Seeds & complete & 41, 61, 71 (primary); 31 sensitivity & \texttt{aggregate\allowbreak\_with\allowbreak\_prior\allowbreak\_validation.csv} \\
+Dataset & complete & \nolinkurl{openai/gsm8k} primary subsets & manifests + aggregate validation CSV \\
+Provider / model & complete & Cohere / command-r-plus-08-2024 & \nolinkurl{validation_manifest.json} \\
+Seeds & complete & 41, 61, 71 (primary); 31 sensitivity & aggregate validation CSV \\
 Budget & complete & $B=6$ matched across all methods & manifests + per-example rows \\
-Output roots & complete & major roots enumerated & supplementary reproducibility artifact + \texttt{docs/LATEST\allowbreak\_RESULTS\allowbreak\_AND\allowbreak\_CLAIMS.md} \\
-Disjointness proofs & complete & source overlaps $= 0$ & \texttt{final\allowbreak\_postrun\allowbreak\_metrics.json} checks \\
-Dry-run logs & complete & dry-run plans present for all validation runs & \texttt{dry\allowbreak\_run\allowbreak\_call\allowbreak\_plan.log} \\
-Postrun outputs & complete & final postrun metrics and CI tables present & \texttt{final\allowbreak\_fix24\allowbreak\_all\allowbreak\_external\allowbreak\_postrun} root \\
-Bootstrap method & complete & 5000 resamples; pooled + source-stratified summaries & \texttt{bootstrap\allowbreak\_ci\allowbreak\_summary.csv} \\
-Policy code files & complete & \texttt{support\allowbreak\_aware\allowbreak\_selector.py}, \texttt{cluster\allowbreak\_answer\allowbreak\_selector.py}, \texttt{robust\allowbreak\_answer\allowbreak\_parser.py} & \texttt{experiments/} \\
+Output roots & complete & major roots enumerated & supplementary package + \nolinkurl{LATEST_RESULTS_AND_CLAIMS.md} \\
+Disjointness proofs & complete & source overlaps $= 0$ & \nolinkurl{final_postrun_metrics.json} checks \\
+Dry-run logs & complete & dry-run plans present for all validation runs & \nolinkurl{dry_run_call_plan.log} \\
+Postrun outputs & complete & final postrun metrics and CI tables present & \nolinkurl{final_fix24_all_external_postrun} root \\
+Bootstrap method & complete & 5000 resamples; pooled + source-stratified summaries & \nolinkurl{bootstrap_ci_summary.csv} \\
+Offline reproduction & complete & reported metrics/tables reproducible from processed artifacts without new API calls & reviewer package + no-API table scripts \\
+Reviewer package contents & complete & quickstart, environment specs, manifests, per-example outputs, summaries, bootstrap files & submission package inventory \\
+Excluded/redacted material & complete & no API keys, secrets, \texttt{.env} files, private credentials, or unrelated local files & package policy \\
+Live regeneration boundary & partial & full raw-output reruns require commercial credentials and may vary at replay time & provider access + live service behavior \\
+Policy code files & complete & key selector / parser files listed & \nolinkurl{experiments/} \\
 Tests & partial & policy/parser tests present; not all scripts formalized as tests & \texttt{tests/} \\
-Ablation variants & complete & FIX-5/6/7/8/9 documented with negative or insufficient evidence & Table~\ref{tab:negative_results} + supplementary documentation \\
+Ablation variants & complete & Additional development variants are documented with negative or insufficient evidence & Table~\ref{tab:negative_results} + supplementary documentation \\
 Rerun requirements & partial & Provider API access required for live reruns & validation scripts/manifests \\
 \bottomrule
-\end{tabular}}
+\end{tabularx}
 \end{table*}

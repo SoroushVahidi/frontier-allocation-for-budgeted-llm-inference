@@ -4,6 +4,7 @@
 \paragraph{Reasoning-time sampling, search, and self-consistency.}
 Chain-of-thought prompting \citep{wei2022chain} and zero-shot chain-of-thought \citep{kojima2022large} showed that explicitly eliciting intermediate reasoning improves large-language-model performance on mathematical and symbolic tasks.
 Self-consistency extends this idea by sampling multiple reasoning paths and returning the most frequent final answer \citep{wang2023self}.
+Follow-up work studies broader consensus variants, including universal self-consistency across generated candidates \citep{chen2023universalselfconsistency}.
 Tree-structured reasoning methods, including Tree of Thoughts \citep{yao2023tree} and Graph of Thoughts \citep{besta2024graph}, further broaden inference-time exploration by organizing candidate reasoning paths into explicit search structures.
 Program-aided language-model reasoning similarly generates executable or semi-executable solution traces before extracting a final answer \citep{gao2023pal}.
 The present work is closest to this family in that it assumes multiple candidate answers and runtime traces are available, but it studies a different question: how to choose among already generated answers using gold-free execution metadata rather than selecting by raw frequency alone.
@@ -18,11 +19,18 @@ The contribution here is therefore not a new generation-time scaling law; it is 
 A complementary line of work trains verifiers or reward models to rerank candidate solutions.
 For GSM8K, \citet{cobbe2021training} showed that an outcome verifier can substantially improve answer selection when trained on labeled solution data.
 Process reward models provide finer-grained supervision by scoring intermediate reasoning steps rather than only final answers \citep{lightman2024lets}.
+Related lines include self-verification and iterative self-correction, where models critique or re-check their own outputs before finalizing an answer \citep{weng2023largelanguagemodelsbetter,madaan2023selfrefineiterativerefinementselffeedback}.
 Lightweight supervised text-classification frameworks such as SetFit can also support task-specific reranking when suitable labels are available \citep{tunstall2022efficient}.
 In contrast, the policy studied here does not train a verifier and does not use correctness labels at decision time; it relies on runtime-visible frontier metadata and agreement patterns among independently generated candidate answers.
+
+\paragraph{Ensembling, selective prediction, and calibration.}
+Classical ensemble methods establish why simple voting can be robust when model errors are partially independent \citep{dietterich2000ensemble}.
+Selective prediction methods formalize abstention or fallback on subsets where a primary predictor is less reliable \citep{geifman2017selectiveclassificationdeepneural}.
+Calibration work studies when confidence-like quantities are trustworthy enough for such selective decisions \citep{guo2017calibrationmodernneuralnetworks}.
+FTA is closer to this selective-routing view than to pure ensembling: it keeps the frontier default on most examples and overrides only on a small runtime-identifiable subset.
 
 \paragraph{Cost-aware routing, adaptive computation, and positioning.}
 Cost-aware routing systems such as FrugalGPT \citep{chen2023frugalgpt} and language-model cascades \citep{dohan2022language} reduce inference cost by deciding which model or stage to invoke for a given input.
 Adaptive computation methods make a related decision within a model or computation graph, allocating more processing to inputs that appear to require it \citep{graves2016adaptive}.
-The setting in this paper is different: the evaluated candidate-producing methods are compared under a matched per-method budget, and FIX-2+FIX-4 itself is a deterministic selection layer that issues no additional model calls once candidate answers and metadata are available.
+The setting in this paper is different: the evaluated candidate-producing methods are compared under a matched per-method budget, and Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) itself is a deterministic selection layer that issues no additional model calls once candidate answers and metadata are available.
 The resulting claim is intentionally narrow: on the tested Cohere/GSM8K setting, two runtime-legal signals---weak frontier traces and unanimous external disagreement---provide useful information for selecting among already generated answers.

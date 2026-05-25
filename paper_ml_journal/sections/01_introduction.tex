@@ -6,9 +6,10 @@ without additional model training~\citep{snell2024scaling}.
 By generating multiple candidate answers under a fixed budget and aggregating or
 selecting among them, a system can achieve accuracy gains comparable to those from
 model scaling, at inference time~\citep{wang2023self}.
-In settings where the inference budget is strictly matched---every compared method
-receives the same number of model calls per example---the quality of the final
-answer depends entirely on the selection rule applied to the already-generated pool.
+In settings where the inference budget is strictly matched per method---every compared
+candidate-producing method receives the same number of model calls per example---the
+quality of the final answer depends entirely on the selection rule applied to the
+already-generated pool.
 Majority vote treats all candidates equally; but generation runs produce metadata
 that is richer than raw candidate answers, and this metadata may carry signal about
 which candidates are more reliable.
@@ -23,13 +24,13 @@ provide reference answers under the same budget.
 Given these already-generated outputs, the goal is to select a final answer without
 additional inference calls and without using gold labels.
 
-The main contribution of this paper is \textbf{FIX-2+FIX-4} (Combined
-Failure-Trace-Guided Allocator), a deterministic two-gate policy that relies on
+The main contribution of this paper is \textbf{Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4)},
+a deterministic two-gate policy that relies on
 failure-trace metadata logged during normal frontier execution.
-The \textit{Low-Depth Guard} (FIX-2) fires when the frontier's
+The \textit{Low-Depth Guard} (LDG; implementation: FIX-2) fires when the frontier's
 \texttt{override\_reason} field signals a structurally weak single-branch output,
 substituting an external majority vote.
-The \textit{External-Consensus Fallback} (FIX-4) fires when all three external
+The \textit{External-Consensus Fallback} (ECO; implementation: FIX-4) fires when all three external
 baselines unanimously prefer a different answer than the frontier's selection.
 Both gates are strictly gold-free: no correctness labels, ground-truth answers, or
 example identifiers are accessed at decision time.
@@ -37,28 +38,33 @@ The two gates operate in strict priority order; at most one fires per example.
 
 On a disjoint Aggregate-720 combining three independent evaluation seeds (seeds 41,
 61, 71; $300 + 120 + 300$ examples with zero example-id or question-hash overlap),
-FIX-2+FIX-4 achieves 80.69\% accuracy versus 77.64\% (L1), 77.08\% (S1), and
+Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) achieves 80.69\% accuracy versus 77.64\% (L1), 77.08\% (S1), and
 75.14\% (TALE).
 Source-stratified 95\% bootstrap confidence intervals are strictly positive for all
 four pairwise comparisons, including versus the source-local best external
 (CI lower bound $+1.11$~pp).
 We also report a stronger pooled-answer ensemble baseline over frontier, L1, S1,
-and TALE; FIX-2+FIX-4 remains ahead by point estimate on Final-300 and
-Aggregate-720, but that comparison is not statistically separated.
+and TALE; FTA remains ahead by point estimate on Final-300 and Aggregate-720, but
+that comparison is not statistically separated.
+Accordingly, the paper's claim is not broad superiority over ensembling; it is that
+gold-free failure-trace metadata can identify selective recovery cases under a
+matched per-method budget contract.
+This contract is an evaluation design: generating frontier+L1+S1+TALE from scratch
+is not equivalent to a single six-call run.
 All claims are explicitly scoped to the tested provider and benchmark; we make no
 universal generalization claims.
 
 We also document five not retained prototypes (FIX-5 through FIX-9) evaluated
 against the same criteria, following a protocol that separates exploratory
-development from main evidence.
+development from validation evidence.
 These are reported as negative or insufficient results in Section~\ref{sec:ablation}
 and Table~\ref{tab:negative_results}.
 
 The remainder of the paper is organized as follows.
 Section~\ref{sec:related_work} reviews related work on test-time compute scaling,
 verifier-guided reranking, and cost-aware routing.
-Section~\ref{sec:method} specifies FIX-2+FIX-4 precisely, including exact trigger
-conditions and pseudocode.
+Section~\ref{sec:method} specifies FTA precisely, including exact trigger
+conditions and a policy summary table.
 Sections~\ref{sec:experiments} and~\ref{sec:results} describe the evaluation
 protocol and report results with full confidence intervals.
 Section~\ref{sec:ablation} summarizes ablation variants and not retained outcomes.

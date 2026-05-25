@@ -2,13 +2,13 @@
 \label{sec:discussion}
 
 \paragraph{Why failure-trace-guided gating works.}
-The two gates in FIX-2+FIX-4 target failure modes that are identifiable at runtime
+The two gates in Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) target failure modes that are identifiable at runtime
 without any access to gold labels.
-The Low-Depth Guard (FIX-2) addresses a structural weakness: when the frontier search
+The Low-Depth Guard (LDG; implementation: FIX-2) addresses a structural weakness: when the frontier search
 terminates with a \textit{single weak branch}---signalled by the \texttt{override\_reason}
 field---the resulting answer is drawn from a narrow slice of the candidate space.
 In such cases, the external majority vote is empirically more reliable.
-The External-Consensus Fallback (FIX-4) targets a different pattern: when the
+The External-Consensus Fallback (ECO; implementation: FIX-4) targets a different pattern: when the
 direct-agreement trigger fires---signalling that the frontier selected its own answer
 confidently---yet all three independent external baselines unanimously prefer a different
 answer, that unanimous disagreement constitutes strong evidence that the frontier is wrong.
@@ -21,24 +21,24 @@ equalling TALE performance exactly on both splits (80.33\% and 54.17\%,
 respectively).
 On seed~71 (Final-300), FIX-5 made one net positive switch over TALE
 (78.67\% vs.\ 78.33\%), a difference of a single example that is negligible
-compared to the $+8.33$~pp advantage of FIX-2+FIX-4 over TALE on the same split.
+compared to the $+8.33$~pp advantage of Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) over TALE on the same split.
 The TALE-default design assumed a reliable agreement region that did not materialise
 consistently across evaluation seeds, making the router effectively inactive in most
 conditions.
 
-FIX-6/LoVEC proposed collecting extra frontier or TALE-retry actions for predicted
+FIX-6 (extra-action variant) proposed collecting extra frontier or TALE-retry actions for predicted
 failure cases.
 The first 40-case overlapping pilot showed nonnegative action-value signal, but
-the independent 80-case Stage-2 relaunch (disjoint from the pilot) yielded
-net $-1$ for extra frontier actions and net $-4$ for extra TALE retries relative to FIX-2+FIX-4,
-with non-trivial control-slice regressions (8.9\% for frontier, 11.1\% for TALE retry).
+an independent 80-case follow-up (disjoint from the pilot) yielded
+net $-1$ for extra frontier actions and net $-4$ for extra TALE retries relative to Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4),
+with meaningful regressions on the corresponding control slices (8.9\% for frontier, 11.1\% for TALE retry).
 The failure to replicate on disjoint data is the key indicator: the pilot signal
 appears to have been artefact-specific rather than generalisable.
 
 FIX-7 (cluster-level selector) showed only limited positive movement in offline replay,
 with a best-rule local gain of $+0.67$~pp on final-300, but it did not provide
-promotion-grade aggregate evidence or a robust policy improvement and was therefore
-not promoted.
+validation-grade aggregate evidence or a robust policy improvement and was therefore
+not retained.
 FIX-8 (robust parser/canonicaliser) produced zero accuracy-changing switches on
 final-300 and aggregate-720.
 Taken together, these outcomes indicate that the targeted residual patterns are either
@@ -51,10 +51,10 @@ at $[-0.48, +5.71]$) to the disjoint Aggregate-720 evidence (seeds 41, 61, 71).
 By combining three independently sampled unbiased evaluation splits, the stratified
 bootstrap CI narrows sufficiently that the lower bound vs.\ every external baseline
 is strictly positive.
-This is not simply a power argument: the source-stratified design controls for
+The source-stratified design controls for
 seed-specific variance, and the zero-overlap check on example-id and question-hash
 confirms independence.
-The result is that the point-estimate advantage of FIX-2+FIX-4 is consistent across
+The result is that the point-estimate advantage of Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) is consistent across
 all three seeds, which is the primary reason the aggregate CIs no longer include zero.
 
 \paragraph{Evidence scope and generalization.}
@@ -64,7 +64,7 @@ whether the same failure-trace signals are informative on other providers,
 benchmarks, or budget levels is an open empirical question.
 Existing repository artifacts include earlier MATH-500, AIME, OpenAI/Cohere, and
 budget-sweep outputs, but these do not contain the same four-method per-example
-records and frontier trace metadata needed to replay FIX-2+FIX-4 under the current
+records and frontier trace metadata needed to replay Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) under the current
 protocol.
 They are therefore unsuitable as a clean second benchmark/provider/budget result
 for this manuscript without new matched-budget generation.

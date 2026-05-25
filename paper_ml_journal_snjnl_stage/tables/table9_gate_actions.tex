@@ -1,12 +1,12 @@
 \begin{table*}[t]
 \centering
-\caption{Gate-action decomposition for the promoted FIX-2+FIX-4 policy. FIX-4 fires only after FIX-2 does not fire. The final columns report correctness before and after FIX-4 on the examples where FIX-4 fires, relative to the original frontier answer.}
+\caption{Gate-action decomposition for the final Failure-Trace Allocator (FTA) policy. External-Consensus Fallback (ECO) fires only after Low-Depth Guard (LDG) does not fire. The final columns report correctness before and after ECO on the examples where ECO fires, relative to the original frontier answer.}
 \label{tab:gate_actions}
 \scriptsize
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrrr}
 \toprule
-Split & $N$ & FIX-2 fires & FIX-4 fires & No gate & FIX-4 before & FIX-4 after & FIX-4 W/L/T \\
+Split & $N$ & Low-Depth Guard (LDG) fires & ECO fires & No gate & ECO before & ECO after & ECO W/L/T \\
 \midrule
 seed41 & 300 & 38 & 2 & 260 & 0/2 & 2/2 & 2/0/0 \\
 seed61 & 120 & 21 & 0 & 99 & 0/0 & 0/0 & 0/0/0 \\

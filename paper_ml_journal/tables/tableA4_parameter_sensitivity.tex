@@ -1,6 +1,6 @@
 \begin{table}[H]
 \centering
-\caption{Parameter grounding for FIX-2+FIX-4 and the evaluation protocol. We report parameter grounding and available robustness checks rather than a full continuous hyperparameter sweep; a full threshold sweep is left for future work. All values are fixed and applied identically across all evaluated splits.}
+\caption{Parameter grounding for Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) and the evaluation protocol. We report parameter grounding and available robustness checks rather than a full continuous hyperparameter sweep; a full threshold sweep is left for future work. All values are fixed and applied identically across all evaluated splits.}
 \label{tab:param_sensitivity}
 \scriptsize
 \resizebox{\textwidth}{!}{%
@@ -33,7 +33,7 @@ $\wedge$ \texttt{pool\_group\_count}$\geq 2$ \newline
   Condition derived from offline evaluation review; trigger counts in supplementary artifacts. &
   No continuous threshold sweep. \\
 \addlinespace
-External-consensus condition (FIX-4): \texttt{l1}$=$\texttt{s1}$=$\texttt{tale} $\wedge$ all $\neq$ frontier \newline
+External-consensus condition (External-Consensus Fallback (ECO, implementation: FIX-4)): \texttt{l1}$=$\texttt{s1}$=$\texttt{tale} $\wedge$ all $\neq$ frontier \newline
   \textit{(unanimity gate)} &
   Identifies unanimous external agreement diverging from frontier.
   Unanimity is a strong, conservative signal; partial agreement is not acted on. &
@@ -66,8 +66,8 @@ Provider / model \newline \textit{(Cohere command-r-plus-08-2024)} &
 \addlinespace
 External tie fallback \newline \textit{(TALE$\succ$S1$\succ$L1)} &
   Deterministic gold-free fallback when L1, S1, and TALE all disagree.
-  Retained as the fixed promoted-policy convention rather than optimized on Aggregate720. &
-  Alternative FIX-2-only replays on Aggregate720 give 80.14\% for S1-first and 80.42\% for L1-first; frontier fallback on all-different external ties gives 80.83\%. &
+  Retained as the fixed retained-policy convention rather than optimized on Aggregate720. &
+  Alternative Low-Depth Guard (LDG, implementation: FIX-2)-only replays on Aggregate720 give 80.14\% for S1-first and 80.42\% for L1-first; frontier fallback on all-different external ties gives 80.83\%. &
   Tie order is not separately validated as an optimal policy. \\
 \bottomrule
 \end{tabular}}

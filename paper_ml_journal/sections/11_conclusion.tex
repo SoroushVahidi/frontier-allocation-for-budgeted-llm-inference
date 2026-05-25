@@ -1,28 +1,28 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented FIX-2+FIX-4, a deterministic gold-free policy gating method for
+We presented Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4), a deterministic gold-free policy gating method for
 matched-budget LLM reasoning.
 On a disjoint 720-example aggregate evaluation (three independent seeds, zero overlap),
-FIX-2+FIX-4 achieves 80.69\% (581/720) versus L1 77.64\%, S1 77.08\%, and TALE 75.14\%.
+Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) achieves 80.69\% (581/720) versus L1 77.64\%, S1 77.08\%, and TALE 75.14\%.
 Source-stratified 95\% bootstrap confidence intervals are strictly positive for all four
 baseline comparisons, with the lower bound vs.\ best external at $+1.11$ pp.
-On the Final-300 evaluation (seed 71, budget 6), FIX-2+FIX-4 reaches 86.67\% (260/300),
+On the Final-300 evaluation (seed 71, budget 6), Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) reaches 86.67\% (260/300),
 compared to 83.00\% for L1, 82.00\% for S1, and 78.33\% for TALE.
 
 The policy consists of two rule-based gates applied in strict priority order.
-The Low-Depth Guard (FIX-2) detects structurally weak frontier search branches using the
+The Low-Depth Guard (LDG; implementation: FIX-2) detects structurally weak frontier search branches using the
 logged \texttt{override\_reason} field and substitutes the external majority vote.
-The External-Consensus Fallback (FIX-4) identifies cases where all three external
+The External-Consensus Fallback (ECO; implementation: FIX-4) identifies cases where all three external
 baselines unanimously disagree with the frontier's selection, overriding to the
 consensus answer.
 Both gates are gold-free: no correctness labels, example identifiers, or artifact
 paths are accessed at runtime.
 The rules, trigger conditions, and exact field names are fully specified in
-Table~\ref{tab:policy_rules} and Algorithm~\ref{alg:fix24}, with reproducibility
+Table~\ref{tab:policy_rules} and Table~\ref{alg:fix24}, with reproducibility
 details documented in the appendix and supplementary artifact.
 
-Further accuracy gains in this setting will most likely require advances in candidate
+Further accuracy gains in this setting are likely to require advances in candidate
 generation rather than selection policy.
 Failure analysis of the 40 residual errors on Final-300 shows that 24 (60\%) are
 \textit{all-methods-wrong} cases in which no evaluated method produced the correct answer;

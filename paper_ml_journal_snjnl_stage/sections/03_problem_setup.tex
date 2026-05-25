@@ -1,5 +1,21 @@
 \subsection{Problem Setup}
-We consider method selection under a fixed per-method budget parameter (budget $=6$) on Cohere command-r-plus-08-2024 runs over \texttt{openai/gsm8k} examples. GSM8K, a grade-school math benchmark, was introduced by \citet{cobbe2021training} and provides 1,319 test problems with numerical final answers that are amenable to exact-match evaluation. For each example, candidate-producing methods produce final-answer candidates under the same provider, model, and budget cap. The objective is to maximize exact-match accuracy without using gold labels at runtime.
+We consider post-generation answer selection under a fixed per-method budget
+parameter (budget $=6$) on Cohere command-r-plus-08-2024 runs over
+\texttt{openai/gsm8k} examples. GSM8K, a grade-school math benchmark, was
+introduced by \citet{cobbe2021training} and provides 1,319 test problems with
+numerical final answers that are amenable to exact-match evaluation. For each
+example, candidate-producing methods produce final-answer candidates under the
+same provider, model, and budget cap, together with method-specific runtime
+metadata. A downstream selector then chooses a final answer from those
+already-generated candidates. The objective is to maximize exact-match accuracy
+without using gold labels at runtime.
+
+This framing separates \emph{candidate generation} from \emph{answer selection}.
+Candidate producers are the methods that spend the matched budget to generate
+answers. The selector is a post-generation policy that observes candidate answers
+and runtime-visible metadata and may either keep the default frontier answer or
+defer to another answer source. No new reasoning branches are sampled during this
+selection step.
 
 The frontier method is a direct-reserve semantic frontier generator. At a high
 level, it allocates the fixed budget across a small set of direct-reserve attempts
@@ -8,16 +24,22 @@ groups, and selects a default frontier answer from the resulting candidate pool.
 During this execution it records runtime trace metadata: answer-group counts,
 support for the selected frontier group, whether the direct-reserve answer agrees
 with the frontier answer, and an \texttt{override\_reason} field summarizing why
-the frontier selector committed to its final answer. The allocator proposed in this
+the frontier selector committed to its final answer. The selector proposed in this
 paper treats those metadata as diagnostics, not as correctness labels.
 
 Two \texttt{override\_reason} values are central. The value
 \texttt{single\_weak\_frontier\_branch} is emitted when the selected frontier
 answer is supported by a narrow or weak frontier trace, which suggests limited
-exploration of alternative answer groups in this evaluated setting. The value
+exploration of alternative answer groups. The value
 \texttt{direct\_frontier\_agree} is emitted when the direct-reserve and frontier
 answers agree internally. Both fields are produced before any comparison to the
 gold answer; they are therefore runtime-visible and gold-free.
+
+The selective-deferral view of the problem is therefore: given a candidate pool
+and associated runtime-observable features, identify a subset of examples on which
+retaining the frontier answer is less reliable than deferring to another answer
+source. In this manuscript, the alternative sources are the three external
+baselines L1, S1, and TALE, and the final selector is deterministic.
 
 Evaluation is reported on:
 \begin{itemize}
@@ -30,7 +52,7 @@ Evaluation is reported on:
 \label{sec:terminology}
 
 The following terms are used consistently throughout the paper.
-Where helpful for readability, we use short paper-facing names and keep the corresponding implementation identifiers in Table~\ref{tab:name_mapping} for reproducibility.
+Where helpful for readability, we use short manuscript names and keep the corresponding implementation identifiers in Table~\ref{tab:name_mapping} for reproducibility.
 
 \begin{description}[leftmargin=2.2cm, labelwidth=2cm, labelsep=0.2cm, style=nextline]
   \item[Candidate pool] The set of final answers produced by the available methods (frontier and external baselines) for a given example. Candidate-pool construction is separate from the downstream selection policy.
@@ -44,6 +66,6 @@ Where helpful for readability, we use short paper-facing names and keep the corr
   \item[Matched budget] All compared candidate-producing methods operate under the same per-method budget cap $B$, ensuring that accuracy differences are not confounded by unequal per-method computational limits. If a deployment generates frontier, L1, S1, and TALE outputs from scratch, its total wall-clock and API cost depends on which producers are executed.
   \item[Postrun replay] Offline re-evaluation of a previously generated run artifact using a policy rule without issuing new provider API calls. Postrun replay is used to compute policy-specific accuracy from existing logs.
   \item[Gold-free runtime feature] Any input to a policy decision rule that is derived solely from model outputs, run metadata, or structural properties of the candidate pool---never from gold labels, exact-match signals, or correctness indicators.
-  \item[Promotion-grade evidence] Evidence collected on held-out evaluation sets that were not used during rule development, meeting the disjointness, seed-independence, and aggregate scale criteria documented in Section~\ref{sec:experiments}.
+  \item[Held-out evaluation evidence] Evidence collected on evaluation sets that were not used during rule development, meeting the disjointness, seed-independence, and aggregate-scale criteria documented in Section~\ref{sec:experiments}.
   \item[Provider-specific evidence] Results obtained from a particular provider--model pairing (here, Cohere command-r-plus-08-2024). Claims are explicitly scoped to this setting and do not generalize beyond it without additional replication.
 \end{description}

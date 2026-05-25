@@ -13,7 +13,7 @@ recover these cases; they represent a hard ceiling for the current approach.
 correct numerical answer was present in the pool but not extracted or matched, due
 to format mismatches between the model's output format and the evaluation matcher.
 \emph{Present-not-selected} cases (4/40, 10.0\%) are cases where the correct
-answer was available in the pool but the FIX-2+FIX-4 rule chain did not surface it.
+answer was available in the pool but the Failure-Trace Allocator (FTA) rule chain did not surface it.
 
 Within the all-methods-wrong category, the dominant subtype is
 \emph{multi-step composition traps} (10/24), problems where the error is embedded
@@ -24,13 +24,14 @@ incorrect answer---account for most of the remainder.
 False-consensus cases are the most resistant to any selection-based intervention:
 unanimous agreement provides no gating signal when the consensus itself is wrong.
 
-These findings directly inform the scope of FIX-2+FIX-4 and the directions for
+These findings directly inform the scope of Failure-Trace Allocator (FTA) and the directions for
 future work.
 The all-methods-wrong class (60\% of failures) is generation-limited: addressing it
-requires either stronger base generators or training-time interventions that improve
+may require either stronger base generators or training-time interventions that improve
 coverage of hard compositional patterns, not better post-hoc selection policies.
 The parser/canonicalization class (30\% of failures) is potentially tractable with
-improved answer normalization; however, the FIX-8 prototype produced zero
+improved answer normalization; however, the robust-parser variant reported in
+Table~\ref{tab:negative_results} produced zero
 accuracy-changing switches in this setting, suggesting the problem is subtler than
 simple string-matching improvements.
 The present-not-selected class (10\% of failures) represents the only residual

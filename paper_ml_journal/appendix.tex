@@ -20,14 +20,14 @@ The following tables give the per-example win/loss/tie decomposition
 \subsection*{Parameter Grounding and Sensitivity}
 
 Table~\ref{tab:param_sensitivity} documents the key parameters and design choices
-used in FIX-2+FIX-4, including their values, roles, and available robustness evidence.
+used in Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4), including their values, roles, and available robustness evidence.
 
 \input{tables/tableA4_parameter_sensitivity}
 
 \clearpage
 \subsection*{Runtime Feature Legality}
 
-Table~\ref{tab:feature_legality} lists all features used by FIX-2+FIX-4 at
+Table~\ref{tab:feature_legality} lists all features used by Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) at
 inference time and confirms their gold-free status.
 
 \input{tables/tableA5_feature_legality}
@@ -43,17 +43,17 @@ implementation identifiers, roles, runtime availability, and gold-free status.
 \section*{Data Availability}
 The GSM8K benchmark questions used for evaluation are available from the original source
 \citep{cobbe2021training}. A supplementary reproducibility package is included with this
-submission. Upon acceptance, the processed evaluation artifacts supporting the reported
-tables and figures will be made publicly available in a versioned repository, preferably
-with a persistent identifier such as a Zenodo DOI. Additional processed artifacts can be
-provided to reviewers upon request.
+submission and contains the processed evaluation artifacts used to generate the reported
+tables and figures (including aggregate summaries, paired comparison tables, and run manifests).
+The reported Aggregate-720 accuracy (80.69\%) and associated confidence-interval tables can be
+reproduced from these processed artifacts without issuing new provider API calls.
+No API keys, credentials, or other secrets are included in the supplementary package.
 
 \section*{Code Availability}
-The implementation of the proposed allocator and evaluation scripts will be made publicly
-available upon acceptance in a versioned repository, preferably with a persistent
-identifier such as a Zenodo DOI. The supplementary reproducibility package included with
-this submission contains the processed artifacts needed to inspect the reported results.
-Live reruns require provider API access to Cohere command-r-plus-08-2024.
+The supplementary package includes the code paths and scripts used for policy replay and
+evaluation of the reported artifacts. Live regeneration of candidate answers requires
+provider API access to Cohere command-r-plus-08-2024; however, the manuscript's reported
+post-generation analyses are reproducible offline from the supplied processed artifacts.
 
 \section*{Funding}
 This work was supported by Cohere research API credits. No other specific grant

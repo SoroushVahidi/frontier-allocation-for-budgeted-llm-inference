@@ -44,13 +44,13 @@
 \node[font=\footnotesize, align=center] at (4.1, -0.6)
 {Paper-facing trigger names map to implementation identifiers in Table~\ref{tab:name_mapping}.};
 \end{tikzpicture}
-\caption{Failure-trace-guided allocator (FIX-2+FIX-4). The allocator first checks
-the weak-frontier trigger (Low-Depth Guard, FIX-2): if it fires, the policy uses the
+\caption{Failure-trace-guided allocator (Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4)). The allocator first checks
+the weak-frontier trigger (Low-Depth Guard, Low-Depth Guard (LDG, implementation: FIX-2)): if it fires, the policy uses the
 external majority answer. Otherwise it checks the direct-agreement trigger
-(External-Consensus Fallback, FIX-4): when all external baselines unanimously disagree
+(External-Consensus Fallback, External-Consensus Fallback (ECO, implementation: FIX-4)): when all external baselines unanimously disagree
 with the frontier answer, the policy uses the external unanimous answer. If neither
 trigger fires, the frontier answer is retained. No gold labels or correctness signals
 are accessed at any step. Paper-facing trigger names map to implementation identifiers
 in Table~\ref{tab:name_mapping}.}
-\label{fig:method_overview}
+\label{backup:fig:method_overview_placeholder}
 \end{figure*}

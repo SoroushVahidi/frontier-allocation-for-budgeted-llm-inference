@@ -1,19 +1,19 @@
-\begin{table}[t]
+\begin{table*}[t]
 \centering
-\caption{Win/loss/tie decomposition for FIX-2+FIX-4 versus each external baseline on
-Final-300 (seed 71, budget 6, $n=300$). A win is a case where FIX-2+FIX-4 is correct
+\caption{Win/loss/tie decomposition for Failure-Trace Allocator (FTA) versus each external baseline on
+Final-300 (seed 71, budget 6, $n=300$). A win is a case where FTA is correct
 and the baseline is not; a loss is the reverse; a tie is when both policies agree on
-correctness. The low loss counts confirm that FIX-2+FIX-4 recoveries substantially
+correctness. The low loss counts confirm that FTA recoveries substantially
 outweigh regressions, particularly vs.\ TALE.}
 \label{tab:wlt}
 \small
-\begin{tabular}{lccc}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}Xccc@{}}
 \toprule
 Comparison & Wins & Losses & Ties \\
 \midrule
-FIX-2+FIX-4 vs L1   & 19 & 8 & 273 \\
-FIX-2+FIX-4 vs S1   & 23 & 9 & 268 \\
-FIX-2+FIX-4 vs TALE & 27 & 2 & 271 \\
+FTA vs.\ L1   & 19 & 8 & 273 \\
+FTA vs.\ S1   & 23 & 9 & 268 \\
+FTA vs.\ TALE & 27 & 2 & 271 \\
 \bottomrule
-\end{tabular}
-\end{table}
+\end{tabularx}
+\end{table*}

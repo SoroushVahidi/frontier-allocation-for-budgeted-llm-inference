@@ -42,8 +42,8 @@
 % frontier: go right then up to final.south
 \draw[arr] (front.east)  -| (final.south);
 \node[font=\footnotesize, align=center] at (4.1, -0.6)
-{Paper-facing trigger names map to implementation identifiers in Table~\ref{tab:name_mapping}.};
+{Journal-facing trigger names map to implementation identifiers in Table~\ref{tab:name_mapping}.};
 \end{tikzpicture}
-\caption{Overview of the failure-trace-guided allocator. The policy first checks the weak-frontier trigger; if it fires, the external majority answer is selected. Otherwise, the policy checks the direct-agreement trigger; if all external baselines unanimously disagree with the frontier answer, the unanimous external answer is selected. If neither trigger fires, the frontier answer is retained. Paper-facing trigger names map to implementation identifiers in Table~A6.}
+\caption{Overview of the Failure-Trace Allocator (FTA) selective-deferral policy. The policy first checks the weak-frontier trigger; if it fires, the external majority answer is selected. Otherwise, the policy checks the direct-agreement trigger; if all external baselines unanimously disagree with the frontier answer, the unanimous external answer is selected. If neither trigger fires, the frontier answer is retained. Journal-facing trigger names map to implementation identifiers in Table~A6.}
 \label{fig:method_overview}
 \end{figure*}
