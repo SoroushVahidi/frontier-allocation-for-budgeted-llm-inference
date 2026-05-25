@@ -1,6 +1,6 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-20 (final FIX-2+FIX-4 all-external postrun completed; aggregate-720 claim decision updated; FIX-8 parser prototype evaluated offline)
+**Last updated:** 2026-05-24 (FTA/LDG/ECO terminology adopted in paper draft; XGB53 parallel router track validated; Cohere MATH aux generation in progress)
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
 
@@ -8,7 +8,7 @@ This document is the canonical single-page record of the most recent empirical r
 
 ## 0. Current Operational Checkpoint
 
-- Current best effective policy: **FIX-2+FIX-4**.
+- Current best effective policy: **FIX-2+FIX-4** (paper name: **Failure-Trace Allocator / FTA**; FIX-2 = Low-Depth Guard / LDG; FIX-4 = External-Consensus Fallback / ECO). Implementation names in code and artifacts remain FIX-2/FIX-4/FIX-2+FIX-4.
 - **FIX-5 is not promoted** as the current best policy after unbiased validation.
 - **FIX-6 / LoVEC extra-action is not promoted** after the independent Stage-2 relaunch.
 - **FIX-7 is an offline prototype only** (no runtime promotion claim).
@@ -20,6 +20,28 @@ This document is the canonical single-page record of the most recent empirical r
 - Budget-accounting boundary: the matched-budget claim is a per-method evaluation contract (`B=6` logical calls per candidate-producing method). FIX-2+FIX-4 is a post-generation selector and adds no model calls after candidate answers and frontier metadata are available. Do not claim that generating the full frontier/L1/S1/TALE pool from scratch costs only one six-call run.
 - Tie-breaker boundary: the TALE > S1 > L1 external fallback is a fixed deterministic convention for all-different external answers, not an optimized learned ranking. Aggregate-720 FIX-2-only sensitivity gives 80.00% under TALE-first, 80.14% under S1-first, 80.42% under L1-first, and 80.83% under frontier fallback for all-different external ties.
 - Unsafe current claim: do not extrapolate beyond this benchmark setting without additional independent runs.
+
+## 0B. Parallel / Exploratory Tracks (2026-05-24)
+
+These are active research tracks that are **NOT paper-facing end-to-end accuracy claims**.
+
+### XGB53 Learned Router (validated 2026-05-24)
+
+- **Script:** `scripts/validate_xgb53_router_v2_tmux.py`
+- **Report:** `docs/XGB53_ROUTER_V2_TMUX_VALIDATION_20260524.md`
+- **Repeated CV accuracy (20 seeds):** 83.21% ± 0.26% (CI95 ±0.11%)
+- This is a 5-target method-selection classification accuracy, **not** a GSM8K end-to-end accuracy.
+- All 53 features passed the runtime-legal leakage audit; fold-safe calibration confirmed.
+- LOSO: 80.83% | Provider-heldout: 80.38% | Dataset-heldout: 80.48%
+- **Do not compare to FTA Final-300/Aggregate-720 numbers directly** — different tasks.
+- A separate held-out end-to-end validation run is required before any paper claim update.
+
+### Cohere MATH Auxiliary Generation (launched 2026-05-25, in progress)
+
+- **Session:** `cohere_math_train_aux_20260525T001141Z`
+- **Goal:** 200 non-official MATH-500 examples × 4 methods = 800 Cohere calls
+- **Purpose:** Expand router training data to address MATH-domain weakness in XGB53
+- **Status:** Running (~83/800 scored as of last check)
 
 ---
 
