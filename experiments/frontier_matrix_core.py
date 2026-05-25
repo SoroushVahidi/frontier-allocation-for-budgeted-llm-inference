@@ -91,6 +91,8 @@ def resolve_api_key_for_provider(provider: str) -> str | None:
         return os.getenv("GROQ_API_KEY")
     if p == "gemini":
         return os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    if p == "azure_openai":
+        return os.getenv("AZURE_OPENAI_API_KEY")
     return None
 
 

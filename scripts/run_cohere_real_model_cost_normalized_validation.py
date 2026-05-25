@@ -237,6 +237,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--openai-model", default="gpt-4o-mini")
     p.add_argument("--mistral-model", default="mistral-small-latest")
     p.add_argument("--cerebras-model", default="llama3.1-8b")
+    p.add_argument("--azure-model", default=os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4.1-mini"),
+                   help="Azure OpenAI deployment name (default: AZURE_OPENAI_DEPLOYMENT env var).")
     p.add_argument("--datasets", default=DEFAULT_DATASETS)
     p.add_argument("--budgets", default=DEFAULT_BUDGETS)
     p.add_argument("--seeds", default=DEFAULT_SEEDS)
@@ -512,7 +514,7 @@ def normalize_providers(args: argparse.Namespace) -> list[str]:
     else:
         providers = parse_csv_list(args.providers)
     normed = [p.strip().lower() for p in providers if p.strip()]
-    allowed = {"cohere", "openai", "cerebras", "mistral"}
+    allowed = {"cohere", "openai", "cerebras", "mistral", "azure_openai"}
     bad = [p for p in normed if p not in allowed]
     if bad:
         raise ValueError(f"Unsupported provider(s): {bad}; allowed={sorted(allowed)}")
@@ -1266,6 +1268,7 @@ def main() -> None:
         "openai": args.openai_model,
         "mistral": args.mistral_model,
         "cerebras": args.cerebras_model,
+        "azure_openai": args.azure_model,
     }
     provider_status: dict[str, dict[str, str]] = {}
     if args.summarize_only:
@@ -1283,6 +1286,17 @@ def main() -> None:
             elif provider == "mistral":
                 ok = bool(os.getenv("MISTRAL_API_KEY", ""))
                 reason = "api_key_present" if ok else "api_key_missing"
+            elif provider == "azure_openai":
+                ok = bool(os.getenv("AZURE_OPENAI_API_KEY")) and bool(os.getenv("AZURE_OPENAI_ENDPOINT"))
+                if ok:
+                    reason = "azure_openai_key_and_endpoint_present"
+                else:
+                    missing = []
+                    if not os.getenv("AZURE_OPENAI_API_KEY"):
+                        missing.append("AZURE_OPENAI_API_KEY")
+                    if not os.getenv("AZURE_OPENAI_ENDPOINT"):
+                        missing.append("AZURE_OPENAI_ENDPOINT")
+                    reason = f"azure_openai_missing_env_vars:{','.join(missing)}"
             else:
                 ok, reason = ensure_openai_readiness(timestamp=args.timestamp)
             provider_status[provider] = {"ready": "1" if ok else "0", "reason": reason}
@@ -1316,6 +1330,7 @@ def main() -> None:
         "openai": os.getenv("OPENAI_API_KEY", ""),
         "mistral": os.getenv("MISTRAL_API_KEY", ""),
         "cerebras": os.getenv("CEREBRAS_API_KEY", ""),
+        "azure_openai": os.getenv("AZURE_OPENAI_API_KEY", ""),
     }
     ov_verifier_env = {
         "DR_V2_OV_RERANK_VERIFIER_BACKEND": os.getenv("DR_V2_OV_RERANK_VERIFIER_BACKEND", ""),
@@ -1419,7 +1434,7 @@ def main() -> None:
                             budget,
                             [1],
                             rng,
-                            use_openai_api=(provider in {"openai", "mistral"}),
+                            use_openai_api=(provider in {"openai", "mistral", "azure_openai"}),
                             include_broad_diversity_aggregation_methods=True,
                             include_external_l1_baseline=True,
                             include_external_s1_baseline=True,
