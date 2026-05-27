@@ -1,0 +1,24 @@
+# Large/generated artifacts
+outputs/
+*.jsonl
+*.csv
+*.parquet
+*.pkl
+*.joblib
+*.log
+*.pdf
+*.zip
+*.tar
+*.tar.gz
+
+# Python/cache/env
+__pycache__/
+.ipynb_checkpoints/
+.pytest_cache/
+.cache/
+venv/
+.venv/
+modal-venv/
+
+# Git/system
+.git/

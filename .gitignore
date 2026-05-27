@@ -158,6 +158,13 @@ docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_*.md
 !outputs/hundred_hard_early_root_depth2_coverage_eval_*/
 !outputs/hundred_hard_early_root_depth2_coverage_eval_*/**/*
 !outputs/hundred_hard_early_coverage_depth2_vs_depth3_eval_*/
+
+# 2026-05-27 repo polish: keep local backups and bulky transient caches out of git.
+*.bak_*
+*.jsonl
+*.parquet
+*.pkl
+*.joblib
 !outputs/hundred_hard_early_coverage_depth2_vs_depth3_eval_*/**/*
 !outputs/hundred_conditional_depth3_gate_eval_*/
 !outputs/hundred_conditional_depth3_gate_eval_*/**/*
@@ -337,3 +344,4 @@ outputs/outcome_verifier_answer_group_selector_*/**/*.log
 outputs/outcome_verifier_answer_group_selector_*/**/logs/**
 outputs/outcome_verifier_answer_group_selector_*/**/progress_heartbeat.jsonl
 outputs/outcome_verifier_answer_group_selector_*/**/compressed_*.tar.gz
+.aider*
