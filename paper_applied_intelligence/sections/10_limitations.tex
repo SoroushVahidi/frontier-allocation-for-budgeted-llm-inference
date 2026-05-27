@@ -1,0 +1,78 @@
+\subsection{Limitations}
+\label{sec:limitations}
+
+We summarize what is established by the current evidence and then state the
+main scope boundaries explicitly.
+
+\paragraph{Established in this submission.}
+The policy is runtime-legal and gold-free by construction
+(Table~\ref{tab:feature_legality}); evaluation is disjoint by design across
+the Aggregate-720 sources; and FTA leads each individual external baseline
+(L1/S1/TALE) by point estimate with strictly positive source-stratified CI
+lower bounds on Aggregate-720.
+The pooled four-answer comparison is also reported and shows a closer gap
+whose confidence interval includes zero on both evaluation sets.
+
+\paragraph{Benchmark scope.}
+Results are scoped to GSM8K (\texttt{openai/gsm8k}) under the matched-budget
+protocol described in Section~\ref{sec:experiments}.
+No accuracy claim is made beyond this dataset and task family.
+
+\paragraph{Provider-specific scope.}
+All main evidence is obtained on Cohere command-r-plus-08-2024.
+The method is not claimed to generalize to other providers, model families,
+or API versions without independent replication.
+
+\paragraph{Seed~61 is failure-enriched.}
+The 120-example seed~61 split was used as a development seed and is
+failure-enriched: all four methods (frontier, L1, S1, TALE) fall to
+approximately 54--58\% accuracy on this split, substantially below the
+81--87\% range on seeds~41 and~71.
+Absolute accuracy estimates from seed~61 alone are therefore not
+representative of normal evaluation conditions.
+Seed~61 is included in Aggregate-720 for aggregate coverage, and the
+source-stratified confidence intervals account for its higher difficulty,
+but it should not be interpreted as an independent IID validation split.
+
+\paragraph{Pooled-ensemble comparison not statistically separated.}
+Against a pooled four-answer majority-vote ensemble (Pooled-4), FTA leads by
+point estimate on both evaluation sets ($+2.33$~pp on Final-300;
+$+0.83$~pp on Aggregate-720), but the paired bootstrap confidence interval
+includes zero in both cases: $[-0.67,\,+5.67]$ on Final-300 and
+$[-1.11,\,+2.78]$ on Aggregate-720.
+FTA cannot be claimed to be statistically superior to the pooled ensemble.
+This comparison is reported as a robustness check, not as a retained
+superiority claim.
+
+\paragraph{Budget scope and compute accounting.}
+The matched-budget claim is a per-method evaluation contract.
+Full candidate-pool construction requires $4 \times B = 24$ logical inference
+calls per example; FTA itself adds no post-generation model calls.
+Monetary cost depends on provider pricing and is outside the main comparison
+metric.
+
+\paragraph{D9 multi-provider evidence is supporting only.}
+The preliminary D9 experiment provides supporting evidence that the
+failure-trace signal may generalize across providers, but the evaluation is
+restricted to 80--160 examples per provider and uses cross-validation rather
+than a held-out test set at full scale.
+D9 findings are Tier~2 supporting evidence; they are not a second primary
+submission claim.
+
+\paragraph{Tie-breaker sensitivity.}
+The TALE$\succ$S1$\succ$L1 fallback used when all three external answers
+differ is deterministic and gold-free, but it is not claimed to be optimal.
+Alternative tie orders move Aggregate-720 replay by less than one percentage
+point in the available artifacts.
+
+\paragraph{Residual pool-miss failures.}
+A residual failure class exists in which all methods---frontier and external
+baselines---produce incorrect answers for the same example.
+The proposed policy cannot recover from this class, as no correct answer is
+present in the candidate pool.
+
+\paragraph{Not-retained variants.}
+Follow-up prototypes were explored during development but did not meet
+validation-grade evidence criteria.
+They are reported as negative results in Table~\ref{tab:negative_results} and
+are not part of the retained method.

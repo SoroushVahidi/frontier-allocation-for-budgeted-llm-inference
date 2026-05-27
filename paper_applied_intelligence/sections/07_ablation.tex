@@ -1,0 +1,49 @@
+\subsection{Ablation Study and Not-Retained Variants}
+\label{sec:ablation}
+
+We evaluate ablation and extension variants to test whether the retained
+two-gate policy can be improved by additional routing, extra-action,
+clustering, parsing, or pool-miss logic.
+Table~\ref{tab:ablation} summarizes the evaluated variants from FIX-1
+through FIX-9.
+All variants were evaluated via postrun replay on existing candidate
+artifacts; no additional inference calls were issued for ablation purposes.
+None of the variants met retention criteria beyond FTA, and they are
+reported to delimit the supported claim.
+
+\paragraph{Retained gate components.}
+LDG alone achieves 80.00\% on Aggregate-720 ($+2.36$~pp over the frontier
+baseline), confirming that the Low-Depth Guard carries most of the combined
+gain.
+ECO alone achieves 75.00\% on Final-300---below LDG---but contributes an
+additional $+0.69$~pp when combined with LDG, reflecting its role in
+recovering cases where LDG does not fire.
+FIX-3 (calibration on score-absent non-weak-frontier edge cases) was
+evaluated but applied to zero examples in the primary splits, contributing
+no accuracy change; it is excluded from the combined policy.
+
+\paragraph{Non-retained variants.}
+FIX-5 (TALE-default router) produced zero switches on seeds~41 and~61,
+equalling TALE performance on both splits, and only a marginal net positive
+switch on seed~71 ($+1$ example over TALE, Final-300 78.67\% vs.\ 78.33\%).
+This outcome is $-8.00$~pp below FTA on the same split.
+Note that the Aggregate-720 accuracy for FIX-5 (75.28\%) numerically
+coincides with that of the frontier baseline; this reflects the zero-switch
+behavior on seeds~41 and~61, not an equivalence by design.
+The TALE-default design assumed a reliable agreement region that did not
+materialise consistently across evaluation seeds; see
+Section~\ref{sec:discussion} for interpretation.
+FIX-6 (extra-action variant) showed a nonnegative pilot signal in the
+initial 40-case overlapping evaluation, but an independent 80-case follow-up
+yielded net $-1$ for extra frontier actions and net $-4$ for extra TALE
+retries relative to FTA.
+Early-stage signal that fails to replicate on disjoint data is the standard
+not-retained criterion.
+FIX-7 (cluster-level selector) achieved at most $+0.67$~pp in the best rule
+variant on Final-300, below the threshold for retention in the main method.
+FIX-8 (robust parser/canonicaliser) produced zero accuracy-changing switches
+on both Final-300 and Aggregate-720, indicating that parse-failure residuals
+are rare in this evaluation setting.
+FIX-9 (pool-miss detector) found 23 of 24 all-methods-wrong residuals to be
+generation-limited, with no selector-only remedy available; see the failure
+analysis in Section~\ref{sec:failure_analysis}.

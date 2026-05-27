@@ -1,0 +1,72 @@
+\appendix
+\section{Reproducibility and Supplementary Material}
+\label{sec:appendix_repro}
+This appendix collects reproducibility information, additional result decompositions,
+parameter grounding, runtime feature legality, and paper-facing name mappings.
+
+\input{tables/tableA1_reproducibility}
+
+\clearpage
+\subsection*{Additional Result Decompositions}
+
+The following tables give the per-example win/loss/tie decomposition
+(Table~\ref{tab:wlt}) and claim language guidance for manuscript writing
+(Table~\ref{tab:claim_language}).
+
+\input{tables/tableA2_win_loss_tie}
+\input{tables/tableA3_safe_unsafe_claims}
+
+\clearpage
+\subsection*{Parameter Grounding and Sensitivity}
+
+Table~\ref{tab:param_sensitivity} documents the key parameters and design choices
+used in Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4), including their values, roles, and available robustness evidence.
+
+\input{tables/tableA4_parameter_sensitivity}
+
+\clearpage
+\subsection*{Runtime Feature Legality}
+
+Table~\ref{tab:feature_legality} lists all features used by Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) at
+inference time and confirms their gold-free status.
+
+\input{tables/tableA5_feature_legality}
+
+\clearpage
+\subsection*{Paper-Facing Name Mapping}
+
+Table~\ref{tab:name_mapping} maps paper-facing short names to their
+implementation identifiers, roles, runtime availability, and gold-free status.
+
+\input{tables/tableA6_name_mapping}
+
+\section*{Data Availability}
+The GSM8K benchmark questions used for evaluation are available from the original source
+\citep{cobbe2021training}. A supplementary reproducibility package is included with this
+submission and contains the processed evaluation artifacts used to generate the reported
+tables and figures (including aggregate summaries, paired comparison tables, and run manifests).
+The reported Aggregate-720 accuracy (80.69\%) and associated confidence-interval tables can be
+reproduced from these processed artifacts without issuing new provider API calls.
+No API keys, credentials, or other secrets are included in the supplementary package.
+
+\section*{Code Availability}
+The supplementary package includes the code paths and scripts used for policy replay and
+evaluation of the reported artifacts. Live regeneration of candidate answers requires
+provider API access to Cohere command-r-plus-08-2024; however, the manuscript's reported
+post-generation analyses are reproducible offline from the supplied processed artifacts.
+
+\section*{Funding}
+This work was supported by Cohere research API credits. No other specific grant
+funding was received from any funding agency in the public, commercial, or
+not-for-profit sectors.
+
+\section*{Competing Interests}
+The authors declare no competing interests.
+
+\section*{Use of AI Tools}
+The author used ChatGPT, Cursor, Claude, GitHub Copilot, Cohere models, and Perplexity AI during parts of the coding, literature-search, manuscript-drafting, editing, and artifact-preparation workflow. These tools were used for assistance with code navigation, implementation support, language editing, reference discovery, and drafting support. All scientific claims, experimental design choices, code changes, analyses, reported results, citations, and final manuscript text were reviewed and approved by the author, who takes full responsibility for the content of the paper.
+
+\section*{Author Contributions}
+Soroush Vahidi: Conceptualization, Methodology, Software, Validation, Formal analysis,
+Investigation, Data curation, Writing --- original draft, Writing --- review and editing,
+Visualization.
