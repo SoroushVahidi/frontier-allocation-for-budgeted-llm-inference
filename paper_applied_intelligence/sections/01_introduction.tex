@@ -1,0 +1,92 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Scaling inference-time computation has emerged as a practical strategy for improving
+the accuracy of large language models on reasoning tasks without additional model
+training~\citep{snell2024scaling}.
+By generating multiple candidate answers under a fixed inference budget and selecting
+among them, a system can achieve accuracy gains comparable to those from model-parameter
+scaling, at inference time~\citep{wang2023self}.
+This reframes answer quality as an \emph{intelligent decision problem}: given a pool of
+already-generated candidates, which selection rule best exploits the available runtime
+information under cost constraints?
+
+In settings where the inference budget is \emph{matched per method}---every
+candidate-producing method receives the same number of model calls per example---the
+quality of the final answer depends entirely on the selection rule applied to the
+already-generated pool.
+Simple majority vote treats all candidates equally; yet a frontier generation run
+produces structured metadata---records of search depth, branch structure, and override
+events---that is richer than the raw candidates alone and may carry reliable signal
+about candidate trustworthiness.
+Exploiting such runtime-visible signals for dynamic selection is the core question
+studied here.
+
+We examine this question in a concrete, reproducible setting.
+The task is grade-school arithmetic reasoning on the GSM8K
+benchmark~\citep{cobbe2021training}, the provider is Cohere command-r-plus-08-2024,
+and the inference budget is $B = 6$ logical calls per example.
+A frontier generator produces candidate answers via program-aided
+execution~\citep{gao2023pal}; three independent external methods (L1, S1, and TALE)
+provide reference answers under the same budget cap.
+Given these already-generated outputs, the goal is to select a final answer without
+additional inference calls and without using gold labels.
+
+\paragraph{Contributions.}
+The main contribution is \textbf{Failure-Trace Allocator (FTA)}, a deterministic
+two-gate post-generation policy that uses failure-trace metadata logged during normal
+frontier execution:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item The \textit{Low-Depth Guard} fires when the frontier's execution trace signals
+        a structurally weak single-branch output, substituting an external majority-vote
+        answer.
+  \item The \textit{External-Consensus Fallback} fires when all three external baselines
+        unanimously disagree with the frontier's selected answer.
+\end{itemize}
+Both gates are strictly gold-free: no correctness labels, ground-truth answers, or
+example identifiers are accessed at decision time.
+The two gates operate in strict priority order; at most one fires per example.
+
+On the primary evaluation set of 300 disjoint examples (Final-300), FTA achieves
+\textbf{86.67\%} accuracy.
+On a disjoint Aggregate-720 combining three independent evaluation seeds (seeds 41,
+61, and 71; $300 + 120 + 300$ examples with zero overlap in example identifiers or
+question hashes), FTA achieves \textbf{80.69\%} accuracy versus 77.64\% (L1),
+77.08\% (S1), and 75.14\% (TALE).
+Source-stratified 95\% bootstrap confidence intervals are strictly positive for all
+four pairwise comparisons, including versus the best external source
+(CI lower bound $+1.11$~pp).
+As supporting evidence, a multi-provider regime-learning selector (D9) trained on the
+same failure-trace signal improves over the frontier under matched conditions with zero
+false-override events.
+FTA remains ahead of a pooled four-answer ensemble (frontier+L1+S1+TALE) by point
+estimate on both evaluation sets, but that comparison is not statistically separated.
+
+We also document five not-retained prototype variants evaluated against the same
+criteria; these are reported as negative or insufficient results in
+Section~\ref{sec:ablation} and Table~\ref{tab:negative_results}.
+
+\paragraph{Scope disclosures.}
+Four scope notes are integral to interpreting all claims in this paper.
+\emph{(i)} Confidence intervals are source-stratified bootstrap; the interval versus
+the pooled four-answer ensemble includes zero on both Final-300 and Aggregate-720,
+so superiority over ensembling is \emph{not} claimed.
+\emph{(ii)} The matched-budget contract is an evaluation design: constructing the full
+frontier+L1+S1+TALE pool from scratch corresponds to 24 logical calls per example,
+not six.
+\emph{(iii)} All evaluation and selection findings are scoped to GSM8K with the
+Cohere command-r-plus-08-2024 provider; generalization to other benchmarks or
+providers requires independent replication.
+\emph{(iv)} The 120-example evaluation set at seed 61 is failure-enriched by
+construction; results on seeds 41 and 71 serve as out-of-distribution checks.
+
+\paragraph{Paper organization.}
+Section~\ref{sec:related_work} reviews related work on test-time compute scaling,
+verifier-guided reranking, selective prediction, and cost-aware routing.
+Section~\ref{sec:method} specifies FTA precisely, including exact trigger conditions
+and a policy summary table.
+Sections~\ref{sec:experiments} and~\ref{sec:results} describe the evaluation protocol
+and report results with full confidence intervals.
+Section~\ref{sec:ablation} summarizes ablation variants and not-retained outcomes.
+Sections~\ref{sec:discussion}--\ref{sec:conclusion} discuss implications, limitations,
+and directions for future work.

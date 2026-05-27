@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering
+\caption{Source-by-source accuracy (\%) and aggregate context. Sensitivity source (seed 31) is a labeled auxiliary set, not part of retained Aggregate720 evidence. Bold denotes the best value within each source row (ties allowed).}
+\label{tab:source_by_source}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccccr}
+\toprule
+Source & Seed & $N$ & Frontier & Low-Depth Guard (LDG, implementation: FIX-2) & Low-Depth Guard (LDG, implementation: FIX-2)+4 & L1 & S1 & TALE & $\Delta$(Low-Depth Guard (LDG, implementation: FIX-2)+4 vs best ext.) \\
+\midrule
+main\_300\_seed41 & 41 & 300 & 81.00 & 82.67 & \textbf{83.33} & 80.33 & 80.33 & 80.33 & $+3.00$ \\
+independent\_120\_seed61 & 61 & 120 & 57.50 & \textbf{59.17} & \textbf{59.17} & 57.50 & 56.67 & 54.17 & $+1.67$ \\
+final\_300\_seed71 & 71 & 300 & 76.67 & 85.67 & \textbf{86.67} & 83.00 & 82.00 & 78.33 & $+3.67$ \\
+sensitivity\_100\_seed31 & 31 & 100 & 73.00 & 80.00 & \textbf{82.00} & 76.00 & 77.00 & \textbf{82.00} & 0.00 \\
+\midrule
+\textbf{Aggregate720 (primary)} & 41+61+71 & 720 & 75.28 & 80.00 & \textbf{80.69} & 77.64 & 77.08 & 75.14 & $\mathbf{+3.06}$ \\
+\bottomrule
+\end{tabular}}
+\end{table*}
