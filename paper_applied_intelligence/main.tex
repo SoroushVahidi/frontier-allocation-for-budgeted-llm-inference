@@ -14,7 +14,7 @@
 \usepackage{cleveref}
 \usepackage{enumitem}
 \usepackage{float}
-\usepackage{natbib}
+\usepackage[numbers]{natbib}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning}
 
@@ -26,9 +26,10 @@
 
 \author{Soroush Vahidi}
 
-\institute{Soroush Vahidi \at Department of Computer Science,
+\institute{Department of Computer Science,
 New Jersey Institute of Technology, Newark, NJ, USA \\
-\email{sv96@njit.edu}}
+\email{sv96@njit.edu} \\
+ORCID: \href{https://orcid.org/0000-0003-1934-6282}{0000-0003-1934-6282}}
 
 \date{}
 \maketitle
@@ -43,8 +44,9 @@ post-generation policy that exploits failure-trace metadata logged as a
 side-effect of the frontier generation run.
 The \emph{Low-Depth Guard} fires when the frontier search terminates on a
 structurally weak single branch, substituting an external majority-vote answer.
-The \emph{External-Consensus Fallback} fires when all three independent external
-baselines unanimously disagree with the frontier's selected answer.
+The \emph{External-Consensus Fallback} fires, as a low-frequency high-precision
+safeguard, when all three independent external baselines unanimously disagree
+with the frontier's selected answer.
 Both gates are strictly gold-free and issue no additional inference calls.
 
 We evaluate on the GSM8K benchmark~\citep{cobbe2021training} using
@@ -102,11 +104,12 @@ other providers or tasks requires independent replication.
 \section*{Acknowledgements}
 The author thanks Professor Ioannis Koutis for his support, guidance, and helpful
 discussions during this work. The author is also deeply grateful to his mother for
-her continuous support and encouragement. The author acknowledges Cohere for
-providing research API credits that supported the model-inference experiments in
-this study.
+her continuous support and encouragement. The author acknowledges Cohere and CloudRift AI for 
+providing research API credits that supported the model-inference experiments in this study. The 
+author also thanks Anders Borum for providing free lifetime access to Secure ShellFish, which 
+supported the remote research workflow.
 
-\bibliographystyle{spmpsci}
+\bibliographystyle{unsrtnat}
 \bibliography{refs}
 
 \clearpage

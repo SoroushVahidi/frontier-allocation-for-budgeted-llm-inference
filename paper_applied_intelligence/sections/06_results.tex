@@ -67,6 +67,24 @@ Aggregate-720 LDG-only accuracy from 80.00\% to 80.42\%, with frontier
 fallback on all-different external ties reaching 80.83\%; these variants are
 reported only as sensitivity because they were not the main method.
 
+\paragraph{FTA vs.\ External-3 majority: selective vs.\ uniform override.}
+The External-3 majority baseline (L1/S1/TALE vote) reaches 85.33\% on Final-300 and
+80.28\% on Aggregate-720, placing it close to FTA by point estimate.
+This proximity merits interpretation, because the two approaches differ in operating
+principle: External-3 applies a uniform vote over the three external baselines on every
+example, while FTA retains the frontier answer on 593 of 720 Aggregate-720 examples and
+overrides only when runtime failure-trace metadata indicates structural weakness (LDG) or
+unanimous high-confidence external disagreement (ECO).
+FTA's value is therefore not a pooled-vote point estimate but a transparent, auditable
+selective-deferral rule in which each override is attributable to a named gate and a logged
+trigger field from the frontier run.
+The ECO component contributes only five triggers on Aggregate-720---all recovering from
+incorrect frontier answers---and should be read as a low-frequency high-precision
+safeguard rather than a high-coverage source of aggregate recovery.
+In this evaluation, FTA and External-3 reach similar aggregate accuracy through different
+mechanisms: FTA preserves the frontier signal on most examples and defers selectively,
+while External-3 discards the frontier uniformly.
+
 \paragraph{Source-by-source breakdown.}
 Table~\ref{tab:source_by_source} gives the per-source accuracy for all
 evaluated methods.

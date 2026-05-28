@@ -8,16 +8,16 @@
 \toprule
 Component & Predicate / exact condition & Action & Gold-free rationale \\
 \midrule
-Low-Depth Guard (LDG; implementation: FIX-2): \textsc{WeakFrontier} &
+Low-Depth Guard (LDG): \textsc{WeakFrontier} &
   \texttt{override\allowbreak\_reason} contains \texttt{single\allowbreak\_weak\allowbreak\_frontier\allowbreak\_branch} \textbf{or} (\texttt{frontier\allowbreak\_support}$=0$ \textbf{and} \texttt{pool\allowbreak\_group\allowbreak\_count}$\geq 2$) &
   Fallback to external majority vote; if no majority use priority TALE$\succ$S1$\succ$L1; else keep frontier &
   Uses only runtime metadata and baseline answers; no gold/exact labels \\
-External-Consensus Fallback (ECO; implementation: FIX-4): \textsc{ExternalConsensusDisagree} &
+External-Consensus Fallback (ECO): \textsc{ExternalConsensusDisagree} &
   \texttt{override\allowbreak\_reason}$=$\texttt{direct\allowbreak\_frontier\allowbreak\_agree} \textbf{and} \texttt{l1}$=$\texttt{s1}$=$\texttt{tale} \textbf{and} unanimous external $\neq$ frontier &
   Replace frontier with the unanimous external answer &
   Uses only runtime override reason and method answers \\
-Combined Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4) &
-  If Low-Depth Guard (LDG, implementation: FIX-2) fires: apply Low-Depth Guard (LDG, implementation: FIX-2) and stop; else if External-Consensus Fallback (ECO, implementation: FIX-4) fires: apply External-Consensus Fallback (ECO, implementation: FIX-4); else keep frontier &
+Combined Failure-Trace Allocator (FTA) &
+  If LDG fires: apply LDG and stop; else if ECO fires: apply ECO; else keep frontier &
   Single-fire precedence chain &
   No correctness labels in trigger chain \\
 \bottomrule

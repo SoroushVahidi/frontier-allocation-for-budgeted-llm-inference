@@ -33,6 +33,27 @@ This places the method in the same conceptual space as selective
 prediction, dynamic ensemble selection, and cost-aware LLM routing, while
 keeping the decision rule deterministic and auditable.
 
+\paragraph{Frontier generator and runtime metadata.}
+The frontier method (Section~\ref{sec:terminology}) produces each candidate by exploring
+multiple reasoning \emph{branches}, where a branch is one candidate trajectory and its
+\emph{depth} is the number of expansion steps from the root.
+As a side-effect of normal inference, the frontier logs four runtime-visible metadata
+fields that FTA consumes.
+\texttt{frontier\_support} is the integer count of branches that converge on the selected
+answer; a value of zero or one indicates a low-support, single-branch selection.
+\texttt{candidate\_pool\_answer\_group\_count} is the integer count of distinct answer
+equivalence classes across all branches explored, with higher values indicating greater
+internal disagreement.
+\texttt{override\_reason} is a string set by the frontier's internal selection step;
+the values \texttt{"single\_weak\_frontier\_branch"} (at most one branch supports the
+selected answer) and \texttt{"direct\_frontier\_agree"} (the frontier answer matches the
+frontier's own internal reference selection, indicating internal self-consistency) are the
+two states relevant to the LDG and ECO gates respectively.
+\texttt{direct\_frontier\_agree} is a boolean indicator of the same internal-consistency
+condition.
+All fields are recorded during ordinary inference without gold-label access; FTA uses them
+exactly as logged, making the decision boundary auditable from the run records.
+
 Conceptually, FTA uses three abstract predicates.
 \textsc{WeakFrontier}$(x)$ is true when the frontier trace indicates low support
 or a single-branch selection.
