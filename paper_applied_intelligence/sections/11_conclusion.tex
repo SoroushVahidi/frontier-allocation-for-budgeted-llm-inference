@@ -16,9 +16,10 @@ The policy consists of two rule-based gates applied in strict priority order.
 The Low-Depth Guard (LDG) detects structurally weak frontier search branches
 using logged failure-trace metadata and substitutes the external majority
 answer.
-The External-Consensus Fallback (ECO) identifies cases where all three
-external baselines unanimously disagree with the frontier's selection,
-overriding to the consensus answer.
+The External-Consensus Fallback (ECO), a low-frequency high-precision
+safeguard in this evaluation, identifies cases where all three external
+baselines unanimously disagree with the frontier's selection, overriding
+to the consensus answer.
 Both gates are gold-free: no correctness labels, example identifiers, or
 artifact paths are accessed at runtime, and no additional inference calls are
 issued after candidate generation.
