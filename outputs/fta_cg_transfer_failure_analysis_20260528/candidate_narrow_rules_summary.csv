@@ -1,0 +1,10 @@
+set,rule,wins_preserved,wins_reverted_to_fix2,losses_preserved,losses_averted_by_fix2,net_win_improvement
+math500_seed71_disjoint,require_non_corr_disagree (non_corr_2of2==0),2,3,2,3,0
+gsm8k_final300_seed71,require_non_corr_disagree (non_corr_2of2==0),1,4,0,0,-3
+gsm8k_aggregate720,require_non_corr_disagree (non_corr_2of2==0),4,6,0,2,0
+math500_seed71_disjoint,require_non_corr_agree (non_corr_2of2==1),3,2,3,2,0
+gsm8k_final300_seed71,require_non_corr_agree (non_corr_2of2==1),4,1,0,0,3
+gsm8k_aggregate720,require_non_corr_agree (non_corr_2of2==1),6,4,2,0,0
+math500_seed71_disjoint,any_1of3 (current rule),5,0,5,0,0
+gsm8k_final300_seed71,any_1of3 (current rule),5,0,0,0,5
+gsm8k_aggregate720,any_1of3 (current rule),10,0,2,0,8

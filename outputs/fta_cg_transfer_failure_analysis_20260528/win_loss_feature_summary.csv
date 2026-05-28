@@ -1,0 +1,11 @@
+set,change_type,count,all_n_corroborating_1,non_corr_2of2_count,non_corr_2of2_pct,corroborating_l1_pct,corroborating_s1_pct,corroborating_tale_pct
+math500_seed71_disjoint,cg_win,5,True,3,0.6,0.8,0.2,0.0
+math500_seed71_disjoint,cg_loss,5,True,3,0.6,0.4,0.4,0.2
+math500_seed71_disjoint,cg_changed_both_wrong,16,True,4,0.25,0.6875,0.1875,0.125
+gsm8k_final300_seed71,cg_win,5,True,4,0.8,0.4,0.4,0.2
+gsm8k_final300_seed71,cg_changed_both_wrong,2,True,0,0.0,0.5,0.5,0.0
+gsm8k_aggregate720,cg_win,10,True,6,0.6,0.4,0.5,0.1
+gsm8k_aggregate720,cg_loss,2,True,2,1.0,0.5,0.0,0.5
+gsm8k_aggregate720,cg_changed_both_wrong,7,True,1,0.14285714285714285,0.42857142857142855,0.5714285714285714,0.0
+cloudrift_gsm8k_seed71,cg_win,1,True,0,0.0,0.0,1.0,0.0
+cloudrift_gsm8k_seed71,cg_loss,2,True,1,0.5,0.0,0.5,0.5
