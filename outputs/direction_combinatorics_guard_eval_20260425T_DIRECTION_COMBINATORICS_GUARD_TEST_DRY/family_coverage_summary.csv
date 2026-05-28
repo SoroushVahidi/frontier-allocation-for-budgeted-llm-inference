@@ -1,4 +1,0 @@
-method,avg_num_strategy_families_seen,avg_dominant_family_share,family_cap_trigger_rate,commit_guard_trigger_rate
-strict_f3,1.5,0.75,0.0,0.0
-strict_f3_direction_combinatorics_guard_v1,2.0,0.75,0.5,0.5
-external_l1_max,0.0,0.0,0.0,0.0

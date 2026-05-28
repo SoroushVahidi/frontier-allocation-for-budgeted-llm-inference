@@ -1,5 +1,0 @@
-example_id,dataset,stratum,seed,budget,method,gold_answer,selected_answer,selected_answer_group,gold_present_case,selected_is_gold_case,absent_from_pool_case,present_not_selected_case
-e1,openai/gsm8k,absent_from_tree,11,4,strict_f3,4,NA,NA,0,0,1,0
-e1,openai/gsm8k,absent_from_tree,11,4,external_l1_max,4,NA,NA,0,0,1,0
-e1,openai/gsm8k,absent_from_tree,11,4,direct_reserve_strong_v1,4,NA,NA,0,0,1,0
-e1,openai/gsm8k,absent_from_tree,11,4,direct_reserve_strong_plus_diverse_v1,4,NA,NA,0,0,1,0

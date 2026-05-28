@@ -1,5 +1,0 @@
-absent_from_tree,answer_group_support_counts,base_external_l1_max_correct,base_strict_f3_correct,budget,dataset,diagnostic_offline_proxy,example_id,gold_answer_present_in_candidate_pool,is_correct,method,present_not_selected,provider,seed,selected_answer_group,top2_support_gap,top_answer_group
-1,,,,4,openai/gsm8k,,e1,,0,strict_f3,0,cohere,11,,,
-0,,,,4,openai/gsm8k,,e1,,1,external_l1_max,0,cohere,11,,,
-1,,,,4,openai/gsm8k,,e1,,0,strict_gate1_cap_k6,0,cohere,11,,,
-0,"{""strict_f3_group"": 1, ""direct_l1_group"": 1}",1,0,4,openai/gsm8k,1,e1,1,1,strict_f3_direct_reserve_gate_rerank_v1,0,cohere,11,direct_l1_group,0.0,direct_l1_group

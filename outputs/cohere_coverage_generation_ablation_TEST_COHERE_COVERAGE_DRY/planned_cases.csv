@@ -1,2 +1,0 @@
-example_id,dataset,question,gold_answer_raw,gold_answer,stratum,case_idx,seed,budget
-e1,openai/gsm8k,What is 2+2?,4,4,absent_from_tree,1,11,4

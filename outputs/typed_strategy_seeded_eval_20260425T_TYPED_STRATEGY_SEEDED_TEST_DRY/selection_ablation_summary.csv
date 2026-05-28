@@ -1,7 +1,0 @@
-rule,n,accuracy,gold_present_rate
-support_only,2,0.0,0.0
-verifier_only,2,0.0,0.0
-support_plus_verifier,2,0.0,0.0
-support_plus_strategy_diversity,2,0.0,0.0
-support_plus_verifier_plus_strategy_diversity,2,0.0,0.0
-oracle_if_gold_present,2,0.0,0.0

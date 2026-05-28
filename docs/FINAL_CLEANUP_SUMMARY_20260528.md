@@ -114,6 +114,25 @@ All of the following were verified to exist after cleanup:
 
 ---
 
+## Final Tracked-Output Repair (same date)
+
+79 tracked output files were left as unstaged deletions (` D`) after pass 3 removed
+their parent directories. A final repair pass classified all 79:
+
+- All 79 files are in dry-run (`_dry_run`), test (`_TEST`, `TEST_DRY`), or preflight
+  (`TESTPREFLIGHT`) directories that were correctly identified as cleanup candidates.
+- No protected, canonical, or future-useful paths were affected.
+- No restores were needed.
+- All 79 deletions were staged and committed.
+
+Post-repair remaining dirty state:
+- **90 modified tracked output files** (`M` entries) — pre-.gitignore-era whitelisted
+  output dirs; left untouched intentionally (do not revert or commit).
+- **~430 untracked output dirs** — protected and future-research artifacts; leave local.
+- **No staged files** after repair commit.
+
+---
+
 ## Gitignore Pattern Fixed
 
 Pass 2 added `applied_intelligence_fta_*_latex_*.zip` which did not match both files.

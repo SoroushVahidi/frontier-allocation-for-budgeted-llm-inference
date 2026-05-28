@@ -1,5 +1,0 @@
-method,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,counting_combinatorics_accuracy,avg_actions,avg_expansions
-strict_f3,2,0.0,1.0,0.0,0.0,0.0,4.0,4.0
-strict_f3_direction_combinatorics_guard_v1,2,0.0,0.0,0.0,1.0,0.0,4.0,4.0
-strict_f3_typed_strategy_seeded_v1,2,0.0,1.0,0.0,0.0,0.0,4.0,4.0
-external_l1_max,2,0.0,1.0,0.0,0.0,0.0,1.5,1.5

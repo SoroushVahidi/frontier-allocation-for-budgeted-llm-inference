@@ -1,6 +1,0 @@
-selector,n_cases,gold_present_cases,selected_gold_rate,accuracy_gold_present,present_not_selected_rate
-current_controller_selector,2,2,0.5,0.5,0.5
-support_based_answer_group_selector,2,2,0.5,0.5,0.5
-learned_candidate_scorer,2,2,0.5,0.5,0.5
-learned_answer_group_scorer,2,2,0.5,0.5,0.5
-pairwise_bt_selector,2,2,0.5,0.5,0.5

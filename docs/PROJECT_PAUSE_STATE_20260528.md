@@ -4,11 +4,14 @@
 **Branch:** `main`  
 **HEAD commit (at pause):** `86df796b` — *repo: clean pause-state housekeeping* (pass 2)  
 **Final cleanup commit:** `8f329bb5` — *repo: finalize cleanup before project pause*  
-**Origin in sync:** YES (will be after push)
+**Final repair commit:** pending → will be set after push  
+**Origin in sync:** YES (after final repair push)
 
 > **Cleanup pass 2 (same date):** Fixed `.gitignore` pattern for Applied Intelligence submission zips (`applied_intelligence_fta_*latex*.zip`); pruned 3 stale missing worktree references. No scientific content changed.
 >
-> **Cleanup pass 3 — final (same date):** Deleted ~42 GB of abandoned SetFit/relation-verifier ML outputs; deleted completed_tmux_jobs_audit snapshot (1.5GB); deleted dry-run/no-key/test output dirs; deleted 6 tracked UUID root screenshots; removed all 6 stale worktrees (diffs archived in `docs/archived_worktree_diffs_20260528/`); deleted 18 manuscript `.bak_*` files. Updated gitignore pattern. Expected remaining dirty state is only the 91 pre-.gitignore-era modified tracked output files and any residual untracked output dirs (all protected/future-useful).
+> **Cleanup pass 3 — final (same date):** Deleted ~42 GB of abandoned SetFit/relation-verifier ML outputs; deleted completed_tmux_jobs_audit snapshot (1.5GB); deleted dry-run/no-key/test output dirs; deleted 6 tracked UUID root screenshots; removed all 6 stale worktrees (diffs archived in `docs/archived_worktree_diffs_20260528/`); deleted 18 manuscript `.bak_*` files. Updated gitignore pattern.
+>
+> **Final repair (same date):** 79 tracked output deletions from dry-run/test dirs classified as safe and committed. No restores needed. **Project is safe to pause.** Remaining dirty state is only 90 pre-.gitignore-era modified tracked output files (`M`), intentionally left dirty. First next research step: **MATH-500 selector rule mining** (no API needed).
 
 Read `docs/CURRENT_CANONICAL_STATE_20260527.md` for the full evidence summary.  
 Read `docs/LATEST_RESULTS_AND_CLAIMS.md` for the safe/unsafe claim list.
