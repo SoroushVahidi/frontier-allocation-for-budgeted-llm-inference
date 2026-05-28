@@ -1,5 +1,7 @@
 # Claims guide
 
+> **STATUS NOTE (2026-05-27):** This document is stale. It references `outcome_verifier_answer_group_selector_v1` as the primary safe claim, which is no longer current. The current headline result is **FTA (FIX-2+FIX-4): 86.67% Final-300 (260/300), 80.69% Aggregate-720 (581/720)**. For current safe/unsafe claims and required disclosures, see [`docs/CURRENT_CANONICAL_STATE_20260527.md`](CURRENT_CANONICAL_STATE_20260527.md). Historical content below is preserved for provenance.
+
 This is the shortest claim-scope guide for readers, reviewers, and agents. It does not replace `docs/PAPER_SOURCE_OF_TRUTH.md` or `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`; it summarizes the current safe interpretation.
 
 ## Current safe claims

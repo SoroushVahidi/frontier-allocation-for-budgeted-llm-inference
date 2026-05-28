@@ -1,5 +1,7 @@
 # PAPER_SOURCE_OF_TRUTH
 
+> **STATUS NOTE (2026-05-27):** This document is partially stale. It references `strict_f3` as the manuscript-facing method, which is no longer current. The current manuscript-facing method is **Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4)** with headline results 86.67% Final-300 and 80.69% Aggregate-720. For the current canonical state, see [`docs/CURRENT_CANONICAL_STATE_20260527.md`](CURRENT_CANONICAL_STATE_20260527.md). The evidence hierarchy structure and real-model audit rules below remain valid principles.
+
 This file defines the authoritative evidence hierarchy for anonymous review.
 
 ## Evidence hierarchy

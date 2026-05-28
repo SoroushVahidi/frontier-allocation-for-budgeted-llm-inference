@@ -2,26 +2,36 @@
 
 This page is the shortest reviewer-facing path through the repository. It intentionally avoids historical run folders unless a canonical document promotes them.
 
-## What this repository claims safely
+**Canonical current state:** [`docs/CURRENT_CANONICAL_STATE_20260527.md`](docs/CURRENT_CANONICAL_STATE_20260527.md)
 
-The project studies frontier allocation and final-answer selection under explicit inference-budget contracts.
+## What this repository claims safely (2026-05-27 update)
+
+The project studies frontier allocation and final-answer selection under explicit inference-budget contracts. The current headline contribution is **FTA / FIX-2+FIX-4 (Failure-Trace Allocator)**.
 
 Safe current claims:
 
-- The repository has an audited recovery-track outcome-verifier selector configuration.
-- The selected verifier selector is a recovery/selector-evidence track choice only.
-- `external_l1_max` is the strong external comparator to beat in current real-model comparisons.
-- Recent diagnostics suggest discovery/coverage is a major residual bottleneck when gold answers are absent from candidate pools.
+- **FTA / FIX-2+FIX-4 achieves 86.67% (260/300) on Final-300** (Cohere × GSM8K, seed=71, budget=6); independently reproduced from raw per-example records.
+- **FTA achieves 80.69% (581/720) on Aggregate-720** (seeds 41+61+71); source-stratified CI lower bounds vs L1/S1/TALE/best-external all strictly positive.
+- FTA gate features (override_reason, frontier_support, external unanimity) are gold-free at runtime; leakage audit PASS.
+- FTA adds zero model calls at selection time after candidates are generated.
+- D9 gated selector achieves CV 50.18%±2.52% vs frontier 34.36% (+15.82pp) on 550 multi-provider D6 pools; 0 false overrides.
+- `external_l1_max` (L1) is the primary external comparator: 83.00% on Final-300, 77.64% on Aggregate-720. FTA leads L1 with CI [+0.33, +7.00] (Final-300) and positive stratified CI on Aggregate-720.
 - Timestamped `outputs/` folders are provenance; use canonical docs and manifests before citing numbers.
 
-Unsafe without a new canonical promotion:
+Required disclosures (must state in paper):
 
-- Broad or universal superiority over `external_l1_max`.
-- Runtime promotion of the selected outcome-verifier selector.
-- Headline conclusions from cache-limited verifier runs, mock-backed verifier runs, or selected external-loss subsets.
-- Causal gold-path conclusions from path-gap proxy diagnostics.
+- CI vs pooled ensemble (frontier+L1+S1+TALE majority) **includes zero** at both Final-300 and Aggregate-720 — do not claim statistical superiority over pooled ensembles.
+- Full pool generation costs 4×B=6 = 24 logical calls per example (FTA itself adds 0 post-generation calls).
+- Evaluation scope: Cohere × GSM8K only; not extrapolated to MATH-500.
 
-For the compact claim checklist, see `docs/CLAIMS.md`.
+Unsafe without additional evidence:
+
+- FTA statistical superiority over the pooled ensemble (CI includes zero).
+- FTA results on benchmarks other than Cohere × GSM8K.
+- D8.1 selector results as independent held-out end-to-end accuracy.
+- D6 standalone as a positive net-gain method.
+
+For the compact claim checklist, see `docs/CLAIMS.md` and `docs/CURRENT_CANONICAL_STATE_20260527.md` Section 6.
 
 ## Minimal setup
 

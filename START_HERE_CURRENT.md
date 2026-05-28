@@ -1,78 +1,80 @@
-# Start here — current front door (2026-05-11)
+# Start here — current front door (updated 2026-05-27)
 
 Short orientation for humans and agents. Historical and timestamped material stays in place; this file points to **current** interpretation and safe next actions.
 
-## Canonical Summary
+> **Note:** Content below this line dated "2026-05-11" is historical background. See canonical current state below.
 
-Read [`docs/CURRENT_STATE_SUMMARY_20260511.md`](docs/CURRENT_STATE_SUMMARY_20260511.md) first after this file. It is the canonical handoff for the current evidence hierarchy, method status, and replay status.
+---
 
-## Current evidence at a glance
+## Canonical current state (2026-05-27)
 
-- Main evidence: [outputs/pal_retry_300case_analysis_20260506/report.md](/home/soroush/frontier-allocation-for-budgeted-llm-inference/outputs/pal_retry_300case_analysis_20260506/report.md)
-  - PAL+retry / guarded PAL: `252/300`
-  - `external_l1_max`: `244/300`
-  - gap: `+8` cases / `+2.67 pp`
-  - McNemar `p≈0.322`
-  - bootstrap paired-diff CI: `[-2.00 pp, +7.33 pp]`
-- Diagnostic caution: [outputs/cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z/report.md](/home/soroush/frontier-allocation-for-budgeted-llm-inference/outputs/cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z/report.md)
-  - PAL `17/30`
-  - `external_l1_max` `21/30`
-  - `external_tale_prompt_budgeting` `20/30`
-  - `external_s1_budget_forcing` `20/30`
-  - diagnostic only; not headline ranking evidence
-- Latest targeted follow-up: [docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260511T202624Z.md](/home/soroush/frontier-allocation-for-budgeted-llm-inference/docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260511T202624Z.md)
-  - baseline `direct_hybrid` vs treatment `direct_l1_strong_seed_v1`
-  - seed `11`: `5/15 -> 6/15`
-  - seed `23`: `6/15 -> 5/15`
-  - combined exact: `11/30` for both methods
-  - gold-in-tree proxy moved `15/30 -> 11/30`
-  - not promoted
+**Read first:** [`docs/CURRENT_CANONICAL_STATE_20260527.md`](docs/CURRENT_CANONICAL_STATE_20260527.md)
+**Full results:** [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md)
 
-- Latest offline structural-target replay: `outputs/gsm8k_structural_validator_eval_20260507/pal_frontier_structural_target_replay_v1_20260511T222238Z/`
-  - candidate-level structural feature layer
-  - selector variants: baseline, target check, anti-intermediate filter, unit/entity ledger proxy, wrong-consensus penalty, combined structural selector
-  - replay-ready primary slice: `58/158`
-  - focus slice replay-ready: `0/100`
-  - offline only; not runtime promotion evidence
+### Current verified evidence at a glance
 
-**LATEST HANDOFF:** [`docs/CODEX_WEB_HANDOFF_20260510.md`](docs/CODEX_WEB_HANDOFF_20260510.md)
+**Canonical paper result — FTA / FIX-2+FIX-4 (Failure-Trace Allocator):**
+- Final-300 (seed=71, Cohere × GSM8K, budget=6): **86.67%** (260/300) — independently verified
+- Aggregate-720 (seeds 41+61+71): **80.69%** (581/720) — source-stratified CI lo > 0 vs all externals
+- Gate: FIX-2=63, FIX-4=3, no-gate=234; FIX-4 causes 0 regressions
+- Leakage audit: PASS — gate features gold-free at runtime; 0 post-generation model calls
+- Implementation: `experiments/support_aware_selector.py`
 
-**Focused notes:** [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) · [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) · [`docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`](docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md) · [`docs/DISCOVERY_FAILURE_TAXONOMY.md`](docs/DISCOVERY_FAILURE_TAXONOMY.md) · [`docs/OUTPUT_RETENTION_POLICY_CURRENT.md`](docs/OUTPUT_RETENTION_POLICY_CURRENT.md) · [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md)
+**Supporting evidence — D9 gated selector:**
+- 5-fold grouped CV: **50.18% ± 2.52%** vs frontier 34.36% (+15.82pp)
+- Gate: 0 false overrides across all tested thresholds
+- D6 standalone is negative; D9 gate is required for a positive outcome
 
-## Current project question
+**Required paper disclosures:**
+1. CI vs pooled ensemble includes zero — do not claim statistical superiority over pooled ensembles
+2. Full pool generation = 4×B=6 = 24 logical calls per example
+3. Evaluation: Cohere × GSM8K only; do not extrapolate to MATH-500
+4. Seed=61 (59.17%) in aggregate-720 is failure-enriched, not typical
 
-Under explicit inference budgets, how should compute be allocated across reasoning paths, and how should the **final answer** be chosen from the explored frontier? The active emphasis remains two-track:
+### Current project question
 
-1. **discovery/coverage:** getting the correct answer into the explored candidate pool;
-2. **selection/replay:** choosing among existing candidate groups without gold leakage.
+Under explicit inference budgets, how should compute be allocated across reasoning paths, and how should the **final answer** be chosen from the explored frontier? Active work separates:
+
+1. **discovery/coverage:** getting the correct answer into the explored candidate pool
+2. **selection/replay:** choosing among existing candidates without gold leakage
 
 Do not revert to the older binary cheap-vs-revise routing story.
 
-## Current best external baseline
+### Current best external baselines
 
-**`external_l1_max`** is the primary strong external comparator on real-model GSM8K-style slices referenced throughout the repo. Do **not** claim broad defeat of this baseline without a fully scored, matched contract and canonical doc promotion.
+- **`external_l1_max`** (L1): 83.00% on Final-300; 77.64% on Agg-720
+- **`external_s1_budget_forcing`** (S1): 82.00% on Final-300; 77.08% on Agg-720
+- **`external_tale_prompt_budgeting`** (TALE): 78.33% on Final-300; 75.14% on Agg-720
+- **Pooled ensemble** (frontier+L1+S1+TALE majority): 84.33% on Final-300; 79.86% on Agg-720
 
-Related: **`external_l1_exact`** is a literature-style L1 exact-target-length variant; it appears in fairness/manuscript comparisons, but it is not a substitute for `external_l1_max` as the headline comparator.
+FTA beats all individual externals with positive CI lower bounds. FTA leads the pooled ensemble by point estimate only (CI includes zero — must disclose).
 
-## Current active internal line
+### Current priority: paper finalization
 
-Current best engineered line:
+**No API calls needed.** All canonical numbers are verified. Write the manuscript using FTA as the main result and D9 as supporting multi-provider evidence.
 
+For D9/D6 expansion work (secondary): see `docs/CURRENT_CANONICAL_STATE_20260527.md` Section 7.
+
+---
+
+## Historical front door content (2026-05-11, kept for provenance)
+
+The content below is from the 2026-05-11 handoff. It is preserved for provenance only. The PAL+retry results (252/300 vs 244/300) and old internal lines referenced below are historical background and are **superseded** by the FTA canonical result (260/300 = 86.67%).
+
+**HISTORICAL HANDOFF:** [`docs/CODEX_WEB_HANDOFF_20260510.md`](docs/CODEX_WEB_HANDOFF_20260510.md)
+
+Historical notes: [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) · [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) · [`docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`](docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md) · [`docs/DISCOVERY_FAILURE_TAXONOMY.md`](docs/DISCOVERY_FAILURE_TAXONOMY.md) · [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md)
+
+Historical evidence (2026-05-11, superseded):
+- PAL+retry: 252/300, external_l1_max: 244/300, gap +2.67pp, McNemar p≈0.322 — historical only
+- Structural-target replay: offline diagnostic only, not runtime promotion evidence
+
+Historical best internal line (2026-05-11, superseded by FTA):
 ```text
 direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal
 ```
 
-Small same-case diagnostic line from recent debugging:
-
-```text
-direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak
-```
-
-Key same-case 10-case diagnostic:
-
-```text
-outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/
-```
+**These historical numbers do not override the FTA canonical result. See `docs/CURRENT_CANONICAL_STATE_20260527.md`.**
 
 Headline:
 

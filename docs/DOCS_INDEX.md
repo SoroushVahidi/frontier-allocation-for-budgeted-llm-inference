@@ -2,32 +2,36 @@
 
 This index separates current interpretation documents from diagnostic and historical provenance. Do not delete dated documents merely because they are old; classify them here or in a more specific index.
 
-## Start here
+## Start here (2026-05-27 update)
 
-| Document | Role |
-|---|---|
-| `README.md` | Short repository entry point. |
-| `START_HERE_CURRENT.md` | Short current front door: baselines, selector scope, safe/unsafe claims, commands. |
-| `docs/CURRENT_STATE_SUMMARY_20260511.md` | Canonical state summary and evidence hierarchy baseline; read after `README.md`. |
-| `docs/LATEST_RESULTS_AND_CLAIMS.md` | **Canonical latest results checkpoint** — current numbers, safe/unsafe claims, next step. |
-| `docs/CURRENT_PROJECT_STATUS.md` | Current day-to-day project status and next action. |
-| `docs/CURRENT_EXTERNAL_BASELINE_GAP.md` | Single-page headline vs **`external_l1_max`** (**1018203** bounded harness). |
-| `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md` | Index of superseded/cache-limited/negative pilots without deleting provenance. |
-| `docs/DISCOVERY_FAILURE_TAXONOMY.md` | Discovery vs selector bottleneck vocabulary (+ path-gap proxy warning). |
-| `docs/OUTPUT_RETENTION_POLICY_CURRENT.md` | Practical commit vs `.gitignore` / local-only **`outputs/`** policy. |
-| `docs/LOCAL_ONLY_CLEANUP_CANDIDATES_20260502.md` | Workspace cleanup **ideas only** — no scripted deletion here. |
-| `docs/METHOD_STATUS_TABLE.md` | Classifies important method/selector IDs (canonical vs diagnostic vs external). |
-| `docs/ARTIFACT_STATUS_TABLE.md` | Classifies major `outputs/` artifact families. |
-| `scripts/CURRENT_RUNBOOK.md` | Minimal operational runbook (health, selector rerun, Slurm pointers). |
-| `docs/REPOSITORY_HYGIENE_AUDIT_20260502.md` | Navigation cleanup audit; no provenance deleted. |
-| `docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md` | Last-10 Slurm audit + bounded summaries + **post-freeze addenda** (e.g., **1018203** completion, **1018304**). Bundle: `outputs/last_10_wulver_jobs_audit_20260502T220857Z/`. |
-| `docs/REPO_ORGANIZATION_GUIDE_20260501.md` | Clean navigation, artifact classification, and safe cleanup rules. |
-| `docs/REPO_MAP.md` | Directory roles and repository structure. |
-| `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation. |
-| `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | Cost-aware execution rules for selector work. |
-| `docs/PAPER_SOURCE_OF_TRUTH.md` | Claim-eligible evidence hierarchy. |
-| `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md` | Safe/supportive/unsafe claim map. |
-| `docs/PAPER_OPEN_GAPS_AND_RISKS.md` | Known evidence gaps and risks. |
+> **Newest canonical docs are listed first.** Older docs are preserved for historical provenance.
+
+| Document | Role | Updated |
+|---|---|---|
+| `docs/CURRENT_CANONICAL_STATE_20260527.md` | **Primary canonical reference** — verified FTA metrics, D9 evidence, scenario ranking, safe/unsafe claims, required disclosures | 2026-05-27 |
+| `docs/LATEST_RESULTS_AND_CLAIMS.md` | **Canonical results checkpoint** — FTA audit, D9/Mistral, Cloudrift, all FIX outcomes, claim boundaries | 2026-05-27 |
+| `START_HERE_CURRENT.md` | Current front door: current evidence at a glance, required disclosures, historical content preserved below | 2026-05-27 |
+| `REVIEWER_FIRST.md` | Reviewer/collaborator minimal setup, safe/unsafe claims, reproduction commands | 2026-05-27 |
+| `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md` | Safe/supportive/unsafe claim map — Section 0 is current (FTA era); Section 1+ is historical (pre-FTA) | 2026-05-27 |
+| `docs/REPO_MAP.md` | Directory roles + canonical output index for 2026-05-27 artifacts | 2026-05-27 |
+| `README.md` | Short repository entry point. | 2026-05-20 |
+| `docs/CURRENT_STATE_SUMMARY_20260511.md` | Historical background only (pre-FIX series, as of 2026-05-11); superseded by above | historical |
+| `docs/CURRENT_PROJECT_STATUS.md` | Day-to-day project status (may be partially stale) | |
+| `docs/CURRENT_EXTERNAL_BASELINE_GAP.md` | Single-page headline vs `external_l1_max` | |
+| `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md` | Index of superseded/cache-limited/negative pilots | |
+| `docs/DISCOVERY_FAILURE_TAXONOMY.md` | Discovery vs selector bottleneck vocabulary | |
+| `docs/OUTPUT_RETENTION_POLICY_CURRENT.md` | Practical commit vs local-only `outputs/` policy | |
+| `docs/LOCAL_ONLY_CLEANUP_CANDIDATES_20260502.md` | Workspace cleanup ideas only | |
+| `docs/METHOD_STATUS_TABLE.md` | Classifies method/selector IDs (canonical vs diagnostic vs external) | |
+| `docs/ARTIFACT_STATUS_TABLE.md` | Classifies major `outputs/` artifact families | |
+| `scripts/CURRENT_RUNBOOK.md` | Operational runbook — paper finalization path + health checks | 2026-05-27 |
+| `docs/REPOSITORY_HYGIENE_AUDIT_20260502.md` | Navigation cleanup audit; no provenance deleted | |
+| `docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md` | Last-10 Slurm audit + bounded summaries | |
+| `docs/REPO_ORGANIZATION_GUIDE_20260501.md` | Clean navigation, artifact classification, safe cleanup rules | |
+| `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation | |
+| `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | Cost-aware execution rules for selector work | |
+| `docs/PAPER_SOURCE_OF_TRUTH.md` | Claim-eligible evidence hierarchy (partially stale — pre-FTA era) | |
+| `docs/PAPER_OPEN_GAPS_AND_RISKS.md` | Known evidence gaps and risks | |
 
 ## Current selector / L1-defeat track
 

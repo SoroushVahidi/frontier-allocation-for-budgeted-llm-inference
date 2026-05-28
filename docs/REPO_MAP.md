@@ -103,6 +103,25 @@ Current selector caveat: the selected Cohere cached outcome-verifier selector is
 - Artifact policy: `NEURIPS_PAPER_ARTIFACTS.md`, `../outputs/README.md`
 - Promotion/decision outcome: `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
 - Matched-surface rerun: `MATCHED_SURFACE_MULTI_SEED_MAIN_COMPARISON_20260423T235900Z.md`
+
+## Canonical outputs (2026-05-27, current)
+
+These are the canonical local-only outputs for the current FTA research phase. All are untracked/local-only.
+
+| Output directory | Purpose | Paper-facing | Status |
+|---|---|---|---|
+| `outputs/fta_independent_verification_20260527/run_20260527T003000Z/` | FTA/FIX-2+FIX-4 offline verification audit | YES — main claim | CANONICAL |
+| `outputs/final_fix24_all_external_validation_20260519_20260520T000902Z/` | FTA Final-300 raw per-example records | YES | CANONICAL |
+| `outputs/final_fix24_all_external_postrun_20260520_20260520T025349Z/` | FTA postrun metrics, gate counts, CI, leakage scan | YES | CANONICAL |
+| `outputs/current_research_evidence_summary_20260527/run_20260527T003000Z/` | Consolidated evidence summary | Supporting | CANONICAL |
+| `outputs/repository_situation_and_scenario_ranking_20260527/run_20260527T010000Z/` | Scenario ranking and claim safety table | Supporting | CANONICAL |
+| `outputs/job_d9_retrain_with_mistral_20260526/run_20260526T234411Z/` | D9 final retrain with 550 D6 pools | Supporting | CANONICAL |
+| `outputs/job_d9_retrain_with_cohere_math500_expansion_20260526/run_20260526T144632Z/` | D9 retrain with 400 D6 pools (prior to Mistral) | Supporting | HISTORICAL |
+| `outputs/job_cloudrift_qwen_extraction_repair_20260526/run_20260527T002012Z/` | Cloudrift/Qwen extraction repair audit | Supporting | CANONICAL |
+| `outputs/job_d6_mistral_eval_20260526/run_20260526T232755Z/` | Mistral D6 standalone eval | Diagnostic | CANONICAL |
+| `outputs/job_d8_1_runtime_feature_learning_selectors_20260526/run_20260526T014937Z/` | D8.1 learned selectors (test-split only) | Diagnostic (not independent) | NOT PROMOTED |
+| `outputs/local_failure_workbench_20260525/` | Four-scenario failure workbench (Cohere/Mistral × GSM8K/MATH-500) | Diagnostic | SUPPORTING |
+| `outputs/unified_learning_tables_20260525/run_20260525T184354Z/` | Unified candidate-action training table | Training data | SUPPORTING |
 - Conditional-risk status (supportive, not replacement):
   - `CONDITIONAL_RISK_CAP_MANUSCRIPT_PROMOTION_DECISION_20260423T203259Z.md`
   - `CONDITIONAL_RISK_CAP_PROMOTION_DECISION_CONFIRMATION_20260423.md`

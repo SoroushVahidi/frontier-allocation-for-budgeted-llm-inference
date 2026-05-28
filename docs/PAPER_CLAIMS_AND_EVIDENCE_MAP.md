@@ -1,5 +1,34 @@
 # PAPER_CLAIMS_AND_EVIDENCE_MAP
 
+> **Updated 2026-05-27:** The current canonical claim table is in Section 0 below. The original content (Section 1+) was written for the pre-FTA era (strict_f3 method) and is preserved for historical provenance. Do not use Section 1+ tables as current claim guidance.
+>
+> For the complete current safe/unsafe claim table, see also: `docs/CURRENT_CANONICAL_STATE_20260527.md` Section 6 and `outputs/repository_situation_and_scenario_ranking_20260527/run_20260527T010000Z/paper_claim_safety_table.csv`.
+
+## 0. Current Claim Map (2026-05-27, FTA era)
+
+| Claim | Status | Evidence | Caveat |
+|---|---|---|---|
+| FTA achieves 86.67% (260/300) Final-300 (Cohere × GSM8K, seed=71, budget=6) | **SAFE MAIN CLAIM** | `outputs/fta_independent_verification_20260527/` | Must state dataset=GSM8K only |
+| FTA achieves 80.69% (581/720) Aggregate-720 (seeds 41+61+71) | **SAFE MAIN CLAIM** | `outputs/fta_independent_verification_20260527/` | Must disclose seed=61 failure-enriched |
+| FTA CI vs L1/S1/TALE/best-external (Agg-720) all strictly positive | **SAFE MAIN CLAIM** | `outputs/fta_independent_verification_20260527/` | State source-stratified CI values |
+| FTA gate features are gold-free at runtime (leakage audit PASS) | **SAFE MAIN CLAIM** | `fta_leakage_and_budget_audit.json` | Required disclosure |
+| FTA adds 0 post-generation model calls | **SAFE MAIN CLAIM** | `fta_leakage_and_budget_audit.json` | Must also state full pool=24 calls |
+| FIX-2=63, FIX-4=3, no-gate=234 (Final-300) | **SAFE MAIN CLAIM** | `fta_gate_action_audit.csv` | Independently reproduced |
+| FIX-4 causes 0 regressions (3 wins, 0 losses) | **SAFE MAIN CLAIM** | `fta_gate_action_audit.csv` | Conservative gate |
+| D9 CV 50.18%±2.52% vs frontier 34.36% (+15.82pp) on 550 multi-provider D6 pools | **SAFE SUPPORTING** | `job_d9_retrain_with_mistral_20260526/` | State CV not held-out; 3 providers |
+| D9 gate: 0 false overrides at thresholds 0.3–0.8 | **SAFE SUPPORTING** | `d9_mistral_gate_threshold_sweep.csv` | Training data evaluation |
+| Cloudrift rescue bucket: D6 55%, 0 regressions (40 MATH-500 cases) | **SAFE SUPPORTING** | `cloudrift_d6_bucket_metrics.csv` | Bucket-selected pilot; not random |
+| Lenient extraction 98.8% coverage on Cloudrift/Qwen | **SAFE SUPPORTING** | `cloudrift_qwen_extraction_repair_summary.json` | 1 unrecoverable |
+| FTA statistically superior to pooled ensemble | **UNSAFE — DO NOT CLAIM** | — | CI includes zero at n=300 and n=720 — MUST DISCLOSE |
+| Full pool generation costs only B=6 calls | **UNSAFE — DO NOT CLAIM** | — | Costs 4×B=6=24; FTA post-generation adds 0 |
+| FTA achieves 86.67% on MATH-500 or any other benchmark | **UNSAFE — DO NOT CLAIM** | — | GSM8K only; Cohere MATH-500 FTA=frontier=29% |
+| D8.1 selector results are independent held-out accuracy | **UNSAFE — DO NOT CLAIM** | — | Test-split only; not independently validated |
+| D6 standalone net gain is positive | **UNSAFE — DO NOT CLAIM** | — | Net=-38 across 550 pools; gate required |
+
+---
+
+## 1. Historical Claim Map (pre-FTA era — preserved for provenance)
+
 Conservative map from claim type to evidence status.
 
 ## Legend

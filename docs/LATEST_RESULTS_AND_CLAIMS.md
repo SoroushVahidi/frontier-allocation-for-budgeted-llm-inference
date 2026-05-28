@@ -1,8 +1,62 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-25 (regime-learning checkpoint: six providers protocol-ready; Azure/Cloudrift GSM8K running; Cohere MATH-500 pool-failure analysis complete)
+**Last updated:** 2026-05-27 (FTA independent verification audit complete; D9 Mistral retrain complete; Cloudrift extraction repair complete; scenario ranking compiled)
+
+**Canonical single-page reference:** [`docs/CURRENT_CANONICAL_STATE_20260527.md`](CURRENT_CANONICAL_STATE_20260527.md) — read this first.
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
+
+---
+
+## 0-CURRENT. 2026-05-27 Verification Checkpoint (LATEST)
+
+### FTA / FIX-2+FIX-4 — Independent Verification Complete
+
+**Artifact:** `outputs/fta_independent_verification_20260527/run_20260527T003000Z/`
+
+Both canonical FTA numbers are **independently reproduced** from raw per-example records using the actual `apply_combined_fix24_to_row()` implementation:
+- **Final-300: 260/300 = 86.67%** — REPRODUCED (seed=71)
+- **Aggregate-720: 581/720 = 80.69%** — REPRODUCED (seeds 41+61+71, all pairs zero overlap)
+- Gate counts: FIX-2=63, FIX-4=3, no-gate=234 — REPRODUCED
+- Leakage audit: **PASS** — gate features gold-free at runtime
+
+**Required disclosures (MUST appear in paper):**
+1. CI vs pooled ensemble includes zero (Final-300: [−0.67, +5.67]; Agg-720: [−1.11, +2.78])
+2. Full pool generation = 4×B=6 = 24 logical calls per example (FTA itself adds zero post-generation calls)
+3. Evaluation scope: Cohere × GSM8K only
+4. Seed=61 (59.17%) is failure-enriched base run for FIX-6, not a random sample
+
+Additional seed=31 (82/100, disjoint from agg-720): corroborates 80–87% range. True fresh offline independent replication is not possible — all four pre-generated pools (seeds 31/41/61/71) are already accounted for.
+
+### D9 / Mistral Retrain — Complete
+
+**Artifact:** `outputs/job_d9_retrain_with_mistral_20260526/run_20260526T234411Z/`
+
+- 550 D6 pools total (Cohere=320, Cloudrift=80, Mistral=150); 14,150 training rows
+- **D9 CV: 50.18% ± 2.52%** vs frontier 34.36% (+15.82pp); 5-fold grouped CV by pool_id
+- Gate: **0 false overrides** at all tested thresholds (0.3–0.8)
+- D6 standalone: **negative** across all 550 pools (27.45% vs frontier, net=-38 cases)
+- Verdict: D9_MISTRAL_RETRAIN_USE_D6_AS_GATED_MODULE
+
+D9 is **supporting multi-provider evidence**, not the canonical paper result.
+
+### Cloudrift/Qwen Extraction Repair — Complete
+
+**Artifact:** `outputs/job_cloudrift_qwen_extraction_repair_20260526/run_20260527T002012Z/`
+
+- Strict JSON compliance: 16.2% (13/80) — misleading; actual prior extraction was already 63.7% via ast_dict
+- Lenient multi-stage extractor: **98.8%** (79/80); 1 unrecoverable
+- D6 lenient accuracy: 55.0% vs frontier 37.5%; rescue bucket (40 MATH-500 cases): 55.0%, 0 regressions
+- Root cause: Qwen echoes JSON schema in chain-of-thought → prompt fix needed before new generation
+- D9-ready with current data
+
+### Scenario Ranking — Complete
+
+**Artifact:** `outputs/repository_situation_and_scenario_ranking_20260527/run_20260527T010000Z/`
+
+FTA is **rank #1** in Cohere × GSM8K (canonical). FTA = frontier in Cohere × MATH-500 (pool failure dominates: 53.7% all-sources-wrong) and in Mistral × GSM8K/MATH-500 (S1-dominant regime). D9 is rank #1 in the multi-provider gated setting.
+
+---
 
 ---
 

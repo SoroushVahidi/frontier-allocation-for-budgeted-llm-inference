@@ -2,6 +2,55 @@
 
 Short **current** commands only. For the full script inventory, see repository [`README.md`](../README.md) and [`scripts/README.md`](README.md).
 
+**Current priority:** Paper finalization. See `docs/CURRENT_CANONICAL_STATE_20260527.md` for verified metrics and required disclosures.
+
+## Paper finalization path (no API calls needed)
+
+The FTA canonical results are verified and ready to use in the manuscript:
+
+```
+FTA / FIX-2+FIX-4 (Failure-Trace Allocator):
+  Final-300:     86.67% (260/300, seed=71, Cohere × GSM8K, budget=6)
+  Aggregate-720: 80.69% (581/720, seeds 41+61+71)
+  Leakage audit: PASS
+  Post-generation model calls: 0
+  Gate: FIX-2=63, FIX-4=3, no-gate=234
+
+D9 supporting evidence:
+  CV: 50.18% ± 2.52% vs frontier 34.36% (+15.82pp)
+  Gate false overrides: 0 (all thresholds 0.3–0.8)
+  Pools: 550 D6 pools, 3 providers (Cohere/Cloudrift/Mistral)
+```
+
+Required paper disclosures (MUST appear in paper):
+1. CI vs pooled ensemble includes zero — do not claim statistical superiority
+2. Full pool generation = 4×B=6 = 24 logical calls per example
+3. Evaluation: Cohere × GSM8K only; not extrapolated to MATH-500
+4. Seed=61 (59.17%) in aggregate-720 is failure-enriched (FIX-6 base run)
+
+Key artifact paths:
+```
+outputs/fta_independent_verification_20260527/run_20260527T003000Z/
+outputs/final_fix24_all_external_postrun_20260520_20260520T025349Z/
+outputs/job_d9_retrain_with_mistral_20260526/run_20260526T234411Z/
+```
+
+## Offline audit reproduction (no API calls)
+
+To re-verify FTA metrics offline:
+```bash
+# Read raw per-example records and apply actual implementation:
+python3 experiments/support_aware_selector.py  # verify apply_combined_fix24_to_row() is intact
+# Full audit script used is in:
+# outputs/fta_independent_verification_20260527/run_20260527T003000Z/
+```
+
+To re-run D9 with current training data (no API calls):
+```bash
+# Use the pre-written script:
+python3 outputs/job_d9_retrain_with_mistral_20260526/run_20260526T234411Z/retrain_d9_with_mistral.py
+```
+
 ## Health and reviewer-safe checks
 
 ```bash

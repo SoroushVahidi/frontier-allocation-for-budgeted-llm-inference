@@ -1,5 +1,7 @@
 # PAPER_OPEN_GAPS_AND_RISKS
 
+> **STATUS NOTE (2026-05-27):** This document is stale (pre-FTA era). It references `strict_f3`, DR-v2 outcome-verifier rerank, and Slurm job numbers from a prior research phase that is no longer manuscript-facing. For current open gaps and risks relevant to the FTA Applied Intelligence submission, see [`docs/CURRENT_CANONICAL_STATE_20260527.md`](CURRENT_CANONICAL_STATE_20260527.md). Historical content below is preserved for provenance.
+
 Live list of missing pieces before submission-quality evidence closure.
 
 ## High-priority open gaps
