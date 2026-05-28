@@ -80,14 +80,13 @@ Canonical output roots:
 
 ## Required reading before writing or reviewing claims
 
-1. `docs/CLAIMS.md`
-2. `START_HERE_CURRENT.md`
-3. `docs/PAPER_SOURCE_OF_TRUTH.md`
+1. `docs/CURRENT_CANONICAL_STATE_20260527.md` — single authoritative current-state reference
+2. `docs/CLAIMS.md` — safe/unsafe claim checklist and required disclosures
+3. `docs/PAPER_SOURCE_OF_TRUTH.md` — manuscript method contract and canonical outputs
 4. `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`
-5. `docs/CURRENT_PROJECT_STATUS.md`
-6. `docs/CURRENT_EXTERNAL_BASELINE_GAP.md`
-7. `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`
-8. `docs/ARTIFACT_STATUS_TABLE.md`
+5. `docs/CURRENT_EXTERNAL_BASELINE_GAP.md`
+6. `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`
+7. `docs/ARTIFACT_STATUS_TABLE.md`
 
 ## Selector/API separation
 

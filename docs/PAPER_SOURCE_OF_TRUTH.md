@@ -1,51 +1,71 @@
 # PAPER_SOURCE_OF_TRUTH
 
-> **STATUS NOTE (2026-05-27):** This document is partially stale. It references `strict_f3` as the manuscript-facing method, which is no longer current. The current manuscript-facing method is **Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4)** with headline results 86.67% Final-300 and 80.69% Aggregate-720. For the current canonical state, see [`docs/CURRENT_CANONICAL_STATE_20260527.md`](CURRENT_CANONICAL_STATE_20260527.md). The evidence hierarchy structure and real-model audit rules below remain valid principles.
+**Last updated:** 2026-05-28 — FTA canonical. Prior `strict_f3` content archived below.
 
-This file defines the authoritative evidence hierarchy for anonymous review.
+This file defines the authoritative evidence hierarchy for the manuscript submission.
+
+## Current manuscript method
+
+**Failure-Trace Allocator (FTA)** — implementation: `apply_combined_fix24_to_row()` in
+`experiments/support_aware_selector.py` (also accessible via `experiments/fta_policy.py`).
+
+| Result | Value | Evidence |
+|---|---|---|
+| Final-300 (seed=71, Cohere × GSM8K, budget=6) | **86.67% (260/300)** | Independently verified |
+| Aggregate-720 (seeds 41+61+71) | **80.69% (581/720)** | Source-stratified CI lo > 0 vs all externals |
+| Leakage audit | **PASS** | Gate features gold-free at runtime |
+| Post-generation model calls | **0** | Selection only |
+
+Primary verification artifact:
+`outputs/fta_independent_verification_20260527/run_20260527T003000Z/FTA_INDEPENDENT_VERIFICATION_REPORT.md`
 
 ## Evidence hierarchy
 
 1. **Paper-facing canonical evidence** (eligible for headline claims)
-2. **Appendix/supporting evidence** (robustness, diagnostics, context)
+2. **Appendix/supporting evidence** (robustness, diagnostics, context; e.g. D9 gated selector CV)
 3. **Exploratory/provenance-only evidence** (negative/partial/historical)
 4. **Non-review/private/local-only artifacts** (never claim-bearing)
 
 ## Canonical paper-facing outputs
 
 Canonical paper tables/figures are generated from:
-- `scripts/paper/run_all_neurips_paper_artifacts.py`
+```bash
+python scripts/paper/reproduce_current_manuscript_artifacts.py
+# or equivalently:
+python scripts/paper/run_all_neurips_paper_artifacts.py
+```
 
 Canonical output directories:
 - `outputs/paper_tables/`
 - `outputs/paper_plot_data/`
 - `outputs/paper_figures/`
 
-## Method-surface contract (claim-critical)
+## Method contract (claim-critical)
 
-- Manuscript-facing matched-surface representative: `strict_f3`.
-- Broader operational default on a different surface: `strict_gate1_cap_k6`.
-- The `strict_f3` vs `strict_gate1_cap_k6` matched-surface margin is currently fragile/non-decisive and should not be phrased as decisive superiority.
+- Manuscript-facing method: **FTA / FIX-2+FIX-4** (`direct_reserve_semantic_frontier_v2` + gate).
+- Budget contract: each candidate-producing method runs with B=6 logical calls. FTA is a
+  post-generation selector — it adds zero model calls after candidates exist.
+- Full pool (frontier + L1 + S1 + TALE) generation costs **4 × B = 24 logical calls per example**.
 
 ## Claim eligibility rules
 
 A claim is paper-facing only if:
-- it is supported by the canonical output directories above,
-- its comparison uses an explicit matched contract (e.g., matched maximum action-budget contract and matched-action adapters), and
-- wording matches `docs/CLAIM_BOUNDARIES.md`.
+- it is supported by the canonical output directories above or by
+  `docs/CURRENT_CANONICAL_STATE_20260527.md`,
+- its comparison uses an explicit matched inference-budget contract, and
+- it respects the required disclosures in Section 5 of `docs/CURRENT_CANONICAL_STATE_20260527.md`.
 
 ## Real-model evidence rule
 
-Real-model provider runs are **supporting/diagnostic real-model audits** only. They are **not evidence of universal dominance** and are **not token/latency/cost matched unless explicitly stated**.
+Real-model provider runs are **supporting/diagnostic audits** only. They are **not evidence of
+universal dominance** and are **not token/latency/cost matched unless explicitly stated**.
 
-### Cost-normalized Cohere validation slices (diagnostic)
+Artifacts in local-only folders, machine-specific caches, temporary debug outputs, or private
+execution environments are non-review evidence. They must never be used as claim-bearing
+manuscript evidence unless promoted through canonical documented regeneration.
 
-Bundles such as `outputs/cohere_real_model_cost_normalized_validation_<timestamp>/` are **diagnostic** unless a canonical promotion doc explicitly upgrades them.
+## Historical content (archived 2026-05-28)
 
-**Mock-backed vs verifier-backend provenance:** Some selectors support a mock verifier default (e.g. DR-v2 outcome-verifier rerank). Treat timestamps where the verifier backend env was **unset** as **mock-backed diagnostic provenance** only. A separate timestamp with `DR_V2_OV_RERANK_VERIFIER_BACKEND=cohere` is required before claiming a **real Cohere outcome-verifier** backend experiment. See `docs/OUTPUTS_ARTIFACT_INDEX.md`.
-
-**Headline GSM8k external comparator slice (engineering diagnostic, not dominance):** The repo tracks a finalized **narrow 100-case / six-method** **`openai/gsm8k`** harness (**Slurm 1018203**) distinguishing **`external_l1_max`** from best listed internal **`strict_gate1_cap_k6`** — see **`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`**.
-
-## Non-review/private/local-only class
-
-Artifacts in local-only folders, machine-specific caches, temporary debug outputs, and private execution environments are non-review evidence. They must never be used as claim-bearing manuscript evidence unless promoted through canonical documented regeneration.
+Prior manuscript-facing method was `strict_f3`. That claim is superseded by FTA. The
+`strict_f3` vs `strict_gate1_cap_k6` margin was non-decisive and must not appear in the
+current manuscript. See `archive/` for historical scripts.

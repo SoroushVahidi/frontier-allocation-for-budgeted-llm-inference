@@ -15,16 +15,13 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 
 | Order | Doc | Purpose |
 |------:|-----|---------|
-| 0 | [`REVIEWER_FIRST.md`](REVIEWER_FIRST.md) | Minimal reviewer setup, checks, and reproduction path |
-| 1 | [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md) | **Canonical current results**: FIX-2+FIX-4 final-300 and aggregate-720 evidence, safe/unsafe claims, all FIX-1..8 outcomes, decision records |
-| 2 | [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) | Current front door: merged state, current target method, external baseline, and next experiment pattern |
-| 3 | [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) | Latest method-by-method status: tested, parked, active, and next hopeful lines |
-| 4 | [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md) | Guardrails to avoid old-method/API-waste mistakes |
-| 5 | [`docs/CLAIMS.md`](docs/CLAIMS.md) | Short claim-scope guide: safe claims, unsafe claims, evidence posture |
-| 6 | [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md) | Detailed current research/engineering status |
-| 7 | [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) | Separate strict-method diagnostic vs **`external_l1_max`** |
-| 8 | [`docs/REPO_MAP.md`](docs/REPO_MAP.md) | Directory map and artifact-navigation guide |
-| — | [`docs/CURRENT_STATE_SUMMARY_20260511.md`](docs/CURRENT_STATE_SUMMARY_20260511.md) | Historical background only (pre-FIX series, as of 2026-05-11); superseded by `docs/LATEST_RESULTS_AND_CLAIMS.md` |
+| 0 | [`REVIEWER_FIRST.md`](REVIEWER_FIRST.md) | **Start here**: minimal setup, checks, and reproduction path |
+| 1 | [`docs/CURRENT_CANONICAL_STATE_20260527.md`](docs/CURRENT_CANONICAL_STATE_20260527.md) | **Single authoritative current state**: FTA results, disclosures, safe/unsafe claims, next actions |
+| 2 | [`docs/CLAIMS.md`](docs/CLAIMS.md) | Claim-scope guide: safe claims, unsafe claims, required disclosures |
+| 3 | [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md) | Full evidence record: all FIX-1..8 outcomes, decision records, CI tables |
+| 4 | [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md) | Manuscript method contract and canonical output paths |
+| 5 | [`docs/REPO_MAP.md`](docs/REPO_MAP.md) | Directory map and artifact-navigation guide |
+| — | [`docs/CURRENT_STATE_SUMMARY_20260511.md`](docs/CURRENT_STATE_SUMMARY_20260511.md) | Historical background only (pre-FIX series); superseded by canonical state above |
 
 **Verifier-guided reranking navigation:** [`docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md`](docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md) · [`docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`](docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md)
 
@@ -128,7 +125,7 @@ make selector-test
 Paper artifact regeneration:
 
 ```bash
-python scripts/paper/run_all_neurips_paper_artifacts.py
+python scripts/paper/reproduce_current_manuscript_artifacts.py
 ```
 
 Full operational patterns, cluster batch names, reruns, and pitfalls → [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md).
