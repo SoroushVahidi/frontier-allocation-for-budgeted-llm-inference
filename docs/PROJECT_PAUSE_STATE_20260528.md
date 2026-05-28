@@ -3,7 +3,7 @@
 **Pause date:** 2026-05-28  
 **Branch:** `main`  
 **HEAD commit (at pause):** `86df796b` — *repo: clean pause-state housekeeping* (pass 2)  
-**Final cleanup commit:** pending final cleanup commit  
+**Final cleanup commit:** `8f329bb5` — *repo: finalize cleanup before project pause*  
 **Origin in sync:** YES (will be after push)
 
 > **Cleanup pass 2 (same date):** Fixed `.gitignore` pattern for Applied Intelligence submission zips (`applied_intelligence_fta_*latex*.zip`); pruned 3 stale missing worktree references. No scientific content changed.
