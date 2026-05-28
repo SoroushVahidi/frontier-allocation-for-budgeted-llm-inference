@@ -1,0 +1,56 @@
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rectangle, rounded corners=3pt,
+              minimum height=0.78cm, minimum width=3.1cm,
+              text centered, font=\small, fill=white},
+  decis/.style={draw, diamond, aspect=2.6,
+                minimum height=0.78cm,
+                text centered, font=\small, fill=white},
+  arr/.style={->, >=Stealth, thick},
+  lbl/.style={font=\footnotesize}
+]
+% Figure title
+\node[font=\bfseries\small] at (4.1, 6.5) {Failure-trace-guided allocator};
+% Main column (left): inputs, triggers, frontier
+\node[box]   (inp)    at (0,   5.5) {\textbf{Runtime inputs}};
+\node[decis] (wft)    at (0,   4.0) {Weak-frontier trigger?};
+\node[decis] (dat)    at (0,   2.2) {Direct-agreement trigger?};
+\node[box]   (front)  at (0,   0.7) {Frontier answer};
+
+% Right column: outputs of each "yes" branch
+\node[box]   (extmaj) at (4.4, 4.0) {External majority};
+\node[box]   (extun)  at (4.4, 2.2) {External unanimity};
+
+% Final answer (far right, aligned with extun)
+\node[box, minimum width=3.0cm] (final) at (8.2, 2.2) {\textbf{Final answer}};
+
+% Main flow
+\draw[arr] (inp)  -- (wft);
+\draw[arr] (wft)  -- node[right, lbl] {no}  (dat);
+\draw[arr] (dat)  -- node[right, lbl] {no}  (front);
+
+% "yes" branches to right column
+\draw[arr] (wft)  -- node[above, lbl] {yes} (extmaj);
+\draw[arr] (dat)  -- node[above, lbl] {yes} (extun);
+
+% All outputs to final answer (no crossing arrows)
+% extun is same height as final -> straight arrow
+\draw[arr] (extun.east) -- (final.west);
+% extmaj: go right then down to final.north
+\draw[arr] (extmaj.east) -| (final.north);
+% frontier: go right then up to final.south
+\draw[arr] (front.east)  -| (final.south);
+\node[font=\footnotesize, align=center] at (4.1, -0.6)
+{Paper-facing trigger names map to implementation identifiers in Table~\ref{tab:name_mapping}.};
+\end{tikzpicture}
+\caption{Failure-trace-guided allocator (Failure-Trace Allocator (FTA, implementation: FIX-2+FIX-4)). The allocator first checks
+the weak-frontier trigger (Low-Depth Guard, Low-Depth Guard (LDG, implementation: FIX-2)): if it fires, the policy uses the
+external majority answer. Otherwise it checks the direct-agreement trigger
+(External-Consensus Fallback, External-Consensus Fallback (ECO, implementation: FIX-4)): when all external baselines unanimously disagree
+with the frontier answer, the policy uses the external unanimous answer. If neither
+trigger fires, the frontier answer is retained. No gold labels or correctness signals
+are accessed at any step. Paper-facing trigger names map to implementation identifiers
+in Table~\ref{tab:name_mapping}.}
+\label{backup:fig:method_overview_placeholder}
+\end{figure*}
