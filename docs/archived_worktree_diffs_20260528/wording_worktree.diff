@@ -1,0 +1,35 @@
+Archived from worktree: /tmp/wording-worktree
+Branch: polish-availability (HEAD=765027d9 paper: finalize title and conclusion wording)
+Archived: 2026-05-28 (final pre-pause cleanup)
+Note: Changes are to paper_ml_journal_snjnl_stage/ — the OLD MLJ staging folder.
+Applied Intelligence has superseded the MLJ venue. These changes convert tabular/table*
+environments to longtable for better page-break handling. Low-value since MLJ submission
+was superseded. Archived for completeness only.
+
+diff --git a/paper_ml_journal_snjnl_stage/appendix.tex b/paper_ml_journal_snjnl_stage/appendix.tex
+--- a/paper_ml_journal_snjnl_stage/appendix.tex
++++ b/paper_ml_journal_snjnl_stage/appendix.tex
+@@ Removed 9 \clearpage commands from section breaks (cosmetic layout change)
+
+diff --git a/paper_ml_journal_snjnl_stage/tables/tableA1_reproducibility.tex b/...
+@@ Converted table*/tabular to longtable for page-break support
+
+diff --git a/paper_ml_journal_snjnl_stage/tables/tableA2_win_loss_tie.tex b/...
+@@ Converted table/tabular to longtable
+
+diff --git a/paper_ml_journal_snjnl_stage/tables/tableA3_safe_unsafe_claims.tex b/...
+@@ Converted table*/tabular to longtable
+
+diff --git a/paper_ml_journal_snjnl_stage/tables/tableA4_parameter_sensitivity.tex b/...
+@@ Converted table*/tabular to longtable
+
+diff --git a/paper_ml_journal_snjnl_stage/tables/tableA5_feature_legality.tex b/...
+@@ Converted table*/tabularx to longtable
+
+diff --git a/paper_ml_journal_snjnl_stage/tables/tableA6_name_mapping.tex b/...
+@@ Converted table*/tabularx to longtable
+
+Summary: 7 files changed, ~82 insertions / 67 deletions.
+All changes are in the OLD MLJ staging folder (paper_ml_journal_snjnl_stage/).
+The Applied Intelligence paper (paper_applied_intelligence/) is the current venue
+and these changes do NOT apply to it.

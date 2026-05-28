@@ -2,10 +2,13 @@
 
 **Pause date:** 2026-05-28  
 **Branch:** `main`  
-**HEAD commit (at pause):** `ad9cbe09` — *repo: checkpoint project state before pause*  
-**Origin in sync:** YES
+**HEAD commit (at pause):** `86df796b` — *repo: clean pause-state housekeeping* (pass 2)  
+**Final cleanup commit:** pending final cleanup commit  
+**Origin in sync:** YES (will be after push)
 
-> **Cleanup pass 2 (same date):** Added `.gitignore` pattern for Applied Intelligence submission zips (`applied_intelligence_fta_*_latex_*.zip`); pruned 3 stale worktree references whose directories were already missing. No scientific content changed.
+> **Cleanup pass 2 (same date):** Fixed `.gitignore` pattern for Applied Intelligence submission zips (`applied_intelligence_fta_*latex*.zip`); pruned 3 stale missing worktree references. No scientific content changed.
+>
+> **Cleanup pass 3 — final (same date):** Deleted ~42 GB of abandoned SetFit/relation-verifier ML outputs; deleted completed_tmux_jobs_audit snapshot (1.5GB); deleted dry-run/no-key/test output dirs; deleted 6 tracked UUID root screenshots; removed all 6 stale worktrees (diffs archived in `docs/archived_worktree_diffs_20260528/`); deleted 18 manuscript `.bak_*` files. Updated gitignore pattern. Expected remaining dirty state is only the 91 pre-.gitignore-era modified tracked output files and any residual untracked output dirs (all protected/future-useful).
 
 Read `docs/CURRENT_CANONICAL_STATE_20260527.md` for the full evidence summary.  
 Read `docs/LATEST_RESULTS_AND_CLAIMS.md` for the safe/unsafe claim list.
