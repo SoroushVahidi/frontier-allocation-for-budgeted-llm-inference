@@ -21,6 +21,10 @@ events---that is richer than the raw candidates alone and may carry reliable sig
 about candidate trustworthiness.
 Exploiting such runtime-visible signals for dynamic selection is the core question
 studied here.
+This framing matches a practical deployment setting: after a service has generated a
+fixed candidate pool under cost and rate-limit constraints, an auditable selector must
+decide whether to trust the default frontier output or defer to external consensus,
+without issuing extra inference calls or accessing ground-truth labels.
 
 We examine this question in a concrete, reproducible setting.
 The task is grade-school arithmetic reasoning on the GSM8K

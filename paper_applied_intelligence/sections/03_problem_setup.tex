@@ -79,11 +79,12 @@ reproducibility.
     External baselines provide gold-free consensus signals without access to
     gold labels.
   \item[L1] An external method that selects the answer with the highest support
-    count across sampled model outputs.
+    count across sampled model outputs, following the self-consistency answer
+    aggregation principle \citep{wang2023selfconsistency}.
   \item[S1] An external method that applies sequential budget-forcing to elicit
-    a final answer within the allocated budget.
+    a final answer within the allocated budget \citep{muennighoff2025s1}.
   \item[TALE] An external method that uses prompt-level budget cues to guide
-    answer selection.
+    answer selection \citep{han2025token}.
   \item[Logical API call] A single provider inference request counted against a
     candidate-producing method's budget.
   \item[Budget] The integer upper bound $B = 6$ on logical API calls per
@@ -104,3 +105,9 @@ reproducibility.
     Claims are explicitly scoped to this setting and do not generalize beyond
     it without additional replication.
 \end{description}
+
+These three external baselines are run under the same $B = 6$ logical-call cap
+as the frontier method. L1 is a support-count, self-consistency-inspired answer
+aggregation baseline; S1 adapts the budget-forcing inference idea from s1; and
+TALE is a token-budget-aware prompting baseline. Together they serve as
+independently sourced external reference signals for FTA.

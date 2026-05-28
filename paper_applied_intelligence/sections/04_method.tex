@@ -58,8 +58,8 @@ Conceptually, FTA uses three abstract predicates.
 \textsc{WeakFrontier}$(x)$ is true when the frontier trace indicates low support
 or a single-branch selection.
 \textsc{ExternalMajority}$(x)$ returns an external answer when at least two of
-L1, S1, and TALE agree, with a deterministic fallback only when all three
-differ.
+L1, S1, and TALE agree \citep{wang2023selfconsistency,muennighoff2025s1,han2025token},
+with a deterministic fallback only when all three differ.
 \textsc{ExternalConsensusDisagree}$(x)$ is true when L1, S1, and TALE
 unanimously agree with one another and disagree with the frontier answer.
 The exact field-level realizations of these predicates are given in

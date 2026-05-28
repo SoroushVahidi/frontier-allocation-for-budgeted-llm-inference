@@ -22,10 +22,11 @@ minus each baseline on this split:
 \end{itemize}
 All three CI lower bounds are strictly positive on this split.
 
-\paragraph{Aggregate-720 (primary).}
-The primary claim rests on the disjoint Aggregate-720 evaluation combining
-three independent sources (seeds 41, 61, 71; comprising 300, 120, and 300
-examples respectively, with no example-id or question-hash overlap).
+\paragraph{Aggregate-720 (disjoint robustness aggregate).}
+The Aggregate-720 evaluation combines three disjoint sources (seeds 41, 61, 71;
+comprising 300, 120, and 300 examples respectively, with no example-id or
+question-hash overlap) and provides a stress-robustness check across
+independently sampled splits, including the failure-enriched seed~61.
 FTA reaches \textbf{80.69\%} (581/720), versus L1 77.64\% (559/720),
 S1 77.08\% (555/720), and TALE 75.14\% (541/720).
 Source-stratified bootstrap 95\% confidence intervals (5\,000 resamples):

@@ -3,14 +3,18 @@
 
 We presented the \textbf{Failure-Trace Allocator (FTA)}, a deterministic,
 gold-free answer-selection policy for matched-budget LLM inference.
-On the primary Aggregate-720 evaluation (three disjoint seeds, zero overlap),
-FTA achieves 80.69\% (581/720) versus L1 77.64\%, S1 77.08\%, and TALE
-75.14\%.
+On the primary unbiased evaluation set (Final-300, seed~71, $n=300$), FTA
+reaches 86.67\% (260/300) versus 83.00\% (L1), 82.00\% (S1), and 78.33\%
+(TALE), with strictly positive paired bootstrap CI lower bounds on all three
+comparisons.
+On the disjoint Aggregate-720 robustness evaluation (seeds 41, 61, 71; zero
+overlap), FTA achieves 80.69\% (581/720) versus L1 77.64\%, S1 77.08\%, and
+TALE 75.14\%.
 Source-stratified 95\% bootstrap confidence intervals are strictly positive
-for all four external baseline comparisons, with the lower bound versus the
-best external at $+1.11$~pp.
-On the Final-300 evaluation (seed~71, $n=300$), FTA reaches 86.67\% (260/300),
-compared to 83.00\% for L1, 82.00\% for S1, and 78.33\% for TALE.
+for all four comparisons (vs.\ L1, S1, TALE, and the source-local best
+external), with the lower bound versus the best external at $+1.11$~pp.
+Seed~61 is failure-enriched and is included for stress coverage; the
+source-stratified intervals account for its higher difficulty.
 
 The policy consists of two rule-based gates applied in strict priority order.
 The Low-Depth Guard (LDG) detects structurally weak frontier search branches

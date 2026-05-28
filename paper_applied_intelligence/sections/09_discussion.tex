@@ -81,7 +81,7 @@ The point-estimate advantage of FTA is consistent across all three seeds,
 which is the primary reason the aggregate CIs no longer include zero.
 
 \paragraph{Multi-provider supporting evidence.}
-As supporting evidence for the generality of the failure-trace signal,
+As supporting evidence for the failure-trace signal,
 a preliminary multi-provider experiment (D9) trains a learned gate on the same
 failure-trace features across three providers.
 Cross-validated accuracy on the D9 gate reaches $0.5018 \pm 0.0252$ against a
@@ -90,10 +90,9 @@ providers and decision thresholds.
 The Cloudrift/Qwen provider contributes the strongest rescue signal
 (frontier 37.5\%, D6-gated 55.0\%, 24 unique-correct outcomes, zero
 regressions with lenient extraction).
-These results are consistent with the hypothesis that frontier structural
-weakness is a provider-independent signal, but the evaluation scope is
-preliminary (80--160 examples per provider); the findings constitute
-supporting evidence, not a second primary claim.
+These results are suggestive rather than conclusive about broader utility, but
+the evaluation scope is preliminary (80--160 examples per provider); the
+findings constitute supporting evidence, not a second primary claim.
 Broader multi-provider evaluation at matched scale is a natural next step.
 
 \paragraph{Evidence scope and generalization.}

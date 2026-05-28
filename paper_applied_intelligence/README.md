@@ -17,8 +17,8 @@ This directory is the Applied Intelligence Journal working manuscript, bootstrap
 
 ## Compile locally
 ```bash
-cd paper_ml_journal
-make pdf
+cd paper_applied_intelligence
+latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 ```
 
 ## Overleaf setup
