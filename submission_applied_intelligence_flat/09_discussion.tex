@@ -1,0 +1,106 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Why failure-trace gating is effective.}
+The two gates in FTA target failure modes that are identifiable at runtime
+without any access to gold labels.
+The Low-Depth Guard (LDG) addresses a structural weakness: when the frontier
+search terminates with a single weak branch---signalled by the logged
+override-reason field---the resulting answer is drawn from a narrow slice of
+the candidate space.
+In such cases, the external majority vote is empirically more reliable.
+The External-Consensus Fallback (ECO) targets a complementary pattern: when
+the frontier selected its answer with high internal confidence, yet all three
+independent external baselines unanimously prefer a different answer, that
+unanimous disagreement provides strong evidence that the frontier selection
+is wrong.
+Both signals are available as logged metadata from normal frontier execution;
+no additional inference or labelling is required.
+
+\paragraph{When FTA helps and when it does not.}
+FTA provides the greatest benefit on examples where the frontier's failure mode
+is structurally signalled---narrow search depth or unanimous external
+disagreement---because these are precisely the cases the two gates are designed
+to detect.
+In the Final-300 evaluation, LDG fires on 63 of 300 examples (21.0\%) and
+yields 36 wins against 9 losses versus the frontier, while ECO fires on only
+3 examples (1.0\%) with zero losses.
+The no-gate majority (234/300, 78.0\%) retains the frontier answer with 94.4\%
+accuracy, indicating that the frontier is reliable on most examples and the
+policy correctly defers to it.
+
+FTA does not help---and cannot---when all methods in the candidate pool produce
+incorrect answers for the same example.
+This \emph{pool-miss} failure class accounts for 24 of the 40 residual errors
+on Final-300 (60\%), representing an irreducible floor for any post-generation
+selection policy operating over the current pool.
+Additionally, the ECO gate requires unanimous external agreement, so cases
+where the external baselines partially but not unanimously disagree with the
+frontier are handled by the frontier default.
+Extending the method to handle partial agreement would require stronger
+statistical justification, as such cases showed more ambiguous outcomes in
+development.
+
+The current evaluation is scoped to GSM8K under the Cohere
+command-r-plus-08-2024 setting.
+Preliminary evidence on other providers (Section~\ref{sec:limitations}) suggests
+the failure-trace signal may have broader utility, but the main findings should
+not be extrapolated to other benchmarks or providers without independent
+replication.
+
+\paragraph{Not-retained variants.}
+Several algorithmic extensions were developed and evaluated during the research
+but did not meet validation-grade evidence criteria
+(Table~\ref{tab:negative_results}).
+A TALE-default router produced zero net switching effect across evaluation
+seeds, equalling TALE performance exactly on seeds~41 and~61, because the
+assumed agreement region did not materialise consistently.
+An extra-action variant---collecting additional frontier or retry actions for
+predicted failure cases---showed a non-negative initial signal in a 40-case
+pilot but failed to replicate on a disjoint 80-case follow-up
+(net $-1$ for extra frontier actions; net $-4$ for TALE retries), suggesting
+the pilot signal was run-specific rather than generalisable.
+A cluster-level selector yielded only limited offline gain without sufficient
+aggregate validation.
+These outcomes indicate that rule-based post-generation selection gains within
+the current pool composition are likely close to saturation, and further
+improvements will require better candidate generation or learned allocation
+policies.
+
+\paragraph{Evidence from the Aggregate-720 evaluation.}
+The most substantive evidence shift in this work is the transition from a
+single-run 300-example evaluation (seed~41, where the CI lower bound vs.\ L1
+crossed zero at $[-0.48,\, +5.71]$) to the disjoint Aggregate-720 evaluation
+(seeds 41, 61, 71).
+By combining three independently sampled evaluation splits, the
+source-stratified bootstrap CI narrows sufficiently that the lower bound
+versus every external baseline is strictly positive.
+The source-stratified design controls for seed-specific variance, and the
+zero-overlap check on example-id and question-hash confirms independence.
+The point-estimate advantage of FTA is consistent across all three seeds,
+which is the primary reason the aggregate CIs no longer include zero.
+
+\paragraph{Multi-provider supporting evidence.}
+As supporting evidence for the failure-trace signal,
+a preliminary multi-provider experiment (D9) trains a learned gate on the same
+failure-trace features across three providers.
+Cross-validated accuracy on the D9 gate reaches $0.5018 \pm 0.0252$ against a
+frontier baseline of $0.3436$, with zero false-override events across all tested
+providers and decision thresholds.
+The Cloudrift/Qwen provider contributes the strongest rescue signal
+(frontier 37.5\%, D6-gated 55.0\%, 24 unique-correct outcomes, zero
+regressions with lenient extraction).
+These results are suggestive rather than conclusive about broader utility, but
+the evaluation scope is preliminary (80--160 examples per provider); the
+findings constitute supporting evidence, not a second primary claim.
+Broader multi-provider evaluation at matched scale is a natural next step.
+
+\paragraph{Evidence scope and generalization.}
+The main findings are scoped to the tested evaluation setting.
+What this evidence does \emph{not} establish is generalization beyond that
+scope: whether the same failure-trace signals are informative on other
+providers, benchmarks, or budget levels is an open empirical question.
+The most efficient next replication would be a second GSM8K provider run or a
+same-provider second benchmark with the identical frontier, L1, S1, and TALE
+logging contract.
+Section~\ref{sec:limitations} enumerates the scope boundaries explicitly.

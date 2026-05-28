@@ -1,0 +1,25 @@
+\begin{table*}[t]
+\centering
+\caption{Ablation variants and non-main method outcomes. Bold denotes the strongest retained-policy result in the main comparison block.}
+\label{tab:ablation}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{0.22\textwidth}p{0.24\textwidth}p{0.33\textwidth}c}
+\toprule
+Policy & Target failure mode & Accuracy / delta summary & Retained \\
+\midrule
+frontier original & baseline reference & final300=76.67\%; agg720=75.28\% & no \\
+FIX-1 support-aware & tie / present-not-selected & 77.00\% (delta vs frontier $+0.33$~pp) & no \\
+Low-Depth Guard (LDG) & single-weak-frontier-branch / low depth & 80.00\% & no (superseded by Failure-Trace Allocator (FTA)) \\
+FIX-3 calibration & score-absent non-weak-frontier edge cases & 73.00\% (applied 0 cases) & no \\
+External-Consensus Fallback (ECO) & direct-frontier-agree + unanimous external disagreement & 75.00\% alone; 82.00\% with Low-Depth Guard (LDG) & part of Failure-Trace Allocator (FTA) \\
+\textbf{Failure-Trace Allocator (FTA)} & low-depth + external-consensus & final300=86.67\%; agg720=80.69\% & \textbf{yes} \\
+FIX-1+2+3+4 & combined heuristic stack & 81.00\% & no \\
+FIX-5 TALE-default router & agreement-region switching & overnight300=80.33\%; final300=78.67\% & no \\
+FIX-6 extra-action variant & residual errors needing extra action & net vs Failure-Trace Allocator (FTA): frontier $-1$, TALE $-4$ & no \\
+FIX-7 cluster selector & cluster-level reranking / parser guards & best-rule local delta vs Failure-Trace Allocator (FTA): $+0.67$~pp & no \\
+FIX-8 robust parser & parser/canonicalization errors & final300 delta $+0.00$~pp; agg720 $+0.00$~pp & no \\
+FIX-9 pool-miss detector & generation-limited residuals & 23/24 all-methods wrong generation-likely; 0 rule opportunities & no \\
+\bottomrule
+\end{tabular}}
+\end{table*}

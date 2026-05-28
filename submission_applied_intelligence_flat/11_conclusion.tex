@@ -1,0 +1,56 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented the \textbf{Failure-Trace Allocator (FTA)}, a deterministic,
+gold-free answer-selection policy for matched-budget LLM inference.
+On the primary unbiased evaluation set (Final-300, seed~71, $n=300$), FTA
+reaches 86.67\% (260/300) versus 83.00\% (L1), 82.00\% (S1), and 78.33\%
+(TALE), with strictly positive paired bootstrap CI lower bounds on all three
+comparisons.
+On the disjoint Aggregate-720 robustness evaluation (seeds 41, 61, 71; zero
+overlap), FTA achieves 80.69\% (581/720) versus L1 77.64\%, S1 77.08\%, and
+TALE 75.14\%.
+Source-stratified 95\% bootstrap confidence intervals are strictly positive
+for all four comparisons (vs.\ L1, S1, TALE, and the source-local best
+external), with the lower bound versus the best external at $+1.11$~pp.
+Seed~61 is failure-enriched and is included for stress coverage; the
+source-stratified intervals account for its higher difficulty.
+
+The policy consists of two rule-based gates applied in strict priority order.
+The Low-Depth Guard (LDG) detects structurally weak frontier search branches
+using logged failure-trace metadata and substitutes the external majority
+answer.
+The External-Consensus Fallback (ECO), a low-frequency high-precision
+safeguard in this evaluation, identifies cases where all three external
+baselines unanimously disagree with the frontier's selection, overriding
+to the consensus answer.
+Both gates are gold-free: no correctness labels, example identifiers, or
+artifact paths are accessed at runtime, and no additional inference calls are
+issued after candidate generation.
+The rules, trigger conditions, and exact field names are fully specified in
+Table~\ref{tab:policy_rules} and Table~\ref{alg:fix24}, with reproducibility
+details documented in the appendix.
+
+As supporting preliminary evidence, a multi-provider regime-learning experiment (D9) using
+the same failure-trace signal achieves a cross-validated accuracy of
+$0.5018 \pm 0.0252$ against a frontier baseline of $0.3436$, with zero
+false-override events across all tested providers and thresholds.
+These preliminary results are suggestive of possible transfer beyond the
+main provider setting, but they do not establish provider-independent
+utility; a full multi-provider evaluation at matched scale remains for
+future work.
+
+Failure analysis of the 40 residual errors on Final-300 shows that 24 (60\%)
+are \emph{all-methods-wrong} cases in which no evaluated method produced the
+correct answer; the dominant subtype is multi-step composition failures
+(10/24) where the error is embedded in intermediate reasoning rather than in
+the final selection step.
+Further accuracy gains in this setting are therefore likely to require
+advances in candidate generation rather than selection policy alone.
+
+Future directions include learned allocation policies that replace the
+deterministic gates with calibrated classifiers, evaluation on broader
+datasets and provider families, stronger candidate-pool construction
+strategies that reduce the pool-miss failure class, and extension to
+multi-turn or open-ended generation settings where failure-trace signals may
+take different structural forms.

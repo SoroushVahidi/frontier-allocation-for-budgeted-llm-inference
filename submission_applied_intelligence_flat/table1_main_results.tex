@@ -1,0 +1,23 @@
+\begin{table*}[t]
+\centering
+\caption{Main validated results (final300 and aggregate720). Deltas are percentage points vs baselines on aggregate720.}
+\label{tab:main_results}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccccc}
+\toprule
+Policy & Final300 Acc. & Final300 c/n & Agg720 Acc. & Agg720 c/n & $\Delta$vsL1 & $\Delta$vsS1 & $\Delta$vsTALE & Retained policy \\
+\midrule
+frontier original & 76.67 & 230/300 & 75.28 & 542/720 & $-2.36$ & $-1.81$ & $+0.14$ & no \\
+Low-Depth Guard (LDG) & 85.67 & 257/300 & 80.00 & 576/720 & $+2.36$ & $+2.92$ & $+4.86$ & no \\
+\textbf{Failure-Trace Allocator (FTA)} & \textbf{86.67} & \textbf{260/300} & \textbf{80.69} & \textbf{581/720} & $\mathbf{+3.06}$ & $\mathbf{+3.61}$ & $\mathbf{+5.56}$ & \textbf{yes} \\
+FIX-5 & 78.67 & 236/300 & 75.28 & 542/720 & $-2.36$ & $-1.81$ & $+0.14$ & no \\
+Pooled-4 ensemble & 84.33 & 253/300 & 79.86 & 575/720 & $+2.22$ & $+2.78$ & $+4.72$ & no \\
+External-3 ensemble & 85.33 & 256/300 & 80.28 & 578/720 & $+2.64$ & $+3.19$ & $+5.14$ & no \\
+L1 & 83.00 & 249/300 & 77.64 & 559/720 & 0.00 & $+0.56$ & $+2.50$ & no \\
+S1 & 82.00 & 246/300 & 77.08 & 555/720 & $-0.56$ & 0.00 & $+1.94$ & no \\
+TALE & 78.33 & 235/300 & 75.14 & 541/720 & $-2.50$ & $-1.94$ & 0.00 & no \\
+best external & 83.00 & 249/300 (L1) & 77.64 & 559/720 (L1) & 0.00 & $+0.56$ & $+2.50$ & no \\
+\bottomrule
+\end{tabular}}
+\end{table*}

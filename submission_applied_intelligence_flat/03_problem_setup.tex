@@ -1,0 +1,114 @@
+\subsection{Problem Setup}
+\label{sec:problem_setup}
+
+We study \emph{fixed-pool answer selection under a matched-budget inference
+contract}.
+The task is: given a set of candidate answers already produced by a collection
+of inference methods under an equal per-method budget, select the best final
+answer without issuing additional provider calls and without access to
+ground-truth labels at decision time.
+
+\paragraph{Problem instance.}
+Each instance comprises a question $q$, a \emph{candidate pool}
+$\mathcal{C}(q) = \{a_F, a_{L1}, a_{S1}, a_{T}\}$ of four final-answer
+candidates generated under the matched-budget protocol
+(Section~\ref{sec:experiments}), and failure-trace metadata $m_F(q)$ produced
+as a byproduct of the frontier method's normal execution.
+A ground-truth answer $y(q)$ exists but is withheld at runtime; it is used only
+for offline evaluation.
+The selection policy maps $(\mathcal{C}(q),\, m_F(q)) \to \hat{a}(q) \in
+\mathcal{C}(q)$.
+
+\paragraph{Candidate pool and budget accounting.}
+The candidate pool is constructed once per evaluation run.
+The four candidate-generating methods each produce one final-answer candidate per
+example under a cap of $B = 6$ logical API calls: the frontier method and three
+external baselines (L1, S1, and TALE).
+Full candidate-pool construction therefore requires $4 \times B = 24$ logical
+inference calls per example.
+The answer-selection policy (FTA) is applied \emph{after} pool construction:
+it selects among already-generated candidates and issues \emph{no} additional
+inference calls.
+
+\paragraph{Runtime-visible vs.\ offline-only information.}
+All inputs to the selection policy are runtime-visible and gold-free: the
+frontier answer, the three external answers, and failure-trace metadata derived
+from the frontier method's logged execution.
+Ground-truth labels, exact-match signals, and correctness indicators are
+\emph{never} inputs to any policy decision; they are used only offline for
+evaluation and failure analysis.
+The oracle accuracy (92.00\% on Final-300) is a diagnostic upper bound computed
+offline with gold labels; it is not a comparison baseline.
+
+Evaluation results are reported on:
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item Final-300 (seed~71, $n=300$): the primary unbiased evaluation set,
+    \item Aggregate-720 (seeds 41, 61, 71; $n=300+120+300$): a broader
+          disjoint aggregate used as supporting robustness evidence within the
+          same experimental regime, with zero example-id and question-hash
+          overlap across sources,
+    \item Seed~61 ($n=120$): a failure-enriched development split; absolute
+          accuracy on this split is not representative of standard evaluation
+          conditions and is not used to derive primary claims.
+\end{itemize}
+
+\subsection{Terminology}
+\label{sec:terminology}
+
+The following terms are used consistently throughout the paper.
+Short paper-facing names are used for readability; the corresponding
+implementation identifiers are preserved in Table~\ref{tab:name_mapping} for
+reproducibility.
+
+\begin{description}[leftmargin=2.2cm, labelwidth=2cm, labelsep=0.2cm, style=nextline]
+  \item[Candidate pool] The set of final answers produced by the available
+    methods (frontier and external baselines) for a given example.
+    Candidate-pool construction is separate from the downstream selection
+    policy.
+  \item[Frontier method] The primary inference method whose answer serves as
+    the default output before any policy gate fires.
+    It produces failure-trace metadata as a side-effect of normal execution,
+    including structural indicators of search breadth and internal answer
+    agreement.
+  \item[Failure-trace metadata] Runtime-visible fields logged during frontier
+    execution that characterize the structural quality of the frontier's
+    search output (e.g., whether the selected answer arises from a single weak
+    branch or from an internally consistent exploration).
+    These fields are gold-free by construction.
+  \item[External baseline] Any of the three independently-sourced single-model
+    methods used as reference signals: L1, S1, or TALE.
+    External baselines provide gold-free consensus signals without access to
+    gold labels.
+  \item[L1] An external method that selects the answer with the highest support
+    count across sampled model outputs, following the self-consistency answer
+    aggregation principle \citep{wang2023selfconsistency}.
+  \item[S1] An external method that applies sequential budget-forcing to elicit
+    a final answer within the allocated budget \citep{muennighoff2025s1}.
+  \item[TALE] An external method that uses prompt-level budget cues to guide
+    answer selection \citep{han2025token}.
+  \item[Logical API call] A single provider inference request counted against a
+    candidate-producing method's budget.
+  \item[Budget] The integer upper bound $B = 6$ on logical API calls per
+    example for each candidate-producing method, applied identically to all
+    compared methods (matched-budget condition).
+  \item[Matched budget] All compared candidate-producing methods operate under
+    the same per-method budget cap $B$, ensuring that accuracy differences are
+    not confounded by unequal per-method computational limits.
+  \item[Gold-free runtime feature] Any input to a policy decision rule derived
+    solely from model outputs, run metadata, or structural properties of the
+    candidate pool---never from gold labels, exact-match signals, or
+    correctness indicators.
+  \item[Oracle upper bound] The accuracy achievable by a hypothetical policy
+    with offline access to gold labels, used only as a diagnostic ceiling.
+    It is not a baseline method.
+  \item[Provider-specific evidence] Results obtained from a particular
+    provider--model pairing (here, Cohere command-r-plus-08-2024).
+    Claims are explicitly scoped to this setting and do not generalize beyond
+    it without additional replication.
+\end{description}
+
+These three external baselines are run under the same $B = 6$ logical-call cap
+as the frontier method. L1 is a support-count, self-consistency-inspired answer
+aggregation baseline; S1 adapts the budget-forcing inference idea from s1; and
+TALE is a token-budget-aware prompting baseline. Together they serve as
+independently sourced external reference signals for FTA.

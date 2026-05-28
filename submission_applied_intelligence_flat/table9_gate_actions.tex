@@ -1,0 +1,17 @@
+\begin{table*}[t]
+\centering
+\caption{Gate-action decomposition for the retained FTA policy. ECO fires only after LDG does not fire. The final columns report correctness before and after ECO on the examples where ECO fires, relative to the original frontier answer.}
+\label{tab:gate_actions}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrrr}
+\toprule
+Split & $N$ & LDG fires & ECO fires & No gate & ECO before & ECO after & ECO W/L/T \\
+\midrule
+seed41 & 300 & 38 & 2 & 260 & 0/2 & 2/2 & 2/0/0 \\
+seed61 & 120 & 21 & 0 & 99 & 0/0 & 0/0 & 0/0/0 \\
+seed71 (Final-300) & 300 & 63 & 3 & 234 & 0/3 & 3/3 & 3/0/0 \\
+Aggregate-720 & 720 & 122 & 5 & 593 & 0/5 & 5/5 & 5/0/0 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

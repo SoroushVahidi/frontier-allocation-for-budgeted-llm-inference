@@ -1,0 +1,198 @@
+\subsection{Method}
+\label{sec:method}
+
+The main method, the \textbf{Failure-Trace Allocator (FTA)}, is an
+answer-selection layer applied \emph{after} candidate generation
+(Figure~\ref{fig:method_overview}).
+It does not generate new candidates and does not issue additional inference
+calls: it selects a final answer from already-produced frontier and external
+outputs under the same per-method budget cap.
+Its two gates---the \emph{Low-Depth Guard} and the
+\emph{External-Consensus Fallback}---fire in strict priority order; at most
+one gate acts per example.
+All runtime decisions are gold-free: no gold answer, exact-match signal, or
+correctness label is accessed.
+Implementation-name mapping is retained in Table~\ref{tab:name_mapping}.
+
+At each example, FTA consumes three classes of runtime-legal inputs:
+the frontier answer candidate, the three evaluated external-baseline answers,
+and failure-trace metadata emitted during normal frontier execution.
+The output is a single final answer plus an explicit policy outcome
+(\texttt{fix2}, \texttt{fix4}, or frontier retained), so every decision can be
+audited after the run using only logged runtime fields.
+This interface is intentionally narrow: the main method does not depend on
+learned scores or post-hoc labels.
+
+From an intelligent-systems perspective, FTA can be read as an
+instance-level selective deferral policy over a fixed candidate pool:
+rather than learning a new generator, it uses runtime-visible
+failure-trace and agreement signals to decide whether to retain the
+frontier answer or defer to an external-consensus answer under a
+matched-budget inference contract.
+This places the method in the same conceptual space as selective
+prediction, dynamic ensemble selection, and cost-aware LLM routing, while
+keeping the decision rule deterministic and auditable.
+
+\paragraph{Frontier generator and runtime metadata.}
+The frontier method (Section~\ref{sec:terminology}) produces each candidate by exploring
+multiple reasoning \emph{branches}, where a branch is one candidate trajectory and its
+\emph{depth} is the number of expansion steps from the root.
+As a side-effect of normal inference, the frontier logs four runtime-visible metadata
+fields that FTA consumes.
+\texttt{frontier\_support} is the integer count of branches that converge on the selected
+answer; a value of zero or one indicates a low-support, single-branch selection.
+\texttt{candidate\_pool\_answer\_group\_count} is the integer count of distinct answer
+equivalence classes across all branches explored, with higher values indicating greater
+internal disagreement.
+\texttt{override\_reason} is a string set by the frontier's internal selection step;
+the values \texttt{"single\_weak\_frontier\_branch"} (at most one branch supports the
+selected answer) and \texttt{"direct\_frontier\_agree"} (the frontier answer matches the
+frontier's own internal reference selection, indicating internal self-consistency) are the
+two states relevant to the LDG and ECO gates respectively.
+\texttt{direct\_frontier\_agree} is a boolean indicator of the same internal-consistency
+condition.
+All fields are recorded during ordinary inference without gold-label access; FTA uses them
+exactly as logged, making the decision boundary auditable from the run records.
+
+Conceptually, FTA uses three abstract predicates.
+\textsc{WeakFrontier}$(x)$ is true when the frontier trace indicates low support
+or a single-branch selection.
+\textsc{ExternalMajority}$(x)$ returns an external answer when at least two of
+L1, S1, and TALE agree \citep{wang2023selfconsistency,muennighoff2025s1,han2025token},
+with a deterministic fallback only when all three differ.
+\textsc{ExternalConsensusDisagree}$(x)$ is true when L1, S1, and TALE
+unanimously agree with one another and disagree with the frontier answer.
+The exact field-level realizations of these predicates are given in
+Table~\ref{alg:fix24} and Table~\ref{tab:policy_rules}; the raw log-field
+names are implementation details documented in the reproducibility appendix.
+
+The \emph{Low-Depth Guard} is motivated by a structural reliability pattern.
+When the frontier search terminates with a single weak branch---signalled by
+logged branch-trace metadata---the resulting candidate is treated as evidence
+of under-exploration.
+In such cases, routing to an external majority answer provides an independent
+cross-policy signal without spending extra compute.
+The \emph{External-Consensus Fallback} addresses a complementary pattern: if
+the frontier's selection is internally self-consistent yet all three external
+methods unanimously prefer a different answer, that unanimous disagreement is
+treated as high-confidence evidence that the frontier selection may be wrong.
+Partial external agreement (one or two externals disagreeing) is intentionally
+not used in the main method because it did not provide validation-grade evidence
+in the evaluation setting.
+
+Intuitively, if a runtime-identifiable subset has lower error under an
+alternative selector than under the frontier default, then deferring on that
+subset can improve expected accuracy in proportion to the subset frequency and
+the error-rate gap. The Low-Depth Guard (LDG) and External-Consensus Fallback
+(ECO) are gold-free heuristics designed to identify two such subsets from
+logged frontier metadata and external-baseline agreement.
+
+The control flow follows a strict precedence chain
+(Figure~\ref{fig:method_overview}, Table~\ref{tab:policy_rules}).
+The Low-Depth Guard is checked first; when it fires, the policy routes to an
+external majority answer and stops.
+This priority reflects the interpretation of the weak-frontier trace as a
+generation-quality warning: when exploration appears narrow, the policy does
+not additionally check external consensus.
+If LDG does not fire, the External-Consensus Fallback is checked; when that
+condition fires, the policy routes to the external unanimity answer.
+If neither gate fires, the frontier answer is retained.
+The default therefore preserves the original frontier method on all examples
+where neither high-confidence failure trace is present.
+Conflict handling is deterministic: at most one gate can act, and external
+majority ties are resolved by the fixed priority order documented in
+Table~\ref{tab:policy_rules}.
+That fallback is retained for reproducibility rather than claimed as optimal;
+the sensitivity noted in Table~\ref{tab:param_sensitivity} shows that
+alternative tie orders change Aggregate-720 replay by less than one
+percentage point.
+
+All trigger features are runtime-legal and gold-free by construction.
+They are computed only from model outputs and frontier trace metadata that are
+already visible at inference time, never from gold answers, exact-match
+signals, example identifiers, or artifact paths.
+Table~\ref{tab:feature_legality} gives the complete legality inventory,
+including allowed inputs and explicitly excluded fields.
+This legality boundary is central to the method definition, not only a
+reporting constraint.
+
+Relative to L1, S1, TALE, and the frontier baseline, FTA plays a different
+role in the stack.
+L1, S1, TALE, and frontier each provide candidate answers under the same
+matched per-method budget; FTA then decides whether to keep the frontier
+answer or override it using external agreement signals.
+This separation between candidate generation and final allocation is what
+allows the policy to improve selection quality without additional model calls.
+Observed gains come from switching the final answer on a small
+trace-identified subset of examples rather than from increasing inference
+budget.
+
+\subsection{Low-Depth Guard (LDG)}
+\label{sec:fix2}
+
+The Low-Depth Guard detects frontier answers arising from structurally weak
+search branches and replaces them with an external majority vote.
+The trigger relies exclusively on fields logged during the frontier run:
+the override-reason indicator and the candidate-pool group count.
+
+\subsection{External-Consensus Fallback (ECO)}
+\label{sec:fix4}
+
+The External-Consensus Fallback identifies examples where the frontier agreed
+with its own internal reserve selection, yet all three external baselines
+unanimously chose a different answer.
+When this unanimous disagreement holds, the policy substitutes the external
+consensus answer.
+
+\subsection{Combined Policy Summary}
+\label{sec:fix24_algorithm}
+
+Table~\ref{alg:fix24} gives the complete pseudocode using exact runtime field
+names.
+Parameter settings and implementation-name mapping are documented in the
+appendix reproducibility tables.
+
+\begin{table}[t]
+\centering
+\caption{Failure-Trace Allocator (FTA) combined policy.
+All inputs are gold-free runtime fields.
+Named constants and name mapping are documented in
+Table~\ref{tab:name_mapping} and Table~\ref{tab:policy_rules}.}
+\label{alg:fix24}
+\scriptsize
+\begin{tabular}{p{0.06\textwidth} p{0.88\textwidth}}
+\toprule
+\textbf{Step} & \textbf{Operation} \\
+\midrule
+\multicolumn{2}{l}{\textit{Inputs per example}} \\
+& \texttt{frontier\_answer}, \texttt{result\_metadata} (from frontier run logs) \\
+& \texttt{l1\_answer}, \texttt{s1\_answer}, \texttt{tale\_answer} (external baseline outputs) \\
+& \texttt{override\_reason}, \texttt{frontier\_support} $\in \mathbb{Z}_{\geq 0}$, \texttt{candidate\_pool\_answer\_group\_count} $\in \mathbb{Z}_{>0}$ \\
+\midrule
+\multicolumn{2}{l}{\textit{Step 1 --- Low-Depth Guard (LDG)}} \\
+1a & \textbf{if} \texttt{override\_reason} contains \texttt{"single\_weak\_frontier\_branch"} \\
+   & \quad \textbf{or} (\texttt{frontier\_support} $= 0$ \textbf{and} \texttt{candidate\_pool\_answer\_group\_count} $\geq 2$) \\
+   & \textbf{then:} \\
+1b & \quad Compute \texttt{ext} $\leftarrow$ majority answer among \{\texttt{l1}, \texttt{s1}, \texttt{tale}\} (at least 2 agree); \\
+   & \quad if no majority, use priority order TALE $\succ$ S1 $\succ$ L1 \\
+1c & \quad \textbf{if} \texttt{ext} exists \textbf{and} \texttt{ext} $\neq$ \texttt{frontier\_answer}: \\
+   & \quad\quad \textbf{return} \texttt{ext}, \texttt{policy} $\leftarrow$ \texttt{fix2} \quad\quad \textit{(guard fires; stop)} \\
+\midrule
+\multicolumn{2}{l}{\textit{Step 2 --- External-Consensus Fallback (ECO)}} \\
+2a & \textbf{if} \texttt{override\_reason} $=$ \texttt{"direct\_frontier\_agree"} \\
+   & \quad \textbf{and} \texttt{l1\_answer} $=$ \texttt{s1\_answer} $=$ \texttt{tale\_answer} \\
+   & \quad \textbf{and} \texttt{l1\_answer} $\neq$ \texttt{frontier\_answer} \\
+   & \textbf{then:} \\
+2b & \quad \textbf{return} \texttt{l1\_answer}, \texttt{policy} $\leftarrow$ \texttt{fix4} \quad\quad \textit{(consensus fallback fires; stop)} \\
+\midrule
+\multicolumn{2}{l}{\textit{Step 3 --- Default}} \\
+3  & \textbf{return} \texttt{frontier\_answer}, \texttt{policy} $\leftarrow$ \texttt{original} \\
+\midrule
+\multicolumn{2}{l}{\textit{Output}} \\
+& Selected answer and \texttt{policy} label; no gold labels accessed at any step. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The exact field-level trigger conditions are also tabulated in
+Table~\ref{tab:policy_rules} for reproducibility.

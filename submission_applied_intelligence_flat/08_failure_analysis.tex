@@ -1,0 +1,45 @@
+\subsection{Failure Analysis}
+\label{sec:failure_analysis}
+
+Table~\ref{tab:failure_taxonomy} and Figure~\ref{fig:failure_breakdown}
+classify the 40 residual errors in the Final-300 evaluation by root cause.
+Three categories emerge.
+\emph{All-methods-wrong} cases (24/40, 60.0\%) are examples where every
+evaluated method---the frontier generator and all three external
+baselines---produced an incorrect answer.
+Because no correct answer appears in the candidate pool, no selection policy
+can recover these cases; they represent a hard ceiling for the current
+approach.
+\emph{Parser/canonicalization failures} (12/40, 30.0\%) are cases where the
+correct numerical answer was present in the pool but not extracted or matched,
+due to format mismatches between the model's output format and the evaluation
+matcher.
+\emph{Present-not-selected} cases (4/40, 10.0\%) are cases where the correct
+answer was available in the pool but the FTA selection policy did not surface
+it.
+
+Within the all-methods-wrong category, the dominant subtype is
+\emph{multi-step composition traps} (10/24), problems where the error is
+embedded in intermediate reasoning rather than in the final answer selection
+step.
+Near-miss numeric errors (5/24), different-wrong-answer divergence with no
+correct cluster (4/24), and false consensus (2/24)---where all methods agree
+on the same incorrect answer---account for most of the remainder.
+False-consensus cases are the most resistant to any selection-based
+intervention: unanimous agreement provides no gating signal when the
+consensus itself is wrong.
+
+These findings directly inform the scope of FTA and the directions for future
+work.
+The all-methods-wrong class (60\% of failures) is generation-limited:
+addressing it requires either stronger base generators or training-time
+interventions that improve coverage of hard compositional patterns, not better
+post-hoc selection policies.
+The parser/canonicalization class (30\% of failures) is potentially tractable
+with improved answer normalization; however, the FIX-8 prototype (robust
+parser/canonicaliser; see Table~\ref{tab:ablation}) produced zero
+accuracy-changing switches in this setting, suggesting the problem is subtler
+than simple string-matching improvements.
+The present-not-selected class (10\% of failures) represents the only residual
+opportunity that a selection policy could in principle address without improved
+candidate generation.

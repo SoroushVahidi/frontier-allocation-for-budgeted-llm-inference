@@ -1,0 +1,44 @@
+\appendix
+\section{Reproducibility and Supplementary Material}
+\label{sec:appendix_repro}
+This appendix collects reproducibility information, additional result decompositions,
+parameter grounding, runtime feature legality, and paper-facing name mappings.
+
+\input{tableA1_reproducibility}
+
+\clearpage
+\subsection*{Additional Result Decompositions}
+
+The following tables give the per-example win/loss/tie decomposition
+(Table~\ref{tab:wlt}) and supported versus unsupported claim examples
+(Table~\ref{tab:claim_language}).
+
+\input{tableA2_win_loss_tie}
+\input{tableA3_safe_unsafe_claims}
+
+\clearpage
+\subsection*{Parameter Grounding and Sensitivity}
+
+Table~\ref{tab:param_sensitivity} documents the key parameters and design choices
+used in Failure-Trace Allocator (FTA), including their values, roles, and available robustness evidence.
+
+\input{tableA4_parameter_sensitivity}
+
+\clearpage
+\subsection*{Runtime Feature Legality}
+
+Table~\ref{tab:feature_legality} lists all features used by Failure-Trace Allocator (FTA) at
+inference time and confirms their gold-free status.
+
+\input{tableA5_feature_legality}
+
+\clearpage
+\subsection*{Paper-Facing Name Mapping}
+
+Table~\ref{tab:name_mapping} maps paper-facing short names to their
+implementation identifiers, roles, runtime availability, and gold-free status.
+
+\input{tableA6_name_mapping}
+
+% Statements and Declarations are consolidated in statements_and_declarations.tex
+% and appear in the main body after Acknowledgements.
