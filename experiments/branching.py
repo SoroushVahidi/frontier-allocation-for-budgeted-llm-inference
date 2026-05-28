@@ -888,6 +888,18 @@ class APIBranchGenerator:
                 return content
         raise RuntimeError("Azure OpenAI API returned no text output.")
 
+    @staticmethod
+    def _cloudrift_extra_payload(provider: str, model: str) -> dict:
+        """Return provider-specific extra payload keys for Cloudrift/Qwen3.
+
+        Qwen3 defaults to thinking mode, which consumes the entire token budget
+        on reasoning and returns content=None.  Disable it for short-answer tasks.
+        Only applied when provider is cloudrift/cloudrift_ai AND model contains 'qwen'.
+        """
+        if provider in {"cloudrift", "cloudrift_ai"} and "qwen" in model.lower():
+            return {"chat_template_kwargs": {"enable_thinking": False}}
+        return {}
+
     def _call_openai_compatible_chat_api(self, prompt: str) -> str:
         """Generic OpenAI-compatible /v1/chat/completions call (Fireworks, Cloudrift AI, etc.)."""
         headers = {"Content-Type": "application/json"}
@@ -902,6 +914,7 @@ class APIBranchGenerator:
             ],
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
+            **self._cloudrift_extra_payload(self.provider, self.model),
         }
 
         retry_attempts = self.retry_max_attempts
@@ -976,8 +989,8 @@ class APIBranchGenerator:
             content = message.get("content")
             if isinstance(content, str) and content.strip():
                 return content
-            # Reasoning/thinking models (e.g. Cloudrift Qwen3) return content=null
-            # and put the actual output in message.reasoning instead.
+            # Safety fallback: if thinking mode was not suppressed (e.g. non-Qwen
+            # Cloudrift model or future provider), surface reasoning as a last resort.
             reasoning = message.get("reasoning")
             if isinstance(reasoning, str) and reasoning.strip():
                 return reasoning
