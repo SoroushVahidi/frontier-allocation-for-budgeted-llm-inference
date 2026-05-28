@@ -4,7 +4,7 @@
 **Branch:** `main`  
 **HEAD commit (at pause):** `86df796b` — *repo: clean pause-state housekeeping* (pass 2)  
 **Final cleanup commit:** `8f329bb5` — *repo: finalize cleanup before project pause*  
-**Final repair commit:** pending → will be set after push  
+**Final repair commit:** `b02998e4` — *repo: finalize tracked-output cleanup before pause*  
 **Origin in sync:** YES (after final repair push)
 
 > **Cleanup pass 2 (same date):** Fixed `.gitignore` pattern for Applied Intelligence submission zips (`applied_intelligence_fta_*latex*.zip`); pruned 3 stale missing worktree references. No scientific content changed.
