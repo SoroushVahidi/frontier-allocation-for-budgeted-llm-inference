@@ -345,3 +345,21 @@ outputs/outcome_verifier_answer_group_selector_*/**/logs/**
 outputs/outcome_verifier_answer_group_selector_*/**/progress_heartbeat.jsonl
 outputs/outcome_verifier_answer_group_selector_*/**/compressed_*.tar.gz
 .aider*
+
+# Local manuscript submission packages and draft PDFs (never version-control)
+submission_package/
+submission_applied_intelligence_flat.zip
+main.pdf
+
+# Local session scratch files
+backup_files.txt
+edited_files.txt
+files_excluded_from_manuscript_commit.txt
+files_to_stage_for_manuscript_commit.txt
+cloudrift_env_presence_redacted.txt
+cloudrift_minimal_smoke_test_command_do_not_run.sh
+debug_json.py
+prepare_critique_case.py
+
+# Root-level Cloudrift investigation scratch notes (move to docs/ before tracking)
+/CLOUDRIFT_*.md
