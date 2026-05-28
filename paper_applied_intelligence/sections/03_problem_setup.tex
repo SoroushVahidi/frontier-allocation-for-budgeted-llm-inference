@@ -43,9 +43,10 @@ offline with gold labels; it is not a comparison baseline.
 Evaluation results are reported on:
 \begin{itemize}[nosep,leftmargin=1.5em]
     \item Final-300 (seed~71, $n=300$): the primary unbiased evaluation set,
-    \item Aggregate-720 (seeds 41, 61, 71; $n=300+120+300$): the primary claim
-          set combining three disjoint sources, with zero example-id and
-          question-hash overlap across sources,
+    \item Aggregate-720 (seeds 41, 61, 71; $n=300+120+300$): a broader
+          disjoint aggregate used as supporting robustness evidence within the
+          same experimental regime, with zero example-id and question-hash
+          overlap across sources,
     \item Seed~61 ($n=120$): a failure-enriched development split; absolute
           accuracy on this split is not representative of standard evaluation
           conditions and is not used to derive primary claims.

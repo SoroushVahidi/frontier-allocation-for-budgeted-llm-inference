@@ -80,18 +80,12 @@ Partial external agreement (one or two externals disagreeing) is intentionally
 not used in the main method because it did not provide validation-grade evidence
 in the evaluation setting.
 
-\paragraph{Selective-recovery proposition.}
-Let $S$ be a runtime-identifiable subset of examples.
-Let $e_F(S)$ be frontier error rate on $S$ and $e_M(S)$ be external-majority
-error rate on $S$.
-If $e_F(S) > e_M(S)$, then replacing frontier with external majority on $S$
-improves expected accuracy by
-\[
-  P(S)\,\bigl(e_F(S)-e_M(S)\bigr).
-\]
-The Low-Depth Guard (LDG) and External-Consensus Fallback (ECO) are
-gold-free empirical heuristics intended to identify such subsets without using
-correctness labels at runtime.
+Intuitively, if a runtime-identifiable subset has lower error under an
+alternative selector than under the frontier default, then deferring on that
+subset can improve expected accuracy in proportion to the subset frequency and
+the error-rate gap. The Low-Depth Guard (LDG) and External-Consensus Fallback
+(ECO) are gold-free heuristics designed to identify two such subsets from
+logged frontier metadata and external-baseline agreement.
 
 The control flow follows a strict precedence chain
 (Figure~\ref{fig:method_overview}, Table~\ref{tab:policy_rules}).
