@@ -2,8 +2,10 @@
 
 **Pause date:** 2026-05-28  
 **Branch:** `main`  
-**HEAD commit (at pause):** `5b780df8` — *analysis: audit Cohere MATH-500 failure pool*  
+**HEAD commit (at pause):** `ad9cbe09` — *repo: checkpoint project state before pause*  
 **Origin in sync:** YES
+
+> **Cleanup pass 2 (same date):** Added `.gitignore` pattern for Applied Intelligence submission zips (`applied_intelligence_fta_*_latex_*.zip`); pruned 3 stale worktree references whose directories were already missing. No scientific content changed.
 
 Read `docs/CURRENT_CANONICAL_STATE_20260527.md` for the full evidence summary.  
 Read `docs/LATEST_RESULTS_AND_CLAIMS.md` for the safe/unsafe claim list.
