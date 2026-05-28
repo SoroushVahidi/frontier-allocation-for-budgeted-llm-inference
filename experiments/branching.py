@@ -471,7 +471,7 @@ class APIBranchGenerator:
             return self._call_groq_chat_api(prompt)
         if self.provider == "azure_openai":
             return self._call_azure_chat_api(prompt)
-        if self.provider in {"fireworks", "cloudrift_ai"}:
+        if self.provider in {"fireworks", "cloudrift_ai", "cloudrift"}:
             return self._call_openai_compatible_chat_api(prompt)
         return self._call_responses_api(payload)
 

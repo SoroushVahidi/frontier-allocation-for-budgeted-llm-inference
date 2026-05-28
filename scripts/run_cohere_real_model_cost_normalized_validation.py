@@ -518,7 +518,7 @@ def normalize_providers(args: argparse.Namespace) -> list[str]:
     else:
         providers = parse_csv_list(args.providers)
     normed = [p.strip().lower() for p in providers if p.strip()]
-    allowed = {"cohere", "openai", "cerebras", "mistral", "azure_openai", "fireworks", "cloudrift_ai"}
+    allowed = {"cohere", "openai", "cerebras", "mistral", "azure_openai", "fireworks", "cloudrift_ai", "cloudrift"}
     bad = [p for p in normed if p not in allowed]
     if bad:
         raise ValueError(f"Unsupported provider(s): {bad}; allowed={sorted(allowed)}")
@@ -1274,6 +1274,7 @@ def main() -> None:
         "cerebras": args.cerebras_model,
         "azure_openai": args.azure_model,
         "fireworks": args.fireworks_model,
+        "cloudrift": args.cloudrift_model,
         "cloudrift_ai": args.cloudrift_model,
     }
     provider_status: dict[str, dict[str, str]] = {}
@@ -1306,7 +1307,7 @@ def main() -> None:
             elif provider == "fireworks":
                 ok = bool(os.getenv("FIREWORKS_API_KEY", ""))
                 reason = "api_key_present" if ok else "api_key_missing"
-            elif provider == "cloudrift_ai":
+            elif provider in ("cloudrift_ai", "cloudrift"):
                 ok = bool(os.getenv("CLOUDRIFT_API_KEY", "") or os.getenv("RIFT_API_KEY", ""))
                 reason = "api_key_present" if ok else "api_key_missing"
             else:
@@ -1344,6 +1345,7 @@ def main() -> None:
         "cerebras": os.getenv("CEREBRAS_API_KEY", ""),
         "azure_openai": os.getenv("AZURE_OPENAI_API_KEY", ""),
         "fireworks": os.getenv("FIREWORKS_API_KEY", ""),
+        "cloudrift": os.getenv("CLOUDRIFT_API_KEY", "") or os.getenv("RIFT_API_KEY", ""),
         "cloudrift_ai": os.getenv("CLOUDRIFT_API_KEY", "") or os.getenv("RIFT_API_KEY", ""),
     }
     ov_verifier_env = {
@@ -1367,6 +1369,11 @@ def main() -> None:
         atexit.register(lambda: configure_logical_api_call_budget(None))
     else:
         configure_logical_api_call_budget(None)
+
+    provider_base_urls = {
+        "cloudrift": os.getenv("CLOUDRIFT_BASE_URL"),
+        "cloudrift_ai": os.getenv("CLOUDRIFT_BASE_URL"),
+    }
 
     if not args.summarize_only:
         for provider in providers:
