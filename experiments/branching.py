@@ -291,7 +291,7 @@ class APIBranchGenerator:
             default_base_url = os.environ.get("AZURE_OPENAI_ENDPOINT", "https://api.openai.com/v1")
         elif self.provider == "fireworks":
             default_base_url = os.environ.get("FIREWORKS_BASE_URL", "https://api.fireworks.ai/inference/v1")
-        elif self.provider == "cloudrift_ai":
+        elif self.provider in {"cloudrift_ai", "cloudrift"}:
             default_base_url = os.environ.get("CLOUDRIFT_BASE_URL", "https://inference.cloudrift.ai/v1")
         else:
             default_base_url = "https://api.openai.com/v1"

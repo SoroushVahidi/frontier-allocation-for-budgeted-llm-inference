@@ -89,6 +89,23 @@ class TestPayloadIntegration:
         assert "chat_template_kwargs" in extra
         assert extra["chat_template_kwargs"]["enable_thinking"] is False
 
+    def test_cloudrift_alias_uses_cloudrift_base_url(self):
+        """'cloudrift' alias must route to inference.cloudrift.ai, not api.openai.com."""
+        import os
+        original = os.environ.get("CLOUDRIFT_BASE_URL")
+        os.environ["CLOUDRIFT_BASE_URL"] = "https://inference.cloudrift.ai/v1"
+        try:
+            gen = self._make_generator("cloudrift", "Qwen/Qwen3.6-35B-A3B-FP8")
+            assert "cloudrift.ai" in gen.base_url, (
+                f"'cloudrift' provider routed to wrong base_url: {gen.base_url}"
+            )
+            assert "openai.com" not in gen.base_url
+        finally:
+            if original is None:
+                os.environ.pop("CLOUDRIFT_BASE_URL", None)
+            else:
+                os.environ["CLOUDRIFT_BASE_URL"] = original
+
     def test_cloudrift_ai_qwen_payload_contains_extra_key(self):
         gen = self._make_generator("cloudrift_ai", "Qwen/Qwen3-32B")
         extra = APIBranchGenerator._cloudrift_extra_payload(gen.provider, gen.model)
