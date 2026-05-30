@@ -2,6 +2,21 @@
 
 ---
 
+## 2026-05-30 Update: Aggregate Terminology Harmonized
+
+Replaced residual "robustness aggregate" with "source-stratified supporting aggregate" in two body locations:
+
+- `sections/06_results.tex` — paragraph heading (Results §Aggregate-720 paragraph)
+- `tables/table2_source_by_source.tex` — table caption row label
+
+Same changes applied to `submission_applied_intelligence_single_tex/main.tex`.
+Zero "robustness aggregate" matches remain in any active source file.
+Three occurrences of "source-stratified supporting aggregate" now appear in each source (abstract, paragraph heading, table row).
+Both builds compiled: 28 pages, 0 BibTeX errors, 0 unresolved.
+Final zip recreated: `applied_intelligence_fta_single_tex_source_20260530.zip`.
+
+---
+
 ## 2026-05-30 Update: ECO Precision Wording Softened
 
 Replaced remaining overstrong "high-precision / highly precise" ECO language with cautious
