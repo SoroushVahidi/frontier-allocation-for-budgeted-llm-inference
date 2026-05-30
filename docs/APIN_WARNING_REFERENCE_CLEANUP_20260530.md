@@ -2,6 +2,21 @@
 
 ---
 
+## 2026-05-30 Update: Supporting Evidence Wording Clarified
+
+Four low-risk reviewer-risk reductions applied after skeptical manuscript review:
+
+- **D9 Introduction sentence** (`sections/01_introduction.tex`): "improves over the frontier under matched conditions" → "improves over the frontier baseline in cross-validation"
+- **Tier~2 jargon** (`sections/10_limitations.tex`): "Tier~2 supporting evidence" → "supplementary supporting evidence"
+- **D6-gated jargon** (`sections/09_discussion.tex`): "(frontier 37.5%, D6-gated 55.0%, 24 unique-correct outcomes, zero regressions with lenient extraction)" → "(frontier 37.5%, selector-gated 55.0%, 24 additional correct outcomes, zero regressions)"
+- **Dynamic ensemble selection citation** (`sections/04_method.tex`): added `\citep{cruz2015metades}` (key already in refs.bib)
+
+Same changes applied to `submission_applied_intelligence_single_tex/main.tex`.
+Both builds: 28 pages, 0 BibTeX errors, 0 unresolved.
+Final zip recreated: `applied_intelligence_fta_single_tex_source_20260530.zip`.
+
+---
+
 ## 2026-05-30 Update: Aggregate Terminology Harmonized
 
 Replaced residual "robustness aggregate" with "source-stratified supporting aggregate" in two body locations:
