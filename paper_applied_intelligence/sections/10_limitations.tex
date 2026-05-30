@@ -78,6 +78,12 @@ baselines---produce incorrect answers for the same example.
 The proposed policy cannot recover from this class, as no correct answer is
 present in the candidate pool.
 
+\paragraph{No formal risk-coverage objective.}
+FTA does not optimize a formal risk-coverage objective and does not provide
+formal risk-coverage guarantees; it is a deterministic rule-based policy that
+uses runtime signals to decide when to defer, without guarantees on coverage or
+selective risk \citep{geifman2017selectiveclassificationdeepneural,mozannar2023who}.
+
 \paragraph{Not-retained variants.}
 Follow-up prototypes were explored during development but did not meet
 validation-grade evidence criteria.

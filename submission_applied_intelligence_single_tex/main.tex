@@ -53,7 +53,7 @@ We evaluate on GSM8K using Cohere command-r-plus-08-2024 under a matched
 per-method cap of six logical inference calls per example.
 On the primary unbiased 300-example evaluation set (Final-300), FTA achieves
 \textbf{86.67\%} accuracy.
-On a disjoint 720-example robustness aggregate spanning three independent
+On a disjoint 720-example source-stratified supporting aggregate spanning three independent
 evaluation seeds, FTA achieves \textbf{80.69\%} accuracy versus 77.64\%~(L1),
 77.08\%~(S1), and 75.14\%~(TALE).
 Source-stratified 95\% bootstrap confidence intervals are strictly positive
@@ -200,6 +200,8 @@ Classical ensemble methods establish why simple voting can be robust when model 
 Selective prediction methods formalize abstention or fallback on subsets where a primary predictor is less reliable \citep{geifman2017selectiveclassificationdeepneural}.
 Calibration work studies when confidence-like quantities are trustworthy enough for such selective decisions \citep{guo2017calibrationmodernneuralnetworks}.
 FTA is closer to this selective-routing view than to pure ensembling: it keeps the frontier default on most examples and overrides only on a small runtime-identifiable subset.
+Learning-to-defer methods provide a related formalization of selective deferral, with algorithms designed to optimally assign predictions between a model and a human expert \citep{mozannar2023who,mao2023defer}.
+FTA adopts the same selective-deferral framing---deciding when to trust the frontier and when to defer to external signals---but uses a deterministic rule-based policy rather than a learned deferral objective, and defers within an automated candidate pool rather than to a human expert.
 
 \paragraph{Cost-aware routing, adaptive computation, and positioning.}
 Cost-aware routing systems such as FrugalGPT \citep{chen2023frugalgpt} and language-model cascades \citep{dohan2022language} reduce inference cost by deciding which model or stage to invoke for a given input.
@@ -694,8 +696,8 @@ five are correct.
 The same pattern holds on Final-300, where ECO fires on three examples and
 contributes three wins, zero losses, and zero ties relative to the frontier
 answer and to LDG-only replay.
-Accordingly, ECO should be interpreted as a low-frequency high-precision
-safeguard in this evaluation, not as a standalone high-coverage component
+Accordingly, ECO should be interpreted as a low-frequency safeguard that
+fires without regressions in this evaluation, not as a standalone high-coverage component
 with independent statistical reliability.
 Most of the aggregate recovery mass comes from LDG.
 
@@ -1263,6 +1265,12 @@ baselines---produce incorrect answers for the same example.
 The proposed policy cannot recover from this class, as no correct answer is
 present in the candidate pool.
 
+\paragraph{No formal risk-coverage objective.}
+FTA does not optimize a formal risk-coverage objective and does not provide
+formal risk-coverage guarantees; it is a deterministic rule-based policy that
+uses runtime signals to decide when to defer, without guarantees on coverage or
+selective risk \citep{geifman2017selectiveclassificationdeepneural,mozannar2023who}.
+
 \paragraph{Not-retained variants.}
 Follow-up prototypes were explored during development but did not meet
 validation-grade evidence criteria.
@@ -1294,8 +1302,8 @@ The policy consists of two rule-based gates applied in strict priority order.
 The Low-Depth Guard (LDG) detects structurally weak frontier search branches
 using logged failure-trace metadata and substitutes the external majority
 answer.
-The External-Consensus Fallback (ECO), a low-frequency high-precision
-safeguard in this evaluation, identifies cases where all three external
+The External-Consensus Fallback (ECO), a low-frequency safeguard observed
+without regressions in this evaluation, identifies cases where all three external
 baselines unanimously disagree with the frontier's selection, overriding
 to the consensus answer.
 Both gates are gold-free: no correctness labels, example identifiers, or

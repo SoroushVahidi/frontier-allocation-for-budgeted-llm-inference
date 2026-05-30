@@ -28,6 +28,8 @@ Classical ensemble methods establish why simple voting can be robust when model 
 Selective prediction methods formalize abstention or fallback on subsets where a primary predictor is less reliable \citep{geifman2017selectiveclassificationdeepneural}.
 Calibration work studies when confidence-like quantities are trustworthy enough for such selective decisions \citep{guo2017calibrationmodernneuralnetworks}.
 FTA is closer to this selective-routing view than to pure ensembling: it keeps the frontier default on most examples and overrides only on a small runtime-identifiable subset.
+Learning-to-defer methods provide a related formalization of selective deferral, with algorithms designed to optimally assign predictions between a model and a human expert \citep{mozannar2023who,mao2023defer}.
+FTA adopts the same selective-deferral framing---deciding when to trust the frontier and when to defer to external signals---but uses a deterministic rule-based policy rather than a learned deferral objective, and defers within an automated candidate pool rather than to a human expert.
 
 \paragraph{Cost-aware routing, adaptive computation, and positioning.}
 Cost-aware routing systems such as FrugalGPT \citep{chen2023frugalgpt} and language-model cascades \citep{dohan2022language} reduce inference cost by deciding which model or stage to invoke for a given input.
