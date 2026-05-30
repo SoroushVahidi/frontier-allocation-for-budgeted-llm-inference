@@ -159,3 +159,24 @@ Verification artifact: `outputs/fta_independent_verification_20260527/run_202605
 | Untracked tests | ~16 | Committed in this pass |
 | Untracked output dirs (May 24–28) | ~447 | Not committed — large artifacts |
 | .bak files in paper_applied_intelligence/ | 18 | Leave for now; not tracked |
+
+---
+
+## 10. Post-submission update (2026-05-30 / 2026-05-31)
+
+**Applied Intelligence:** Manuscript **submitted** after technical package correction (single self-contained `main.tex` for Editorial Manager).
+
+| Artifact | Path |
+|----------|------|
+| Final source upload zip | `applied_intelligence_fta_single_tex_source_20260530.zip` |
+| Visual-check PDF | `applied_intelligence_fta_final_visual_check_20260530.pdf` |
+| Unzipped source package | `submission_applied_intelligence_single_tex/` |
+
+**Repository organization (this period):**
+
+- Added [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) — newcomer-facing status page.
+- Added [`docs/SUBMISSION_ARTIFACTS_20260530.md`](SUBMISSION_ARTIFACTS_20260530.md) — which paths to use / not use.
+- Archived dangerous old flat and 20260528 multi-tex packages under [`archive/submission_applied_intelligence_20260530/`](../archive/submission_applied_intelligence_20260530/).
+- Updated [`README.md`](../README.md) and [`START_HERE_CURRENT.md`](../START_HERE_CURRENT.md) with post-submission pointers.
+
+**Current next research step (unchanged):** MATH-500 selector rule mining using existing fully tracked Cohere MATH-500 artifacts; no API needed for initial mining.

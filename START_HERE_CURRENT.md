@@ -1,12 +1,31 @@
-# Start here — current front door (updated 2026-05-27)
+# Start here — current front door (updated 2026-05-31)
 
 Short orientation for humans and agents. Historical and timestamped material stays in place; this file points to **current** interpretation and safe next actions.
 
-> **Note:** Content below this line dated "2026-05-11" is historical background. See canonical current state below.
+---
+
+## Post-submission status — Applied Intelligence (2026-05-30)
+
+The **Applied Intelligence** manuscript has been **submitted** (corrected single-tex source package after publisher return).
+
+| Artifact | Path |
+|----------|------|
+| Final source upload zip | [`applied_intelligence_fta_single_tex_source_20260530.zip`](applied_intelligence_fta_single_tex_source_20260530.zip) |
+| Unzipped source package | [`submission_applied_intelligence_single_tex/`](submission_applied_intelligence_single_tex/) |
+| Visual-check PDF | [`applied_intelligence_fta_final_visual_check_20260530.pdf`](applied_intelligence_fta_final_visual_check_20260530.pdf) |
+| Canonical multi-file source | [`paper_applied_intelligence/`](paper_applied_intelligence/) |
+
+**Historical (do not upload):** `submission_applied_intelligence_flat/`, `applied_intelligence_fta_*_20260528.zip` — archived under [`archive/submission_applied_intelligence_20260530/`](archive/submission_applied_intelligence_20260530/). See [`docs/SUBMISSION_ARTIFACTS_20260530.md`](docs/SUBMISSION_ARTIFACTS_20260530.md).
+
+**Repository front door:** [`PROJECT_STATUS.md`](PROJECT_STATUS.md)
+
+**Research:** project **paused** after submission. **Next step when resuming:** MATH-500 selector rule mining from existing Cohere MATH-500 artifacts (offline first; no API for initial mining). See [`docs/PROJECT_PAUSE_STATE_20260528.md`](docs/PROJECT_PAUSE_STATE_20260528.md).
 
 ---
 
 ## Canonical current state (2026-05-27)
+
+> **Note:** The subsection below predates APIN submission completion. For submission artifacts and post-submit status, use the section above and [`PROJECT_STATUS.md`](PROJECT_STATUS.md). Content dated "2026-05-11" farther down is historical background.
 
 **Read first:** [`docs/CURRENT_CANONICAL_STATE_20260527.md`](docs/CURRENT_CANONICAL_STATE_20260527.md)
 **Full results:** [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md)

@@ -1,5 +1,19 @@
 # Frontier Allocation for Budgeted LLM Inference
 
+> ## Current status / start here (2026-05-31)
+>
+> **Applied Intelligence:** manuscript **submitted** after single-tex package correction (resubmission).
+>
+> | Artifact | Path |
+> |----------|------|
+> | **Source upload (Editorial Manager)** | [`applied_intelligence_fta_single_tex_source_20260530.zip`](applied_intelligence_fta_single_tex_source_20260530.zip) |
+> | **Visual-check PDF** (not in source zip) | [`applied_intelligence_fta_final_visual_check_20260530.pdf`](applied_intelligence_fta_final_visual_check_20260530.pdf) |
+> | **Canonical manuscript source** | [`paper_applied_intelligence/`](paper_applied_intelligence/) |
+>
+> **Full orientation:** [`PROJECT_STATUS.md`](PROJECT_STATUS.md) · **Artifact table:** [`docs/SUBMISSION_ARTIFACTS_20260530.md`](docs/SUBMISSION_ARTIFACTS_20260530.md)
+>
+> **Do not upload** old flat/multi-tex packages (`submission_applied_intelligence_flat/`, `applied_intelligence_fta_*_20260528.zip`) — see [`archive/submission_applied_intelligence_20260530/`](archive/submission_applied_intelligence_20260530/).
+
 Studies **how to allocate a fixed inference budget** across reasoning branches and **how to pick a final answer** from an explored frontier under explicit contracts.
 
 Active work now separates two questions:
