@@ -1204,6 +1204,7 @@ whose confidence interval includes zero on both evaluation sets.
 Results are scoped to GSM8K (\texttt{openai/gsm8k}) under the matched-budget
 protocol described in Section~\ref{sec:experiments}.
 No accuracy claim is made beyond this dataset and task family.
+Preliminary diagnostics on Cohere $\times$ MATH-500 suggest that selector-only transfer can fail when the candidate pool changes: in that setting, FTA did not improve over the frontier baseline, and pool-miss cases dominated, reinforcing that benchmark-level replication is required before broader claims.
 
 \paragraph{Provider-specific scope.}
 All main evidence is obtained on Cohere command-r-plus-08-2024.
@@ -1449,6 +1450,8 @@ Policy code files & complete & \texttt{support\allowbreak\_aware\allowbreak\_sel
 Tests & partial & policy/parser tests present; not all scripts formalized as tests & \texttt{tests/} \\
 Ablation variants & complete & FIX-5/6/7/8/9 documented with negative or insufficient evidence & Table~\ref{tab:negative_results} + supplementary documentation \\
 Rerun requirements & partial & Provider API access required for live reruns & validation scripts/manifests \\
+Independent offline re-derivation & complete & Final-300 (86.67\%) and Aggregate-720 (80.69\%) independently reproduced from raw per-example records using the policy implementation; all stored values confirmed exact & \texttt{outputs/fta\allowbreak\_independent\allowbreak\_verification\allowbreak\_20260527/} \\
+Gold-free leakage audit & pass & No gate decision accesses gold labels, exact-match correctness, example identifiers, or artifact paths at runtime; all trigger features are runtime-visible metadata & \texttt{fta\allowbreak\_leakage\allowbreak\_and\allowbreak\_budget\allowbreak\_audit.json} \\
 \bottomrule
 \end{tabular}}
 \end{table}

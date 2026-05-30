@@ -1,5 +1,25 @@
 # Applied Intelligence — Warning and Reference Cleanup (2026-05-30)
 
+---
+
+## 2026-05-30 Update: Reproducibility and Scope Additions
+
+Three low-risk audit-identified improvements applied after the warning/reference cleanup:
+
+**Added independent offline re-derivation row** (`tables/tableA1_reproducibility.tex`):
+> "Independent offline re-derivation / complete / Final-300 (86.67%) and Aggregate-720 (80.69%) independently reproduced from raw per-example records using the policy implementation; all stored values confirmed exact / outputs/fta_independent_verification_20260527/"
+
+**Added gold-free leakage audit PASS row** (`tables/tableA1_reproducibility.tex`):
+> "Gold-free leakage audit / pass / No gate decision accesses gold labels, exact-match correctness, example identifiers, or artifact paths at runtime; all trigger features are runtime-visible metadata / fta_leakage_and_budget_audit.json"
+
+**Added cautious MATH-500 scope sentence** (`sections/10_limitations.tex`, §Benchmark scope):
+> "Preliminary diagnostics on Cohere × MATH-500 suggest that selector-only transfer can fail when the candidate pool changes: in that setting, FTA did not improve over the frontier baseline, and pool-miss cases dominated, reinforcing that benchmark-level replication is required before broader claims."
+
+Both builds after update: 28 pages, 0 BibTeX errors, 0 unresolved references.
+Final zip: `applied_intelligence_fta_single_tex_source_20260530.zip` (8 files, 1 .tex, no PDF).
+
+---
+
 ## Compile commands used
 
 Both builds use Tectonic 0.16.9 via the `latexmk` shim:
