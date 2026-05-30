@@ -44,8 +44,8 @@ post-generation policy that exploits failure-trace metadata logged as a
 side-effect of the frontier generation run.
 The \emph{Low-Depth Guard} fires when the frontier search terminates on a
 structurally weak single branch, substituting an external majority-vote answer.
-The \emph{External-Consensus Fallback} fires, as a low-frequency high-precision
-safeguard, when all three external baselines unanimously disagree with the
+The \emph{External-Consensus Fallback} fires, as a low-frequency safeguard observed without regressions in this
+evaluation, when all three external baselines unanimously disagree with the
 frontier's selected answer.
 Both gates are gold-free and issue no additional inference calls.
 

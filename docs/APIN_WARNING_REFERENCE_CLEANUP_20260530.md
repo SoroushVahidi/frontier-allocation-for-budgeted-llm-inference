@@ -2,6 +2,22 @@
 
 ---
 
+## 2026-05-30 Update: ECO Precision Wording Softened
+
+Replaced remaining overstrong "high-precision / highly precise" ECO language with cautious
+"observed without regressions in this evaluation" phrasing in three locations:
+
+- `main.tex` abstract (ECO description)
+- `sections/06_results.tex` — FTA-vs-External-3 paragraph
+- `sections/06_results.tex` — Gate-action decomposition paragraph
+
+Same changes applied to `submission_applied_intelligence_single_tex/main.tex`.
+Zero matches for "high-precision" or "highly precise" in either source after fix.
+Both canonical and single-tex builds compiled: 28 pages, 0 BibTeX errors, 0 unresolved.
+Final zip recreated: `applied_intelligence_fta_single_tex_source_20260530.zip`.
+
+---
+
 ## 2026-05-30 Update: Reproducibility and Scope Additions
 
 Three low-risk audit-identified improvements applied after the warning/reference cleanup:

@@ -80,8 +80,8 @@ FTA's value is therefore not a pooled-vote point estimate but a transparent, aud
 selective-deferral rule in which each override is attributable to a named gate and a logged
 trigger field from the frontier run.
 The ECO component contributes only five triggers on Aggregate-720---all recovering from
-incorrect frontier answers---and should be read as a low-frequency high-precision
-safeguard rather than a high-coverage source of aggregate recovery.
+incorrect frontier answers---and should be read as a low-frequency safeguard observed without regressions
+in this evaluation, rather than a high-coverage source of aggregate recovery.
 In this evaluation, FTA and External-3 reach similar aggregate accuracy through different
 mechanisms: FTA preserves the frontier signal on most examples and defers selectively,
 while External-3 discards the frontier uniformly.
@@ -118,7 +118,7 @@ substantially outweigh its regressions on this evaluation.
 Table~\ref{tab:gate_actions} decomposes the main method into gate actions.
 Across Aggregate-720, LDG fires on 122 examples, ECO fires on 5 examples
 where LDG did not fire, and no gate fires on 593 examples.
-The ECO actions are rare but highly precise: before ECO fires, the frontier
+The ECO actions are rare and fire without regressions in this evaluation: before ECO fires, the frontier
 answer is incorrect on all five triggered examples; after ECO fires, all
 five are correct.
 The same pattern holds on Final-300, where ECO fires on three examples and
