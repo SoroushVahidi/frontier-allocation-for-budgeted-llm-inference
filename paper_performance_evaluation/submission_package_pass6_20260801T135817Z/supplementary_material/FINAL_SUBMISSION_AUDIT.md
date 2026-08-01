@@ -102,8 +102,8 @@ Checklist:
 - LaTeX source: flat uploadable source package prepared because Elsevier states subfolders cannot be
   processed by Editorial Manager.
 - Figures/tables: source package includes figures, tables, bibliography, `.bbl`, and `.bst` files.
-- Manuscript length: no accessible PE-specific hard limit found; corrected PDFs are 30 pages
-  anonymous and 32 pages identified in Elsevier preprint formatting.
+- Manuscript length: no accessible PE-specific hard limit found; corrected PDFs are 33 pages
+  anonymous and 33 pages identified in Elsevier preprint formatting.
 
 ## Compile And Validation Results
 
@@ -111,13 +111,13 @@ Root manuscript:
 
 - `latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex`: success.
 - `latexmk -pdf -interaction=nonstopmode -halt-on-error main_with_titlepage.tex`: success.
-- `main.pdf`: 30 pages; metadata author `Anonymous Author(s)`.
-- `main_with_titlepage.pdf`: 32 pages; title-page metadata uses the confirmed author name.
+- `main.pdf`: 33 pages; metadata author `Anonymous Author(s)`.
+- `main_with_titlepage.pdf`: 33 pages; title-page metadata uses the confirmed author name.
 
 Flat package source:
 
-- `latex_flat/main.tex`: success, 30 pages.
-- `latex_flat/main_with_titlepage.tex`: success, 32 pages.
+- `latex_flat/main.tex`: success, 33 pages.
+- `latex_flat/main_with_titlepage.tex`: success, 33 pages.
 
 Validation:
 
@@ -137,13 +137,11 @@ Validation:
 
 ## Page Count
 
-- Final anonymous manuscript PDF: 30 pages.
-- Final title-page manuscript PDF: 32 pages.
-- Main narrative through conclusion: page 20 in the anonymous build and page 21 in the identified
-  build.
-- Declarations and references: pages 21--27 in the anonymous build and pages 22--27 in the
-  identified build.
-- Appendix: pages 28--30 in the anonymous build and pages 28--32 in the identified build.
+- Final anonymous manuscript PDF: 33 pages.
+- Final title-page manuscript PDF: 33 pages.
+- Main narrative through conclusion: page 21 in both builds.
+- Declarations and references: pages 22--28 in both builds.
+- Appendix: pages 29--33 in both builds.
 
 ## Remaining Weaknesses And Editorial Risks
 

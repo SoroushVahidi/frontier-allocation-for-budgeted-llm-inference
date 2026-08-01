@@ -58,10 +58,11 @@ commercial, or not-for-profit sectors.
 
 \subsubsection*{Reproducibility Statement}
 Released aggregate audit records, public manifests, source tables, and analysis scripts support
-deterministic verification of the reported tables and numerical invariants for all 15 completed
+aggregate-record verification of the reported tables and numerical invariants for all 15 completed
 cells; provenance tiers and replay limits are documented in \ref{app:artifact-map}. The released
 artifacts do not guarantee regeneration of identical proprietary API outputs, and live regeneration
-may incur API charges. The manifests define the public replay boundary for the reported analyses.
+may incur API charges. The manifests define the public aggregate-record verification boundary for
+the reported analyses.
 
 \section*{Declaration of competing interest}
 The author declares that he has no known competing financial interests or personal relationships
@@ -72,8 +73,14 @@ GSM8K, MATH-500, GPQA-Diamond, and StrategyQA are publicly available from their 
 The public repository contains the evaluation code, frozen aggregate audit records, analysis scripts,
 manifests, and reproducibility instructions:
 \href{https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference}{\url{https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference}}.
-The fixed public artifact commit is
+The fixed public artifact commit is:
+\begin{quote}
 \texttt{dfc9997d803199d699e23ee42cfe0777e6d78155}.
+\end{quote}
+The later public-release finalization commit is:
+\begin{quote}
+\texttt{b5c8b1032205007ae5fd5fbc1fb4665e5aff0177}.
+\end{quote}
 
 \section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
 During manuscript preparation, the author used ChatGPT, Claude, and Cursor to assist with drafting

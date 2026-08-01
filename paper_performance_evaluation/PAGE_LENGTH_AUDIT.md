@@ -13,21 +13,20 @@ tectonic --keep-logs -p main_with_titlepage.tex
 
 | Variant | Total pages | Main text and declarations | References | Appendix |
 | --- | ---: | ---: | ---: | ---: |
-| Anonymous (`main.pdf`) | 30 | main text through page 20; declarations on pages 21-22 | pages 23-27 | pages 28-30 |
-| Title-page (`main_with_titlepage.pdf`) | 32 | title page plus main text through page 21; declarations on pages 22-23 | pages 24-27 | pages 28-32 |
+| Anonymous (`main.pdf`) | 33 | main text through page 21; declarations on page 22 | pages 23-28 | pages 29-33 |
+| Title-page (`main_with_titlepage.pdf`) | 33 | title page plus main text through page 21; declarations on page 22 | pages 23-28 | pages 29-33 |
 
 Notes:
 
-- References begin on page 23 in the anonymous build and page 24 in the identified build.
-- Appendix content begins on page 28 in both compiled variants.
-- The focused correction pass reduced the identified manuscript from 35 to 32 pages and the
-  anonymous manuscript from 34 to 30 pages in Elsevier preprint formatting.
+- References begin on page 23 in both compiled variants.
+- Appendix content begins on page 29 in both compiled variants.
+- The final minor-edit pass leaves both variants at 33 pages in Elsevier preprint formatting.
 
 ## Source of Length
 
 - Elsevier `preprint,12pt` formatting accounts for substantial vertical expansion.
 - Dense tables in Sections 6, 8, and 9 remain necessary evidence.
-- Appendix now occupies 5 pages in the identified build and carries provenance, pseudocode,
+- Appendix now occupies 5 pages in both builds and carries provenance, pseudocode,
   current-evidence diagnostics, and compute detail.
 - No fonts were reduced below the existing readable table settings.
 

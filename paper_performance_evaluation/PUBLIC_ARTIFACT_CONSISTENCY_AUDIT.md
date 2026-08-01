@@ -9,21 +9,21 @@ rewrites were performed.
 ## Inconsistencies Found
 
 1. The identified manuscript and declarations cited an obsolete fixed commit that did not contain
-   the current 32-page manuscript and corrected artifact documentation.
+   the current 33-page manuscript and corrected artifact documentation.
 2. The root and supplementary claim-evidence maps pointed to unavailable working directories:
    majority analysis, FIX-ablation, repair quantification, researcher-adaptation chronology, and a
    canonical-state file not present in the public checkout.
 3. The claim-evidence map described compute accounting as archived outside the public release.
-4. Several audit files reported stale page counts: 30/32 or 36/36 instead of the current 32/32 PDF
+4. Several audit files reported stale page counts: 30/32 or 36/36 instead of the current 33/33 PDF
    builds.
 5. The manuscript's reproducibility wording described released per-example record replay, while the
    public checkout exposes aggregate audit records, source tables, manifests, and scripts for
-   deterministic verification of the reported aggregate results.
+   aggregate-record verification of the reported aggregate results.
 
 ## Corrections Made
 
-- Replaced the obsolete fixed-commit citation with a temporary "version archived with this
-  submission" placeholder pending the final public commit.
+- Replaced the obsolete fixed-commit citation with the fixed public artifact commit used by the
+  manuscript.
 - Rebuilt `CLAIM_EVIDENCE_MAP.md` to cite only public tracked files, source tables, source sections,
   and the submission package.
 - Added `CLAIM_EVIDENCE_PUBLIC_MAP.md` as an explicit public-facing map.
@@ -32,7 +32,7 @@ rewrites were performed.
   verification.
 - Updated data/code availability wording from "frozen processed records" to "frozen aggregate audit
   records."
-- Updated stale page-count audits to 32 anonymous / 32 identified pages.
+- Updated stale page-count audits to 33 anonymous / 33 identified pages.
 - Removed references to unavailable evidence routes from public-facing maps.
 
 ## Headline Claim Verification
@@ -60,10 +60,10 @@ draw, or expose the earlier working directories used during manuscript developme
 
 Completed before the first public artifact commit:
 
-- Root anonymous manuscript compile: succeeded; 32 pages.
-- Root identified manuscript compile: succeeded; 32 pages.
-- Flat anonymous manuscript compile: succeeded; 32 pages.
-- Flat identified manuscript compile: succeeded; 32 pages.
+- Root anonymous manuscript compile: succeeded; 33 pages.
+- Root identified manuscript compile: succeeded; 33 pages.
+- Flat anonymous manuscript compile: succeeded; 33 pages.
+- Flat identified manuscript compile: succeeded; 33 pages.
 - Headline aggregate checks: passed.
 - Public claim-map path check: passed.
 - Source ZIP extraction: passed.
@@ -76,5 +76,9 @@ Completed before the first public artifact commit:
 
 First public artifact commit: `dfc9997d803199d699e23ee42cfe0777e6d78155`.
 
-Pending after the first commit: exact commit citation rebuild, final push, and fresh-clone validation
-from `origin/main`.
+Final public-release finalization commit after the artifact citation and package refresh:
+`b5c8b1032205007ae5fd5fbc1fb4665e5aff0177`.
+
+The final pushed `origin/main` state was validated after the artifact commit citation and package
+refresh. The manuscript cites the fixed public artifact commit; the later public-release finalization
+commit records the citation and packaging finalization.

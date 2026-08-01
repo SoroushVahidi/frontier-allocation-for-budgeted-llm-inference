@@ -43,7 +43,7 @@ items not confirmed from accessible official text are marked unresolved.
 | Highlights requirement level | Elsevier says required for some journals, optional for others | Highlights prepared. |
 | Graphical abstract requirement level | PE-specific guide not accessible | No graphical abstract; protocol schematic can serve as artwork, not graphical abstract. |
 | PE-specific bibliography style | Not accessible from PE-specific guide | `elsarticle-num` retained; source includes alternate Elsevier styles. |
-| PE-specific manuscript-length guidance | Not accessible from PE-specific guide | Focused correction pass reduced the preprint-formatted builds to 30 pages anonymous and 32 pages identified. |
+| PE-specific manuscript-length guidance | Not accessible from PE-specific guide | Final minor-edit pass leaves the preprint-formatted builds at 33 pages anonymous and 33 pages identified. |
 | PE-specific declarations order | Not accessible from PE-specific guide | General Elsevier order followed before references. |
 | Supplementary-material naming | Not accessible from PE-specific guide | Package named for Performance Evaluation and inventoried. |
 

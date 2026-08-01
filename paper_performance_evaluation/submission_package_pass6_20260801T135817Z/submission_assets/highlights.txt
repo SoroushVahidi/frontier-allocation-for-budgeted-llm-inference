@@ -2,4 +2,4 @@
 - Identical-pool consensus isolates selector effects.
 - Provider-transfer tests reveal gate behavior changes.
 - Protocol-blocked outcomes are reported with provenance.
-- Artifact-level records support deterministic replay.
+- Artifacts support aggregate-record verification.

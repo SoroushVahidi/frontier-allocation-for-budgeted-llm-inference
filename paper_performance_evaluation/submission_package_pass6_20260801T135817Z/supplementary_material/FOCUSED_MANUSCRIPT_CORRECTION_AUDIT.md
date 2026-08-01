@@ -41,8 +41,8 @@ appendix material needed for current-evidence support or reproducibility interpr
 
 ## Validation Summary
 
-- `main_with_titlepage.pdf`: 32 pages after correction.
-- `main.pdf`: 30 pages after correction.
+- `main_with_titlepage.pdf`: 33 pages after final minor edits.
+- `main.pdf`: 33 pages after final minor edits.
 - Undefined references/citations: zero by compile output and source cross-reference scan.
 - Duplicate labels: zero.
 - Missing figures: zero by compile output.

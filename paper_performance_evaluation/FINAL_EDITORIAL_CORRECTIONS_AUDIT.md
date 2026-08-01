@@ -142,8 +142,8 @@ Compiled successfully:
 
 Final page counts:
 
-- Anonymous manuscript: 32 pages.
-- Identified manuscript with title page: 32 pages.
+- Anonymous manuscript: 33 pages.
+- Identified manuscript with title page: 33 pages.
 
 Validation checks:
 
@@ -161,7 +161,7 @@ No fatal compile errors or unresolved references/citations were observed.
 
 ## Remaining Risks
 
-- The paper remains a 32-page manuscript with appendices; it is self-contained but still dense.
+- The paper remains a 33-page manuscript with appendices; it is self-contained but still dense.
 - Closed-provider telemetry remains incomplete by design, so token/USD findings continue to be lower
   bounds where stated.
 - The Fireworks x GPQA cell remains protocol-blocked and cannot be repaired without changing the

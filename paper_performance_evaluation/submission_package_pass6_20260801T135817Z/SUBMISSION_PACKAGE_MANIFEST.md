@@ -10,10 +10,10 @@ Package root:
 
 | File | Size |
 | --- | ---: |
-| `anonymous_manuscript.pdf` | 239615 bytes |
-| `titlepage_manuscript.pdf` | 247202 bytes |
-| `performance_evaluation_submission_source.zip` | 548501 bytes |
-| `performance_evaluation_supplementary_material.zip` | 40585 bytes |
+| `anonymous_manuscript.pdf` | 243450 bytes |
+| `titlepage_manuscript.pdf` | 251463 bytes |
+| `performance_evaluation_submission_source.zip` | 557596 bytes |
+| `performance_evaluation_supplementary_material.zip` | 40567 bytes |
 
 ## Separate Artwork
 
@@ -77,11 +77,11 @@ The legacy concept PDF no longer used in the manuscript is not included in the s
 ## Validation Results
 
 - Root compile:
-  - `latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex`: succeeded; 32 pages.
-  - `latexmk -pdf -interaction=nonstopmode -halt-on-error main_with_titlepage.tex`: succeeded; 32 pages.
+  - `latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex`: succeeded; 33 pages.
+  - `latexmk -pdf -interaction=nonstopmode -halt-on-error main_with_titlepage.tex`: succeeded; 33 pages.
 - Flat-source compile:
-  - `latex_flat/main.tex`: succeeded independently with `latexmk`; 32 pages.
-  - `latex_flat/main_with_titlepage.tex`: succeeded independently with `latexmk`; 32 pages.
+  - `latex_flat/main.tex`: succeeded independently with `latexmk`; 33 pages.
+  - `latex_flat/main_with_titlepage.tex`: succeeded independently with `latexmk`; 33 pages.
 - ZIP extraction:
   - `unzip -t performance_evaluation_submission_source.zip`: no errors.
   - `unzip -t performance_evaluation_supplementary_material.zip`: no errors.

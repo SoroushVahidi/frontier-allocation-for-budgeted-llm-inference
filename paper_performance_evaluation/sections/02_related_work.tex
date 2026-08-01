@@ -21,6 +21,17 @@ work on serverless ML treats public-cloud scaling and cost as part of the perfor
 systems-performance view to closed-API LLM inference, where providers expose incomplete telemetry
 and nominal budgets are not realized resource vectors.
 
+\paragraph{Benchmark validity and serving-resource context}
+LLM evaluation infrastructure such as HELM emphasizes scenario coverage, multi-metric reporting, and
+released evaluation artifacts, while LiveBench addresses benchmark drift and contamination through
+frequently updated, objectively scored workloads \citep{helm,livebench}. GSM-Symbolic further shows
+that GSM8K-style math scores can be sensitive to symbolic perturbations of the same underlying
+problem templates \citep{gsm_symbolic}. These works motivate our workload-validity caveats rather
+than serving as direct experimental baselines. In parallel, open serving-stack work such as
+vLLM/PagedAttention optimizes KV-cache memory and throughput under instrumented serving systems
+\citep{vllm_pagedattention}; our setting instead measures closed APIs whose telemetry is partial and
+whose nominal call budgets do not expose a complete resource vector.
+
 \paragraph{Workload characterization and test-time controls}
 Workload characterization asks whether compared systems face the same demand process and observable
 resource contract. Adaptive compute-allocation work shows that how budget is spent can matter as
