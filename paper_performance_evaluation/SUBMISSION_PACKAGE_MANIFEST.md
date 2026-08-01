@@ -11,9 +11,9 @@ Package root:
 | File | Size |
 | --- | ---: |
 | `anonymous_manuscript.pdf` | 239615 bytes |
-| `titlepage_manuscript.pdf` | 247147 bytes |
-| `performance_evaluation_submission_source.zip` | 548403 bytes |
-| `performance_evaluation_supplementary_material.zip` | 40527 bytes |
+| `titlepage_manuscript.pdf` | 247202 bytes |
+| `performance_evaluation_submission_source.zip` | 548501 bytes |
+| `performance_evaluation_supplementary_material.zip` | 40585 bytes |
 
 ## Separate Artwork
 
@@ -108,5 +108,5 @@ The legacy concept PDF no longer used in the manuscript is not included in the s
 
 - The AI declaration is kept immediately above the references and uses Elsevier's manuscript-preparation
   disclosure framing.
-- A repository DOI can be added later if one is minted; the GitHub URL is supplied, and the fixed
-  public commit is recorded in the final pushed manuscript version.
+- A repository DOI can be added later if one is minted. The GitHub URL is supplied, and the fixed
+  public artifact commit is `dfc9997d803199d699e23ee42cfe0777e6d78155`.

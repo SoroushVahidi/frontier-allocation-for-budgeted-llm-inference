@@ -74,5 +74,7 @@ Completed before the first public artifact commit:
 - Anonymous PDF metadata: `Anonymous Author(s)`.
 - Identified PDF metadata: `Soroush Vahidi`.
 
-Pending after the first commit: push, exact commit citation update, package rebuild with the cited
-commit, and fresh-clone validation from `origin/main`.
+First public artifact commit: `dfc9997d803199d699e23ee42cfe0777e6d78155`.
+
+Pending after the first commit: exact commit citation rebuild, final push, and fresh-clone validation
+from `origin/main`.
