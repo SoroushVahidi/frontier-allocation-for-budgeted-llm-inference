@@ -22,7 +22,7 @@ The manuscript fits *Performance Evaluation* as a measurement-methodology contri
 
 This manuscript is original, has not been published elsewhere, and is not under consideration elsewhere. I am the sole author and approve this submission. Funding and competing-interest disclosures are included with the manuscript. Evaluation code and frozen aggregate audit artifacts supporting verification of the reported aggregates are publicly available at https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference.
 
-This research received in-kind computational support through API and cloud-service credits from the Cohere Labs Catalyst Grant Program, the Google Cloud Research Credits Program, Microsoft Azure for Students, and Fireworks AI. These providers had no role in study design, analysis, manuscript preparation, or the decision to submit.
+This research received in-kind computational support through API and cloud-service credits from the Cohere Labs Catalyst Grant Program, the Google Cloud Research Credits Program, Microsoft Azure for Students, and AMD-provided Fireworks AI credits. Cohere Labs provided USD 1,000 in API credits, and AMD provided USD 50 in Fireworks AI credits. These organizations had no role in the study design, data collection, analysis, interpretation, manuscript preparation, or decision to submit the work.
 
 Thank you for your consideration.
 
