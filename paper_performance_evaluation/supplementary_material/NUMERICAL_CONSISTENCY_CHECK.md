@@ -27,7 +27,7 @@ not alter scientific records.
 
 ## Packaging Checks
 
-- Anonymous and title-page manuscripts compile to 34 pages.
+- Anonymous and title-page manuscripts compile to 32 and 32 pages, respectively.
 - Flat LaTeX source compiles independently after path flattening.
 - Submission and supplementary ZIP files pass `unzip -t`.
 - Supplement checksums pass `sha256sum -c`.
@@ -38,4 +38,3 @@ not alter scientific records.
 Pass 6 changed prose organization, repeated explanations, captions, frontmatter wording, and package
 layout. It did not change tables, result values, p-values, counts, blocked-outcome semantics, or
 claim boundaries.
-

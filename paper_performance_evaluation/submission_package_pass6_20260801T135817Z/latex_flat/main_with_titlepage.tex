@@ -42,41 +42,44 @@
 \input{13_conclusion}
 
 \section*{Acknowledgments}
-[AUTHOR CONFIRMATION REQUIRED: keep personal support, academic/advisory assistance, software
-support, and company-provided API credits distinct. Insert exact names and wording only after
-author confirmation.]
+The author thanks his mother for her emotional support. The author is grateful to Professor Yiannis
+Koutis for his academic guidance and feedback. The author also thanks Anders Borum for providing
+complimentary lifetime access to Secure ShellFish, which supported remote access and development
+during this research.
 
 \section*{Funding}
-[AUTHOR CONFIRMATION REQUIRED: provide funder names and grant numbers, or state that this research
-received no specific grant from funding agencies in the public, commercial, or not-for-profit
-sectors.]
-
-\subsubsection*{Broader Impact Statement}
-This work studies evaluation of budgeted LLM reasoning on standard benchmarks. We are not aware of
-a direct negative societal impact beyond general considerations for LLM inference research; more
-selective or more expensive multi-generator protocols can increase or decrease aggregate compute
-depending on deployment choices (Section~\ref{sec:discussion}).
+This research received in-kind computational support through API and cloud-service credits provided
+by the Cohere Labs Catalyst Grant Program, the Google Cloud Research Credits Program, Microsoft
+Azure for Students, and Fireworks AI. Cohere Labs provided USD 1,000 in API credits through its
+Catalyst Grant Program. These providers had no role in the study design; data collection, analysis,
+or interpretation; preparation of the manuscript; or the decision to submit the article for
+publication. The research received no other specific grant from funding agencies in the public,
+commercial, or not-for-profit sectors.
 
 \subsubsection*{Reproducibility Statement}
-Frozen per-example records and manifests support deterministic replay of scoring, aggregation,
-paired tests, and the reported tables for all 15 completed cells; provenance tiers and known replay
-limits are documented in \ref{app:artifact-map}. The package does not guarantee
-regeneration of identical proprietary API outputs, and live regeneration may incur API charges. The
-submission package is asserted only to the extent documented by its manifests.
-
-\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
-During the preparation of this work, the author used AI-assisted tools for drafting and revising
-prose, inspecting and modifying research code, organizing analyses, and preparing reproducibility
-and consistency checks. After using these tools, the author reviewed and edited the content as
-needed and takes full responsibility for the content of the published article.
+Released aggregate audit records, public manifests, source tables, and analysis scripts support
+deterministic verification of the reported tables and numerical invariants for all 15 completed
+cells; provenance tiers and replay limits are documented in \ref{app:artifact-map}. The released
+artifacts do not guarantee regeneration of identical proprietary API outputs, and live regeneration
+may incur API charges. The manifests define the public replay boundary for the reported analyses.
 
 \section*{Declaration of competing interest}
-[AUTHOR CONFIRMATION REQUIRED: insert explicit competing-interest declaration.]
+The author declares that he has no known competing financial interests or personal relationships
+that could have appeared to influence the work reported in this paper.
 
-\section*{Data availability}
-GSM8K, MATH-500, GPQA-Diamond, and StrategyQA are publicly available datasets. Code, manuscript
-source, and release artifacts are available in the public GitHub repository
-\href{https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference}{SoroushVahidi/frontier-allocation-for-budgeted-llm-inference}.
+\section*{Data and code availability}
+GSM8K, MATH-500, GPQA-Diamond, and StrategyQA are publicly available from their original sources.
+The public repository contains the evaluation code, frozen aggregate audit records, analysis scripts,
+manifests, and reproducibility instructions:
+\href{https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference}{\url{https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference}}.
+The fixed public version is the version archived with this submission.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+During manuscript preparation, the author used ChatGPT, Claude, and Cursor to assist with drafting
+and revising prose. Research-process uses of AI-assisted tools for code inspection, code
+modification, and analysis organization are described in Section~\ref{sec:setup-repro}. The author
+reviewed and edited the tool-assisted prose as needed and takes full responsibility for the content
+of the published article.
 
 \bibliographystyle{elsarticle-num}
 \bibliography{refs}

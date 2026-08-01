@@ -44,8 +44,8 @@ L1/S1/TALE comparisons use closed-API adapters, not official training/serving re
 are to the named adapters. Azure$\times$GPQA FTA is offline selector replay on stored generations.
 Trust tiers (\ref{app:provenance}): Tier~A denotes Cohere/Azure/Vertex$\times$GSM8K cells
 with the strongest draw and scoring provenance; Tier~B denotes the remaining completed cells. An
-earlier fallback-prompt SC attempt is excluded from all results; the corrected Azure true same-model
-SC path records question-source hashes (Section~\ref{sec:sc-entitlement-control}).
+earlier fallback-prompt SC attempt is excluded from all results; the Azure true same-model SC
+control records question-source hashes (Section~\ref{sec:sc-entitlement-control}).
 
 \begin{table}[h]
 \centering
@@ -57,11 +57,13 @@ SC path records question-source hashes (Section~\ref{sec:sc-entitlement-control}
 \subsection{Reproducibility levels}
 \label{sec:setup-repro}
 
-We distinguish three reproducibility claims. \emph{Record replay:} released frozen per-example
-records and manifests support deterministic re-derivation of scoring, aggregation, paired tests, and
-the reported tables. \emph{Historical API-output regeneration:} proprietary, stochastic closed-API
-services need not reproduce identical completions under the same public model ID.
-\emph{Historical subset reconstruction:} for some Tier~B cells the frozen evaluated subset is
-preserved, but the complete original draw procedure cannot be reconstructed from the maintained
-codebase; that incompleteness limits independent regeneration of the sampling step, not replay of
-the analyzed records (\ref{app:artifact-map}).
+We distinguish three reproducibility claims. \emph{Public artifact replay:} released aggregate audit
+records, public manifests, source tables, and analysis scripts support deterministic verification of
+the reported tables and numerical invariants. \emph{Historical API-output regeneration:}
+proprietary, stochastic closed-API services need not reproduce identical completions under the same
+public model ID. \emph{Historical subset reconstruction:} for some Tier~B cells the evaluated subset
+is preserved in aggregate form, but the complete original draw procedure cannot be reconstructed from
+the released artifact record; that incompleteness limits independent regeneration of the sampling
+step, not verification of the reported aggregate analyses (\ref{app:artifact-map}). AI-assisted code
+inspection, code modification, and analysis organization were human-reviewed; all reported outputs
+were independently verified using frozen scripts, records, and manifests.

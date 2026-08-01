@@ -1,44 +1,48 @@
-# Performance Evaluation Claim-Evidence Map
+# Public Claim-Evidence Map
 
-Updated for Pass 6 supplementary packaging.
+Updated 2026-08-01 for the public Performance Evaluation artifact boundary.
 
-This map records the manuscript-facing evidence boundary. It is a routing document for frozen
-records and audit manifests, not an instruction to run new experiments or live API calls.
+This map replaces earlier unavailable routes with paths that exist in the public
+checkout or in the submission supplement/source ZIPs. It does not claim that the public package can
+regenerate proprietary API outputs or reconstruct every historical subset draw. It supports
+deterministic verification of the reported aggregate tables and numerical invariants.
 
-## Primary Numerical Sources
+## Public Evidence Roots
 
-- Pooled-4 / FTA identical-pool analysis: `p1_majority_analysis/`.
-- FIX-2/FIX-4 gate analysis: `p2_fix24_ablation/`.
-- Repair quantification: `p6_repair_quantification/`.
-- Researcher-adaptation chronology: `p7_overfitting_audit/`.
-- 4x4 provider-by-dataset matrix: final conclusive matrix audit, 2026-07-17.
-- Compute accounting: corrected compute-metrics reconstruction CSV.
-- Canonical state: `docs/current/CANONICAL_STATE.md`.
+- Compact matrix audit: `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/`.
+- Manuscript source tables: `paper_performance_evaluation/tables/`.
+- Manuscript source sections: `paper_performance_evaluation/sections/`.
+- Supplementary checks: `paper_performance_evaluation/supplementary_material/`.
+- Submission package: `paper_performance_evaluation/submission_package_pass6_20260801T135817Z/`.
 
-## Manuscript Claims
+## Manuscript-Facing Claims
 
-| Claim | Value | Evidence route |
+| Claim | Reported value | Public evidence route |
 | --- | --- | --- |
-| Completed cells | 15/16 | Final conclusive matrix audit summary. |
-| Blocked cell | Fireworks x GPQA-Diamond `BLOCKED_PROTOCOL_NONCONVERGENCE` | Blocked-cell audit and canonical state. |
-| Paired examples | 3394 | Majority-analysis summary and compute reconstruction. |
-| Nominal budget and seed | B=6, seed=71 | Matrix audit README and canonical state. |
-| FTA vs Pooled-4 | 65.00% vs 66.53%; McNemar p=0.00027 | Majority-analysis summary. |
-| FTA/Pooled-4/tie discordants | 73/125/3196 | Majority-analysis summary. |
-| Frontier pooled | 2176/3394 (64.11%) | Per-example majority-analysis records. |
-| FTA vs Frontier cell signs | 8/6/1 | Final conclusive matrix audit. |
-| FIX-2/FIX-4 switches | 606/21; overlap 0 | Gate-ablation summary. |
-| Azure FIX-2 transfer harm | 2/18 and 7/31 rescue/regression patterns | Provider gate table. |
-| Repair Frontier differs | 151 rows | Repair quantification summary. |
-| External winner flips under uniform repair | 0 | Repair quantification summary. |
-| Successful calls | 2.78 uncorrected to 5.38 reconstructed | Corrected compute reconstruction. |
-| Discovery-delta correlation | Pearson r=-0.185 | Selector-behavior by-cell table. |
-| Azure x GPQA FTA | Offline replay | Canonical state and conclusive audit. |
+| Completed cells | 15/16 | `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/summary.json`; `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/cell_validation_status.csv`; `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/final_4x4_matrix.csv` |
+| Blocked cell | Fireworks x GPQA-Diamond `BLOCKED_PROTOCOL_NONCONVERGENCE` | `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/blocked_cells.csv`; `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/cell_validation_status.csv`; `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/final_4x4_matrix.csv` |
+| Completed-cell paired examples | n=3394 | `paper_performance_evaluation/tables/table6_heldout_selector_phase8.tex`; sum of completed-cell `paired_n` values in `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/final_4x4_matrix.csv` |
+| Nominal budget | B=6 | `paper_performance_evaluation/sections/05_experimental_setup.tex`; `paper_performance_evaluation/sections/appendix.tex` |
+| Pooled-4 aggregate | 2258/3394, 66.53% | `paper_performance_evaluation/tables/table6_heldout_selector_phase8.tex`; per-cell Pooled-4 entries in `paper_performance_evaluation/tables/table1_main_4x4_matrix.tex` |
+| FTA aggregate | 2206/3394, 65.00% | `paper_performance_evaluation/tables/table6_heldout_selector_phase8.tex`; FTA columns in `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/final_4x4_matrix.csv` |
+| Pooled-4 vs FTA paired test | McNemar p=0.00027; discordants 73/125/3196 | `paper_performance_evaluation/sections/07_search_vs_selection.tex`; exact-binomial recomputation from the reported discordant counts |
+| Frontier pooled count | 2176/3394, 64.11% | `paper_performance_evaluation/tables/table6_heldout_selector_phase8.tex`; Frontier columns in `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/final_4x4_matrix.csv` |
+| FTA vs Frontier cell signs | 8/6/1 | `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/summary.json`; `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/fta_vs_frontier_paired_stats.csv` |
+| FIX-2/FIX-4 switches | 606/21, overlap 0 | `paper_performance_evaluation/sections/appendix.tex`; switch rows in `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/fta_frontier_change_diff_all_cells.csv`; per-cell summaries in `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/selector_behavior_by_cell.csv` |
+| Azure FIX-2 transfer harm | 2/18 and 7/31 rescue/regression patterns | `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/selector_behavior_by_cell.csv`; `paper_performance_evaluation/sections/08_provider_analysis.tex` |
+| Successful-call reconstruction | 2.78 to 5.38 of nominal B=6 | `paper_performance_evaluation/tables/table3_resource_accounting.tex`; `paper_performance_evaluation/sections/09_compute_accounting.tex` |
+| Same-model SC control | Azure x GSM8K Frontier and SC-N=6 both 276/300 | `paper_performance_evaluation/sections/06_main_results.tex`; `paper_performance_evaluation/tables/table1_main_4x4_matrix.tex` |
+| Repair asymmetry | Frontier differs on 151/3394 rows; external winner flips 0 | `paper_performance_evaluation/sections/10_ablations.tex`; `paper_performance_evaluation/tables/table4_baseline_fidelity.tex`; `paper_performance_evaluation/sections/appendix.tex` |
+| Held-out selector | Pooled-4 selected in 15/15 leave-one-cell-out folds | `paper_performance_evaluation/tables/table6_heldout_selector_phase8.tex`; `paper_performance_evaluation/sections/07_search_vs_selection.tex` |
+| Discovery-delta correlation | Pearson r=-0.185 | `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/selector_behavior_by_cell.csv`; `paper_performance_evaluation/sections/06_main_results.tex` |
+| Azure x GPQA FTA replay status | Offline replay | `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/azure_gpqa_independent_fta_replay_summary.json`; `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/final_4x4_matrix.csv` |
+| No paid calls in compact audit | `false` / NO | `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/api_calls_made.csv`; `outputs/final_4x4_matrix_conclusive_audit_20260717T223631Z/summary.json` |
 
 ## Boundary Notes
 
+- The public release contains aggregate audit records and source tables, not the earlier
+  majority-analysis, FIX-ablation, repair-quantification, or chronology directories.
 - Oracle rows are upper bounds only.
-- Gold labels are offline-only and are not runtime selector features.
-- D6 diagnostic labels are not runtime selector features.
-- No paid/live API calls are required for the packaged replay boundary.
-
+- Gold labels are offline-only evaluation labels and are not runtime selector features.
+- Live API regeneration and complete historical subset reconstruction are outside the public replay
+  boundary.

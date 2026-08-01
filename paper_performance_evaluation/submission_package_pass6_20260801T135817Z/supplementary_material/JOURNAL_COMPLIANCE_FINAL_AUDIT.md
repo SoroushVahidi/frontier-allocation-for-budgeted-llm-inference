@@ -43,7 +43,7 @@ items not confirmed from accessible official text are marked unresolved.
 | Highlights requirement level | Elsevier says required for some journals, optional for others | Highlights prepared. |
 | Graphical abstract requirement level | PE-specific guide not accessible | No graphical abstract; protocol schematic can serve as artwork, not graphical abstract. |
 | PE-specific bibliography style | Not accessible from PE-specific guide | `elsarticle-num` retained; source includes alternate Elsevier styles. |
-| PE-specific manuscript-length guidance | Not accessible from PE-specific guide | Manuscript reduced from 36 to 34 pages in preprint format. |
+| PE-specific manuscript-length guidance | Not accessible from PE-specific guide | Focused correction pass reduced the preprint-formatted builds to 30 pages anonymous and 32 pages identified. |
 | PE-specific declarations order | Not accessible from PE-specific guide | General Elsevier order followed before references. |
 | Supplementary-material naming | Not accessible from PE-specific guide | Package named for Performance Evaluation and inventoried. |
 
@@ -57,14 +57,11 @@ items not confirmed from accessible official text are marked unresolved.
 
 ## Declaration Fields
 
-Still requiring author confirmation:
+Author and declaration fields were finalized on 2026-08-01:
 
-- Legal author names and order.
-- Affiliations and corresponding author email.
-- ORCID/phone/address fields if the submission system requests them.
-- Funding statement or explicit no-specific-funding statement.
-- Competing-interest statement.
-- Data/code availability URL or DOI.
-- Exact acknowledgment wording for emotional support, academic/advisory help, software support, and API credits.
-- Exact names of AI tools/services if the submission form requires tool-level identification.
-
+- Sole author and corresponding author: Soroush Vahidi.
+- Affiliation: Ying Wu College of Computing, New Jersey Institute of Technology, Newark, New Jersey, USA.
+- Email: sv96@njit.edu.
+- ORCID: https://orcid.org/0000-0003-1934-6282.
+- Acknowledgments, funding, competing-interest, data/code availability, and AI-use statements are present as separate statements.
+- Performance Evaluation-specific declaration order remains unresolved because the journal guide was not fully accessible; the manuscript uses a conventional Elsevier order and places the AI declaration immediately above the references.

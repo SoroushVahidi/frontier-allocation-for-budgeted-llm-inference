@@ -10,10 +10,10 @@ Package root:
 
 | File | Size |
 | --- | ---: |
-| `anonymous_manuscript.pdf` | 262494 bytes |
-| `titlepage_manuscript.pdf` | 269874 bytes |
-| `performance_evaluation_submission_source.zip` | 586863 bytes |
-| `performance_evaluation_supplementary_material.zip` | 14377 bytes |
+| `anonymous_manuscript.pdf` | 239615 bytes |
+| `titlepage_manuscript.pdf` | 247147 bytes |
+| `performance_evaluation_submission_source.zip` | 548403 bytes |
+| `performance_evaluation_supplementary_material.zip` | 40527 bytes |
 
 ## Separate Artwork
 
@@ -28,9 +28,9 @@ Package root:
 ## Submission Assets
 
 - `submission_assets/highlights.txt`: five highlights; each is <=85 characters.
-- `submission_assets/cover_letter.md`: draft cover letter with author placeholders.
-- `submission_assets/declarations.md`: declarations draft and author-confirmation list.
-- `submission_assets/title_page.tex`: separate title-page source with public author name and author-confirmation fields for affiliation/contact metadata.
+- `submission_assets/cover_letter.md`: identified cover letter with confirmed sole-author metadata.
+- `submission_assets/declarations.md`: final declarations matching the identified manuscript.
+- `submission_assets/title_page.tex`: separate title-page source with confirmed sole-author metadata.
 
 ## LaTeX Source Package
 
@@ -54,23 +54,34 @@ The legacy concept PDF no longer used in the manuscript is not included in the s
 
 - `README.md`.
 - `CLAIM_EVIDENCE_MAP.md` adapted for Performance Evaluation packaging.
+- `CLAIM_EVIDENCE_PUBLIC_MAP.md`.
+- `PUBLIC_ARTIFACT_CONSISTENCY_AUDIT.md`.
 - `CLAIM_SCOPE_AUDIT.md`.
 - `NUMERICAL_CONSISTENCY_CHECK.md` adapted for Performance Evaluation packaging.
 - `FIGURE_TABLE_AUDIT.md`.
 - `LAYOUT_AND_PAGE_AUDIT.md`.
+- `AUTHOR_AND_DECLARATIONS_AUDIT.md`.
 - `REDUNDANCY_FINAL_AUDIT.md`.
 - `JOURNAL_COMPLIANCE_FINAL_AUDIT.md`.
+- `JOURNAL_REQUIREMENTS.md`.
 - `PAGE_LENGTH_AUDIT.md`.
+- `FINAL_SUBMISSION_AUDIT.md`.
+- `SUBMISSION_ASSET_AUDIT.md`.
+- `FOCUSED_MANUSCRIPT_CORRECTION_AUDIT.md`.
+- `APPENDIX_AND_VISUAL_CLEANUP_AUDIT.md`.
+- `CITATION_VERIFICATION_FINAL.md`.
+- `HISTORICAL_DIAGNOSTICS_SUPPLEMENT.md`.
+- `FINAL_EDITORIAL_CORRECTIONS_AUDIT.md`.
 - `CHECKSUMS_SHA256.txt`.
 
 ## Validation Results
 
 - Root compile:
-  - `latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex`: succeeded; 34 pages.
-  - `latexmk -pdf -interaction=nonstopmode -halt-on-error main_with_titlepage.tex`: succeeded; 34 pages.
+  - `latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex`: succeeded; 32 pages.
+  - `latexmk -pdf -interaction=nonstopmode -halt-on-error main_with_titlepage.tex`: succeeded; 32 pages.
 - Flat-source compile:
-  - `latex_flat/main.tex`: succeeded independently with `latexmk`; 34 pages.
-  - `latex_flat/main_with_titlepage.tex`: succeeded independently with `latexmk`; 34 pages.
+  - `latex_flat/main.tex`: succeeded independently with `latexmk`; 32 pages.
+  - `latex_flat/main_with_titlepage.tex`: succeeded independently with `latexmk`; 32 pages.
 - ZIP extraction:
   - `unzip -t performance_evaluation_submission_source.zip`: no errors.
   - `unzip -t performance_evaluation_supplementary_material.zip`: no errors.
@@ -86,18 +97,16 @@ The legacy concept PDF no longer used in the manuscript is not included in the s
   - Remaining underfull warnings occur in dense tables and bibliography lines.
 - Anonymity and safety:
   - Anonymous PDF metadata author is `Anonymous Author(s)`.
-  - Anonymous PDF scan found no placeholder author string, placeholder email, ORCID placeholder, or local username.
-  - Supplement scan found no prior-venue private-workflow wording.
+  - Anonymous PDF scan found no author identity, confirmed-person names, ORCID, email, affiliation, or public repository owner string.
+  - Identified PDF metadata author is `Soroush Vahidi`.
+  - Identified PDF text contains the confirmed author metadata, acknowledgments names, funding disclosure, AI-tool names, repository URL, and fixed commit.
+  - Supplement scan found no prior-venue workflow wording.
   - Package scan found no absolute local paths.
   - Package scan found no secret-like strings.
 
-## Remaining Author Confirmations
+## Remaining Journal-System Checks
 
-- Affiliations and corresponding author email.
-- ORCID/phone/address fields if requested by Editorial Manager.
-- Funding statement or explicit no-specific-funding statement.
-- Competing-interest statement.
-- Repository DOI, if minted.
-- Final acknowledgments, keeping emotional support, academic/advisory assistance, software support,
-  and API credits distinct.
-- Exact names of generative-AI tools/services if the submission form requires them.
+- The AI declaration is kept immediately above the references and uses Elsevier's manuscript-preparation
+  disclosure framing.
+- A repository DOI can be added later if one is minted; the GitHub URL is supplied, and the fixed
+  public commit is recorded in the final pushed manuscript version.

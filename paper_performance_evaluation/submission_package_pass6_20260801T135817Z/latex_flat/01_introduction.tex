@@ -33,14 +33,13 @@ fixed, and provider$\times$dataset cells may be completed, transfer-labeled, or 
 \end{figure}
 
 \paragraph{Contribution}
-The deliverable is a protocol-level measurement specification for budgeted closed-API inference
-(Figure~\ref{fig:protocol}). It defines what must be counted separately (nominal actions,
-successful completions, retries, tokens, latency, and dollars), how post-generation selectors should
-be attributed on identical pools, how provider-transfer evidence should be labeled, and how
-blocked/non-convergent cells should be reported as performance outcomes. The empirical sections use
-that protocol to show four consequences: identical-pool plurality is a required selector control,
-failure-mined rules need transfer labels, nominal budgets are not realized resource vectors, and
-provenance/blocked cells affect interpretation even when accuracy values are unchanged.
+This article contributes a controlled performance-evaluation protocol for budgeted closed-API
+inference (Figure~\ref{fig:protocol}). The protocol combines identical-pool attribution,
+provider-transfer analysis, protocol-blocked outcomes, and componentwise realized-resource
+accounting under incomplete closed-API telemetry. The empirical sections use that protocol to show
+four consequences: identical-pool plurality is a required selector control, failure-mined rules need
+transfer labels, nominal budgets are not realized resource vectors, and provenance/blocked cells
+affect interpretation even when accuracy values are unchanged.
 
 \paragraph{Roadmap}
 Section~\ref{sec:related} positions the work relative to performance measurement, test-time
@@ -52,8 +51,8 @@ Sections~\ref{sec:limitations}--\ref{sec:conclusion} summarize scope and implica
 performance-evaluation practice.
 
 \paragraph{Measurement objects}
-The named procedures are controlled objects for exercising the protocol, not promoted inference
-algorithms (Section~\ref{sec:method}). Class~A single-generator policies under $B{=}6$ include a
+The named procedures are measurement objects for exercising the protocol
+(Section~\ref{sec:method}). Class~A single-generator policies under $B{=}6$ include a
 reserved-attempt full-expansion diagnostic (Frontier) and closed-API adapters inspired by L1, S1,
 and TALE \citep{l1,s1,tale}. Class~B post-generation selectors over the shared pool include
 Pooled-4 and FTA. Offline oracles are upper bounds only. A single-cell Azure$\times$GSM8K

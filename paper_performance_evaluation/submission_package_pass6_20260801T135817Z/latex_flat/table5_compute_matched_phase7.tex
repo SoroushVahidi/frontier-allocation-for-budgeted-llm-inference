@@ -1,18 +1,18 @@
 % Values are unchanged from the corrected common-set method summary.
 % Panel A is the direct paired control. Panel B is contextual and mixes generation adapters
 % with an offline pool selector; the operational columns prevent a false equal-cost reading.
-\begin{tabular}{p{2.55cm}p{2.25cm}p{1.3cm}p{2.45cm}rrr}
+\begin{tabularx}{0.98\textwidth}{@{}p{2.35cm}Yp{1.15cm}Yrrr@{}}
 \toprule
-Method & Operational class & New model calls & Pool / call basis & Correct & Total & Accuracy \\
+Method & Operational class & Calls? & Pool/call basis & Correct & Total & Accuracy \\
 \midrule
 \multicolumn{7}{@{}l}{\textit{Panel A: direct paired same-model control (common 300 examples)}} \\
-Frontier & Structured generation policy & Yes & Nominal budget $B{=}6$ & 276 & 300 & 92.00\% \\
-True same-model SC $N{=}6$ & Fixed-$N$ generation + vote & Yes & Exactly 6 samples & 276 & 300 & 92.00\% \\
+Frontier & Structured generation & Yes & Nominal budget $B{=}6$ & 276 & 300 & 92.00\% \\
+True same-model SC $N{=}6$ & Fixed-$N$ generation + vote & Yes & Exactly $6$ samples & 276 & 300 & 92.00\% \\
 \midrule
 \multicolumn{7}{@{}l}{\textit{Panel B: contextual adapter and replay rows (not a cost-matched class)}} \\
 L1-style adapter & Generation adapter & Yes & Nominal budget $B{=}6$ & 269 & 300 & 89.67\% \\
-FTA replay selector & Offline pool selector & No at selection & Shared 4-generator pool ($\leq4B$) & 260 & 300 & 86.67\% \\
+FTA replay selector & Offline pool selector & No & Shared four-generator pool ($\leq4B$); no selector calls & 260 & 300 & 86.67\% \\
 S1-inspired adapter & Generation adapter & Yes & Nominal budget $B{=}6$ & 246 & 300 & 82.00\% \\
 TALE-EP-style adapter & Generation adapter & Yes & Nominal budget $B{=}6$ & 204 & 300 & 68.00\% \\
 \bottomrule
-\end{tabular}
+\end{tabularx}

@@ -13,6 +13,14 @@ nominal budgets \citep{ttc_budget_survey,snell_ttc}. Our protocol follows that m
 reporting componentwise realized resources and by auditing instrumentation artifacts that can alter
 efficiency interpretation without altering correctness outcomes.
 
+Recent systems-performance work reinforces the same scope for cloud and AI services: cloud
+benchmarking methodology calls for explicit measurement and reporting practice; PEVA work on cloud
+microservices studies uncertain latency--resource relationships under dynamic workloads; and PEVA
+work on serverless ML treats public-cloud scaling and cost as part of the performance object
+\citep{papadopoulos2021cloudmethodology,guo2023pobo,ali2025serverlessmltraining}. We adapt that
+systems-performance view to closed-API LLM inference, where providers expose incomplete telemetry
+and nominal budgets are not realized resource vectors.
+
 \paragraph{Workload characterization and test-time controls}
 Workload characterization asks whether compared systems face the same demand process and observable
 resource contract. Adaptive compute-allocation work shows that how budget is spent can matter as
@@ -48,5 +56,4 @@ are observed, with reconstruction status disclosed explicitly.
 Tree-of-Thoughts expands intermediate states under search heuristics \citep{tot}; classical
 metareasoning frames stopping as value-of-computation \citep{metareasoning}. The evaluated Frontier
 configuration does not test adaptive early stopping (Section~\ref{sec:method-frontier}). Historical
-ToT-style adapters and older component sweeps appear only as diagnostics
-(\ref{app:historical-components}).
+explorations outside the evaluated protocol are documented only in the supplementary material.

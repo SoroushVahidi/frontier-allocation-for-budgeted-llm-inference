@@ -17,8 +17,8 @@ counterfactual causes no external winner flips.
 \caption{Provider$\times$dataset landscape under nominal $B{=}6$. Class~A columns are closed-API
 generators (Frontier diagnostic; L1-/S1-/TALE-style adapters). Class~B columns select over the
 \emph{same} four-generator pool (pool cost $\leq 4B$; $0$ extra model calls). Bold marks the highest
-Class~A count and, separately, the higher of FTA vs.\ Pooled-4---descriptive highlighting, not a
-corrected leaderboard. Trust tiers and the Fireworks$\times$GPQA blocked outcome are defined in
+Class~A count and, separately, the higher of FTA vs.\ Pooled-4 as descriptive highlighting. Trust
+tiers and the Fireworks$\times$GPQA blocked outcome are defined in
 Section~\ref{sec:setup}.}
 \label{tab:main-matrix}
 \input{table1_main_4x4_matrix}
@@ -31,7 +31,7 @@ the only errors a commit rule can still fix (Equation~\eqref{eq:acc-decomp}). Wr
 for discovery rate and $\mathrm{CSA}$ for conditional selection accuracy
 (Equation~\eqref{eq:rates}; Figure~\ref{fig:protocol}), higher discovery does not systematically track
 FTA gains: global Pearson $r=-0.185$ (not significant at $n{=}15$; unstable under leave-one-out;
-Figure~\ref{fig:scatter}). Azure$\times$GSM8K has near-ceiling discovery with a large negative FTA
+supplementary scatter diagnostic). Azure$\times$GSM8K has near-ceiling discovery with a large negative FTA
 delta, while Vertex and Azure GPQA share essentially the same discovery rate with opposite selector
 signs (Section~\ref{sec:provider-analysis}). Joint $\mathrm{DR}$/$\mathrm{CSA}$ reporting is
 therefore required before identical-pool tests.
@@ -62,7 +62,7 @@ Panel~B is contextual only.
 \caption{Single-cell supporting control on Azure \texttt{gpt-4.1-mini}$\times$GSM8K ($n{=}300$).
 Panel~A matches call/sample budget (Frontier $B{=}6$ vs.\ SC with six samples); rows are not
 token-, latency-, dollar-, or FLOP-matched. Panel~B is contextual adapter/FTA context on the same
-IDs, not a joint cost-matched leaderboard.}
+IDs.}
 \label{tab:compute-matched-phase7}
-\resizebox{\textwidth}{!}{\input{table5_compute_matched_phase7}}
+\input{table5_compute_matched_phase7}
 \end{table}

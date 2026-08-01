@@ -1,50 +1,50 @@
-# Declarations Draft (Performance Evaluation Submission)
+# Declarations (Performance Evaluation Submission)
 
-Status: Draft with placeholders requiring author confirmation.
+## Acknowledgments
 
-## Acknowledgments (separate from funding and competing interests)
+The author thanks his mother for her emotional support. The author is grateful to Professor Yiannis
+Koutis for his academic guidance and feedback. The author also thanks Anders Borum for providing
+complimentary lifetime access to Secure ShellFish, which supported remote access and development
+during this research.
 
-Planned structure:
+## Funding
 
-1. Emotional support (personal support acknowledgment)
-2. Academic/advisory assistance (non-author intellectual support)
-3. Software/tooling support (non-author technical help)
-4. Company-provided API credits (as acknowledgment of resource support, not funding unless formally grant-like)
+This research received in-kind computational support through API and cloud-service credits provided
+by the Cohere Labs Catalyst Grant Program, the Google Cloud Research Credits Program, Microsoft
+Azure for Students, and Fireworks AI. Cohere Labs provided USD 1,000 in API credits through its
+Catalyst Grant Program. These providers had no role in the study design; data collection, analysis,
+or interpretation; preparation of the manuscript; or the decision to submit the article for
+publication. The research received no other specific grant from funding agencies in the public,
+commercial, or not-for-profit sectors.
 
-Draft placeholder:
+## Declaration of competing interest
 
-> The author thanks [PERSON/TEAM] for emotional support, [ADVISOR/COLLEAGUE] for academic guidance and feedback, and [TOOLING/SOFTWARE SUPPORT ENTITY] for technical support. The author also acknowledges [COMPANY] for providing API credits that supported experimental execution.
+The author declares that he has no known competing financial interests or personal relationships
+that could have appeared to influence the work reported in this paper.
 
-## Funding declaration
+## Data and code availability
 
-> [TODO: either exact funded statement with funder/grant IDs, or "This research did not receive a specific grant from funding agencies in the public, commercial, or not-for-profit sectors."]
+GSM8K, MATH-500, GPQA-Diamond, and StrategyQA are publicly available from their original sources.
+The public repository contains the evaluation code, frozen aggregate audit records, analysis scripts,
+manifests, and reproducibility instructions:
+https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference.
+The fixed public version is the version archived with this submission.
 
-## Competing interest declaration
+## Declaration of generative AI and AI-assisted technologies in the manuscript preparation process
 
-> [TODO: explicit declaration of competing interests or explicit no-competing-interest statement.]
+During manuscript preparation, the author used ChatGPT, Claude, and Cursor to assist with drafting
+and revising prose. Research-process uses of AI-assisted tools for code inspection, code
+modification, and analysis organization are described in the manuscript's Experimental Protocol
+section. The author reviewed and edited the tool-assisted prose as needed and takes full
+responsibility for the content of the published article.
 
-## Data availability declaration
+## Author information
 
-> GSM8K, MATH-500, GPQA-Diamond, and StrategyQA are publicly available datasets. Code, manuscript source, and release artifacts are available at https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference.
+Soroush Vahidi  
+Ying Wu College of Computing  
+New Jersey Institute of Technology  
+Newark, New Jersey, USA  
+Email: sv96@njit.edu  
+ORCID: https://orcid.org/0000-0003-1934-6282
 
-## Generative AI declaration (Elsevier policy-aligned)
-
-Section title to use in manuscript:
-
-> **Declaration of generative AI and AI-assisted technologies in the manuscript preparation process**
-
-Draft statement (to finalize; add exact tool/service names if required by the submission form):
-
-> During the preparation of this work, the author used AI-assisted tools in order to draft and revise prose, inspect and modify research code, organize analyses, and prepare reproducibility and consistency checks. After using these tools, the author reviewed and edited the content as needed and takes full responsibility for the content of the published article.
-
-## Author confirmations still required
-
-- Legal author names
-- Author order
-- Affiliations
-- Corresponding author email (and any phone/address fields requested at submission)
-- Funding wording
-- Competing-interest wording
-- Repository DOI if a Zenodo or other archival DOI is minted after GitHub release
-- Exact wording for API-credit acknowledgment (acknowledgments vs funding boundary)
-- Exact generative-AI tool/service names if Elsevier's submission fields request them
+Soroush Vahidi is the sole author and corresponding author.

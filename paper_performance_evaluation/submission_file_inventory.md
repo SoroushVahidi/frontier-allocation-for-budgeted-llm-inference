@@ -1,37 +1,32 @@
-# Submission File Inventory (Pass 2 Draft)
+# Submission File Inventory
 
 ## Core manuscript package
 
-- `main.tex` — anonymous scaffold (review-safe draft)
-- `main_with_titlepage.tex` — title-page wiring compile variant
-- `title_page.tex` — author/affiliation/corresponding metadata block (with placeholders)
-- `refs.bib` — bibliography database placeholder
-- `elsarticle-num.bst` — Elsevier numbered bibliography style
-- `elsarticle-num-names.bst` — Elsevier alternative style
-- `elsarticle-harv.bst` — Elsevier Harvard style option
+- `main.tex` — anonymous fallback manuscript source for review workflows that require anonymity.
+- `main.pdf` — compiled anonymous fallback manuscript.
+- `main_with_titlepage.tex` — complete identified manuscript source.
+- `main_with_titlepage.pdf` — complete identified manuscript PDF.
+- `title_page.tex` — confirmed sole-author, corresponding-author, affiliation, email, and ORCID block.
+- `refs.bib` — bibliography database.
+- `elsarticle-num.bst` — Elsevier numbered bibliography style.
+- `elsarticle-num-names.bst` — Elsevier alternative numbered bibliography style.
+- `elsarticle-harv.bst` — Elsevier Harvard bibliography style option.
 
-## Compliance/support files
+## Submission assets
 
-- `JOURNAL_REQUIREMENTS.md`
-- `declarations.md`
-- `cover_letter.md`
-- `COMPLIANCE_GAP_REPORT.md`
+- `highlights.txt` — highlights file prepared for upload if required or accepted.
+- `cover_letter.md` — identified cover letter.
+- `declarations.md` — standalone declarations matching the identified manuscript.
+- `submission_package_pass6_20260801T135817Z/` — refreshed submission package directory.
 
-## Template provenance and attribution
+## Supplementary material
 
-- `elsarticle.zip` — official download artifact
-- `template_upstream/` — unpacked official template source
-- `README` — copied from official template package
-- `ELSEVIER_TEMPLATE_MANIFEST.txt`
-- `ELSEVIER_TEMPLATE_CHANGELOG.txt`
-- `template_reference_num.tex`
+- `submission_package_pass6_20260801T135817Z/performance_evaluation_submission_source.zip`
+- `submission_package_pass6_20260801T135817Z/performance_evaluation_supplementary_material.zip`
+- `submission_package_pass6_20260801T135817Z/artwork/` — separate artwork PDFs.
 
-## Conditional files
+## Notes
 
-- `highlights.txt` — prepared as conditional asset (journal-specific requirement unresolved in this environment)
-
-## Not yet created in Pass 2
-
-- Graphical abstract placeholder file (withheld pending verified PE requirement level)
-- Final figure files and figure-caption final pack
-- Final supplementary upload pack naming map
+The official Performance Evaluation guide page was not fully accessible during this pass. The
+identified manuscript is the primary submission file. The anonymous manuscript is retained only as a
+fallback for workflows that request an anonymous manuscript file.

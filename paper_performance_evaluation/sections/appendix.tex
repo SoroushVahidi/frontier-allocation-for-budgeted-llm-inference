@@ -1,6 +1,8 @@
 This appendix supplies disclosure and provenance detail summarized in the main text: gold-free
 features, repair and baseline fidelity, trust tiers, statistical testing, pseudocode, offline
-counterfactuals, historical diagnostics, chronology, pilots, and compute detail.
+counterfactuals, and compute detail. Historical negative variants, pilot surfaces, and partial
+same-model checks are moved to the supplementary material because they are outside the evaluated
+protocol.
 
 \section{Gold-Free Runtime Features}
 \label{app:leakage}
@@ -9,7 +11,7 @@ Every quantity used by Frontier (incumbent support, challenger support, override
 maturity) and by FTA (trace trigger, external agreement) is computed from generated candidates
 only. Gold labels are offline-only for accuracy and discovery/selection diagnostics. Runtime
 leakage checks found no gold-dependent runtime features. Researcher-adaptation concerns remain
-separate (\ref{app:chronology}).
+separate from runtime leakage (Section~\ref{sec:limitations}).
 
 \section{Bounded Answer Repair}
 \label{app:repair}
@@ -18,9 +20,9 @@ Bounded repair re-ranks completed branch nodes by canonicalized answer support. 
 repair with a controller-committed answer when present. Frontier almost always supplies a committed
 answer, so repair is computed but discarded for scoring; L1/S1/TALE typically score the repair-layer
 output. Offline quantification on the 15-cell matrix: Frontier's scored answer differs from the
-repair-related field on \textbf{151} of $3{,}394$ Frontier rows (replacing an older manuscript count
-of 81 under a narrower definition). Among Frontier differs, hypothetical repair application yields
-0 rescues and 68 regressions in this reconstruction (remainder wrong$\leftrightarrow$wrong / neutral).
+repair-related field on \textbf{151} of $3{,}394$ Frontier rows. Among Frontier differs,
+hypothetical repair application yields 0 rescues and 68 regressions in this reconstruction
+(remainder wrong$\leftrightarrow$wrong / neutral).
 External \texttt{repair\_answer\_raw} vs.\ scored often differs textually ($462$ rows) largely due to
 canonicalization; forcing a repair-based external ranking counterfactual produced \textbf{0} external
 winner flips. Asymmetry remains real; external cell winners appear ranking-stable under this
@@ -42,7 +44,7 @@ protocol. TALE-PT is not reproduced.
 \section{Provenance and Trust Tiers}
 \label{app:provenance}
 
-Tier~A: Cohere/Azure/Vertex$\times$GSM8K (strongest draw and scoring provenance under the maintained
+Tier~A: Cohere/Azure/Vertex$\times$GSM8K (strongest draw and scoring provenance under the released
 manifests). Tier~B: remaining completed cells. Three cells had historical duplicate-row noise;
 deduplication changed 0 accuracies. Azure$\times$GPQA FTA: offline selector replay on stored
 generations. Fireworks$\times$GPQA: protocol-blocked (\texttt{BLOCKED\_PROTOCOL\_NONCONVERGENCE}).
@@ -151,65 +153,21 @@ cells; incumbent better in $2/15$. Large gains on several MATH cells. Caveat: me
 varies. This is an offline comparison against stopping after the reserved attempts, not a live
 early-stopping policy and not a matched-cost alternative.
 
-\section{Researcher-Adaptation Chronology}
-\label{app:chronology}
-
-FIX-2/FIX-4 were developed on Cohere$\times$GSM8K failure diagnostics and frozen before the
-subsequent matrix evaluation. Later $4{\times}4$ cells are transfer evaluations. Runtime features
-remain gold-free, but researcher adaptation on Cohere$\times$GSM8K is real. Azure FIX-2 regressions
-are therefore important transfer evidence.
-
-\section{Historical Negative Variants}
-\label{app:negative-variants}
-
-Agreement-region router, extra-budget recovery action, cluster reranking, and related FIX-5--9
-explorations were not retained (net negative, budget-breaking, or below threshold). A historical
-all-methods-wrong diagnostic suggested residual errors were mostly discovery-limited; the exact
-reconstruction is not available in the maintained codebase, so precise counts are non-load-bearing.
-
-\section{Historical Component Diagnostics (Non-Current Path)}
-\label{app:historical-components}
-
-Table~\ref{tab:historical-components} summarizes older STRICT-F3-surface component diagnostics. These
-rows are \emph{not} current-path Frontier/FTA ablations; they are retained only to document
-calibration sensitivity of answer-support, anti-collapse, and repeat-family controls on a historical
-surface.
-
-\begin{table}[tbp]
-\centering
-\footnotesize
-\caption{Condensed historical component diagnostics on an older method surface. Not current-path
-Frontier/FTA results.}
-\label{tab:historical-components}
-\input{tables/table7_historical_component_ablation}
-\end{table}
-
-\section{Natural Plan and GPQA Pilot Details}
-\label{app:non-math-pilot}
-
-Non-math pilot records exist for Natural Plan and GPQA-Diamond, but they are
-small historical pilots, not the current 15-cell Frontier/FTA matrix and not official
-baseline reproductions. Table~\ref{tab:non-math-pilot} reports them to make the available evidence
-visible rather than implying hidden full-scale non-math runs. The main paper's GPQA claims should
-use the 15-cell matrix in Table~\ref{tab:main-matrix}; Natural Plan remains pilot-only.
-
-\begin{table}[tbp]
-\centering
-\footnotesize
-\caption{Historical non-math pilot details. Evidence type: controlled pilot/adapted harness; not a
-current real-model matrix claim.}
-\label{tab:non-math-pilot}
-\resizebox{\textwidth}{!}{\input{tables/table8_non_math_pilot}}
-\end{table}
-
 \section{Reproducibility Records}
 \label{app:artifact-map}
 
-A claim--evidence map links numerical claims to frozen source records, producing scripts, and
-checksums for the corrected true-SC comparison, held-out selector, and 15-cell matrix packages. The
-records support deterministic replay of the reported analyses, not identical proprietary
-regeneration or every historical subset draw (Section~\ref{sec:setup-repro}). Live reruns would
-require provider credentials and paid API calls and are not part of this manuscript.
+A public claim--evidence map links numerical claims to tracked aggregate audit records, source
+tables, producing scripts, and package checksums for the Azure true-SC comparison, held-out selector,
+and 15-cell matrix summaries. The public artifacts support deterministic verification of the
+reported numerical invariants, not identical proprietary regeneration or every historical subset draw
+(Section~\ref{sec:setup-repro}). Live reruns would require provider credentials and paid API calls
+and are not part of this manuscript.
+
+\section{Supplementary Diagnostics}
+\label{app:supp-diagnostics}
+
+The descriptive discovery--selection scatter diagnostic is provided in the supplementary material;
+the tested transfer evidence used in the main paper is reported in Section~\ref{sec:provider-analysis}.
 
 \section{Additional Compute Detail}
 \label{app:compute-detail}
@@ -227,42 +185,3 @@ unique plurality and $12.0\%$ fall back. Accuracy under Frontier-fallback ($67.8
 reconstruction) moves to $66.7\%$/$66.5\%$ under two predeclared alternatives ($\leq 1.3$\,pp);
 none selected post hoc. This reconstruction excludes $135$ incomplete-quad rows and is for
 tie-sensitivity only, not a replacement of the $66.53\%/n{=}3394$ aggregate.
-
-\section{Same-Model Self-Consistency: Historical Partial Checks}
-\label{app:same-model-sc}
-
-Table~\ref{tab:compute-matched-phase7} supersedes the old Azure$\times$GSM8K partial checks for the
-direct six-call SC question. Table~\ref{tab:same-model-sc} is historical, $N$-asymmetric offline
-context ($N{=}3$ for Azure/Cohere, $N{=}5$ for Vertex; GSM8K/GPQA only; not token- or
-cost-matched). Holm correction is within two separate families (Azure/Vertex; Cohere), not a joint
-six-cell family. This is not a full-matrix matched SC/BoN bakeoff.
-
-\begin{table}[tbp]
-\centering
-\footnotesize
-\caption{Same-model SC vs.\ Pooled-4 (offline; partial surface). Holm families: Azure/Vertex (4)
-and Cohere (2), corrected separately.}
-\label{tab:same-model-sc}
-\resizebox{\textwidth}{!}{\begin{tabular}{@{}llrrrrrrc@{}}
-\toprule
-Provider & Dataset & $n$ & SC acc.\ & Pooled-4 acc.\ & $\Delta$ (pp) & Raw $p$ & Holm $p$ & Sig.\ \\
-\midrule
-Azure OpenAI & GPQA-MCQ & 198 & 48.48\% & 52.53\% & $-4.04$ & 0.2153 & 0.8613 & No \\
-Azure OpenAI & GSM8K & 300 & 91.33\% & 92.00\% & $-0.67$ & 0.6250 & 1.0000 & No \\
-Vertex Gemini & GPQA-MCQ & 194 & 58.76\% & 61.86\% & $-3.09$ & 0.3269 & 0.9808 & No \\
-Vertex Gemini & GSM8K & 300 & 93.33\% & 92.67\% & $+0.67$ & 0.6875 & 1.0000 & No \\
-\midrule
-Cohere & GSM8K & 300 & 81.33\% & 87.00\% & $-5.67$ & 0.0115 & \textbf{0.0230} & \textbf{Yes} \\
-Cohere & GPQA-MCQ & 198 & 35.35\% & 36.36\% & $-1.01$ & 0.8714 & 0.8714 & No \\
-\bottomrule
-\end{tabular}}
-\end{table}
-
-\begin{figure}[tbp]
-\centering
-\includegraphics[width=0.78\linewidth]{figures/figure3_search_vs_selection_scatter}
-\caption{Discovery rate vs.\ FTA$-$Frontier delta (15 cells). Global Pearson $r=-0.185$ (not
-supported at $n{=}15$); leave-one-out ranges vary. Descriptive sanity check; Azure sign reversal is
-the clearer tested instance (Section~\ref{sec:provider-analysis}).}
-\label{fig:scatter}
-\end{figure}

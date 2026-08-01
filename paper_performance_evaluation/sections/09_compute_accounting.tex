@@ -38,12 +38,14 @@ matched realized call allocations (\ref{app:compute-detail}).
 
 \begin{figure}[tbp]
 \centering
-\includegraphics[width=0.80\linewidth]{figures/figure4_accuracy_vs_cost_tradeoff}
-\caption{Class~A accuracy vs.\ mean estimated cost per example (milli-USD) for the evaluated
-adapters under this protocol. Points occupy a tradeoff region. Open Frontier markers with rightward
-arrows mark incomplete challenger-phase token persistence.}
+\includegraphics[width=0.86\linewidth,trim=8 8 8 8,clip]{figures/figure4_accuracy_vs_cost_tradeoff}
+\caption{Incomplete-telemetry diagnostic for Class~A accuracy and mean estimated cost per example
+(milli-USD). Open Frontier markers with rightward arrows indicate that challenger-phase token
+fields were not persisted, so Frontier cost positions are lower bounds rather than definitive
+Pareto or cost-efficiency rankings.}
 \label{fig:tradeoff}
 \end{figure}
 
-Figure~\ref{fig:tradeoff} visualizes that tradeoff. The single-cell Azure$\times$GSM8K SC comparison
+Figure~\ref{fig:tradeoff} is therefore a diagnostic for incomplete cost telemetry, not a definitive
+cost-efficiency frontier. The single-cell Azure$\times$GSM8K SC comparison
 (Section~\ref{sec:sc-entitlement-control}) remains call/sample-budget-matched only.

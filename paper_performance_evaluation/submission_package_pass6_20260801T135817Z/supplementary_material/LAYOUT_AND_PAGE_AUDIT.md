@@ -19,8 +19,8 @@ The final two commands regenerated current `.log` files for audit inspection.
 
 | Build | PDF | Pages | Page size |
 |---|---|---:|---|
-| Anonymous | `main.pdf` | 36 | Letter, 612 x 792 pt |
-| Title-page | `main_with_titlepage.pdf` | 36 | Letter, 612 x 792 pt |
+| Anonymous | `main.pdf` | 32 | Letter, 612 x 792 pt |
+| Title-page | `main_with_titlepage.pdf` | 32 | Letter, 612 x 792 pt |
 
 ## Compile Checks
 
