@@ -1,0 +1,158 @@
+\begin{thebibliography}{10}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \def\href#1#2{#2} \def\path#1{#1}\fi
+
+\bibitem{passatk}
+M.~Chen, J.~Tworek, H.~Jun, Q.~Yuan, H.~P. d.~O. Pinto, et~al., Evaluating
+  large language models trained on code, arXiv preprint arXiv:2107.03374
+  (2021).
+
+\bibitem{ll_monkeys}
+B.~Brown, J.~Juravsky, R.~Ehrlich, R.~Clark, Q.~V. Le, C.~R{\'e},
+  A.~Mirhoseini, Large language monkeys: Scaling inference compute with
+  repeated sampling, arXiv preprint arXiv:2407.21787 (2024).
+
+\bibitem{oracle_gap}
+J.~Hu, Oracle gap and signal fidelity: A fixed-pool diagnostic for test-time
+  collaboration, arXiv preprint arXiv:2607.17531 (2026).
+
+\bibitem{selfconsistency}
+X.~Wang, J.~Wei, D.~Schuurmans, Q.~Le, E.~Chi, S.~Narang, A.~Chowdhery,
+  D.~Zhou, Self-consistency improves chain of thought reasoning in language
+  models, in: International Conference on Learning Representations (ICLR),
+  2023, arXiv:2203.11171.
+
+\bibitem{snell_ttc}
+C.~Snell, J.~Lee, K.~Xu, A.~Kumar, Scaling llm test-time compute optimally can
+  be more effective than scaling model parameters, arXiv preprint
+  arXiv:2408.03314ICLR 2025 (2024).
+
+\bibitem{l1}
+P.~Aggarwal, S.~Welleck, L1: Controlling how long a reasoning model thinks with
+  reinforcement learning, arXiv preprint arXiv:2503.04697 (2025).
+
+\bibitem{s1}
+N.~Muennighoff, Z.~Yang, W.~Shi, X.~L. Li, L.~Fei-Fei, H.~Hajishirzi,
+  L.~Zettlemoyer, P.~Liang, E.~Cand{\`e}s, T.~Hashimoto, s1: Simple test-time
+  scaling, arXiv preprint arXiv:2501.19393 (2025).
+
+\bibitem{tale}
+T.~Han, Z.~Wang, C.~Fang, S.~Zhao, S.~Ma, Z.~Chen, Token-budget-aware llm
+  reasoning, arXiv preprint arXiv:2412.18547Findings of ACL 2025 (2024).
+
+\bibitem{adaptive_ttc_cpo}
+Z.~Zhai, B.~Li, B.~Xiao, M.~Li, X.~Wang, Adaptive test-time compute allocation
+  for reasoning llms via constrained policy optimization, arXiv preprint
+  arXiv:2604.14853 (2026).
+
+\bibitem{adactrl}
+S.~Huang, H.~Wang, W.~Zhong, Z.~Su, J.~Feng, B.~Cao, Y.~R. Fung, {AdaCtrl}:
+  Towards adaptive and controllable reasoning via difficulty-aware budgeting,
+  Transactions on Machine Learning ResearchArXiv:2505.18822 (2026).
+
+\bibitem{ava}
+D.~Patel, Anytime verified agents: Adaptive compute allocation for reliable
+  {LLM} reasoning under budget constraints, Transactions on Machine Learning
+  Research (2026).
+
+\bibitem{ttc_budget_survey}
+M.~A. Alomrani, Y.~Zhang, D.~Li, Q.~Sun, S.~Pal, Z.~Zhang, Y.~Hu, R.~D. Ajwani,
+  A.~Valkanas, R.~Karimi, P.~Cheng, Y.~Wang, P.~Liao, H.~Huang, B.~Wang,
+  J.~Hao, M.~Coates, Reasoning on a budget: A survey of adaptive and
+  controllable test-time compute in llms, arXiv preprint arXiv:2507.02076
+  (2025).
+
+\bibitem{universal_sc}
+X.~Chen, R.~Aksitov, U.~Alon, J.~Ren, K.~Xiao, P.~Yin, S.~Prakash, C.~Sutton,
+  X.~Wang, D.~Zhou, Universal self-consistency for large language model
+  generation, arXiv preprint arXiv:2311.17311 (2023).
+
+\bibitem{adaptive_consistency}
+P.~Aggarwal, A.~Madaan, Y.~Yang, Mausam, Let's sample step by step:
+  Adaptive-consistency for efficient reasoning and coding with {LLM}s, in:
+  Proceedings of the 2023 Conference on Empirical Methods in Natural Language
+  Processing, Association for Computational Linguistics, 2023, pp.
+  12375--12396.
+\newblock \href {https://doi.org/10.18653/v1/2023.emnlp-main.761}
+  {\path{doi:10.18653/v1/2023.emnlp-main.761}}.
+
+\bibitem{esc}
+Y.~Li, P.~Yuan, S.~Feng, B.~Pan, X.~Wang, B.~Sun, H.~Wang, K.~Li, Escape
+  sky-high cost: Early-stopping self-consistency for multi-step reasoning, in:
+  International Conference on Learning Representations (ICLR), 2024,
+  arXiv:2401.10480.
+
+\bibitem{difficulty_adaptive_sc}
+X.~Wang, S.~Feng, Y.~Li, P.~Yuan, Y.~Zhang, C.~Tan, B.~Pan, Y.~Hu, K.~Li, Make
+  every penny count: Difficulty-adaptive self-consistency for cost-efficient
+  reasoning, in: Findings of the Association for Computational Linguistics:
+  NAACL 2025, Association for Computational Linguistics, 2025, pp. 6919--6932.
+\newblock \href {https://doi.org/10.18653/v1/2025.findings-naacl.383}
+  {\path{doi:10.18653/v1/2025.findings-naacl.383}}.
+
+\bibitem{reasc}
+J.~Kim, N.~Yang, K.~Min, K.~Jung, Reliability-aware adaptive self-consistency
+  for efficient sampling in {LLM} reasoning, in: Findings of the Association
+  for Computational Linguistics: ACL 2026, Association for Computational
+  Linguistics, 2026, arXiv:2601.02970; DOI: 10.18653/v1/2026.findings-acl.1085.
+
+\bibitem{self_certainty}
+Z.~Kang, X.~Zhao, D.~Song, Scalable best-of-{N} selection for large language
+  models via self-certainty, arXiv preprint arXiv:2502.18581NeurIPS 2025
+  (2025).
+
+\bibitem{letsverify}
+H.~Lightman, V.~Kosaraju, Y.~Burda, H.~Edwards, B.~Baker, T.~Lee, J.~Leike,
+  J.~Schulman, I.~Sutskever, K.~Cobbe, Let's verify step by step, arXiv
+  preprint arXiv:2305.20050 (2023).
+
+\bibitem{frugalgpt}
+L.~Chen, M.~Zaharia, J.~Zou, Frugal{GPT}: How to use large language models
+  while reducing cost and improving performance, arXiv preprint
+  arXiv:2305.05176 (2023).
+
+\bibitem{hybrid_llm}
+D.~Ding, A.~Mallick, C.~Wang, R.~Sim, S.~Mukherjee, V.~Ruhle, L.~V.~S.
+  Lakshmanan, A.~H. Awadallah, Hybrid {LLM}: Cost-efficient and quality-aware
+  query routing, in: International Conference on Learning Representations
+  (ICLR), 2024.
+
+\bibitem{routellm}
+I.~Ong, A.~Almahairi, V.~Wu, W.-L. Chiang, T.~Wu, J.~E. Gonzalez, M.~W. Kadous,
+  I.~Stoica, {RouteLLM}: Learning to route {LLM}s with preference data, in:
+  International Conference on Learning Representations (ICLR), 2025,
+  arXiv:2406.18665.
+
+\bibitem{tot}
+S.~Yao, D.~Yu, J.~Zhao, I.~Shafran, T.~L. Griffiths, Y.~Cao, K.~Narasimhan,
+  Tree of thoughts: Deliberate problem solving with large language models,
+  Advances in Neural Information Processing SystemsArXiv:2305.10601 (2023).
+
+\bibitem{metareasoning}
+S.~Russell, E.~Wefald, Do the Right Thing: Studies in Limited Rationality, MIT
+  Press, 1991.
+
+\bibitem{gsm8k}
+K.~Cobbe, V.~Kosaraju, M.~Bavarian, M.~Chen, H.~Jun, L.~Kaiser, M.~Plappert,
+  J.~Tworek, J.~Hilton, R.~Nakano, C.~Hesse, J.~Schulman, Training verifiers to
+  solve math word problems, arXiv preprint arXiv:2110.14168 (2021).
+
+\bibitem{math500}
+D.~Hendrycks, C.~Burns, S.~Kadavath, A.~Arora, S.~Basart, E.~Tang, D.~Song,
+  J.~Steinhardt, Measuring mathematical problem solving with the math dataset,
+  arXiv preprint arXiv:2103.03874 (2021).
+
+\bibitem{gpqa}
+D.~Rein, B.~L. Hou, A.~C. Stickland, J.~Petty, R.~Y. Pang, J.~Dirani,
+  J.~Michael, S.~R. Bowman, Gpqa: A graduate-level google-proof q\&a benchmark,
+  arXiv preprint arXiv:2311.12022 (2023).
+
+\bibitem{strategyqa}
+M.~Geva, D.~Khashabi, E.~Segal, T.~Khot, D.~Roth, J.~Berant, Did aristotle use
+  a laptop? a question answering benchmark with implicit reasoning strategies,
+  Transactions of the Association for Computational Linguistics (TACL) (2021).
+
+\end{thebibliography}

@@ -1,0 +1,4 @@
+cell_id,manifest_source,duplicate_groups_documented,selection_rule
+azure_gsm8k,outputs/interpretable_core4x4_final_repair_plan_20260717T180003Z/duplicate_resolution_manifest.json,2,valid parse; valid scoring; current/fixed code path; completed attempt; newest valid row tie-breaker
+azure_math500,outputs/interpretable_core4x4_final_repair_plan_20260717T180003Z/duplicate_resolution_manifest.json,1,valid parse; valid scoring; current/fixed code path; completed attempt; newest valid row tie-breaker
+cohere_math500,outputs/interpretable_core4x4_final_repair_plan_20260717T180003Z/duplicate_resolution_manifest.json,11,valid parse; valid scoring; current/fixed code path; completed attempt; newest valid row tie-breaker

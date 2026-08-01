@@ -1,0 +1,17 @@
+category,name,count
+strict_sole_method_wins,direct_reserve_semantic_frontier_v2,4
+strict_sole_method_wins,FTA,6
+strict_sole_method_wins,external_l1_max,1
+strict_sole_method_wins,external_s1_budget_forcing,1
+strict_sole_method_wins,external_tale_prompt_budgeting,2
+method_wins_or_ties,direct_reserve_semantic_frontier_v2,5
+method_wins_or_ties,FTA,7
+method_wins_or_ties,external_l1_max,1
+method_wins_or_ties,external_s1_budget_forcing,1
+method_wins_or_ties,external_tale_prompt_budgeting,3
+frontier_family_sole_wins,Frontier_or_FTA,10
+frontier_family_wins_or_ties,Frontier_or_FTA,11
+fta_sole_wins,FTA,6
+frontier_sole_wins,Frontier,4
+external_baseline_sole_wins,L1_or_S1_or_TALE,4
+ties_involving_our_and_external,OUR_and_EXT,1

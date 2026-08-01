@@ -1,0 +1,68 @@
+\section{Matrix Landscape: Discovery, Adapters, and Scope}
+\label{sec:results}
+
+Table~\ref{tab:main-matrix} is a workload landscape, not an efficiency or selector-attribution
+result. Under nominal budget $B{=}6$, it records Class~A generators and Class~B identical-pool
+selectors across providers and datasets; Section~\ref{sec:setup} defines the unscored
+Fireworks$\times$GPQA protocol-blocked outcome. Sections~\ref{sec:identical-pool}--\ref{sec:compute}
+then isolate the comparisons the matrix alone cannot settle: identical-pool selection, provider
+transfer, and realized-resource accounting. Bounded repair follows the historical convention in
+Section~\ref{sec:method-scope}; \ref{app:repair} verifies that a uniform-repair
+counterfactual causes no external winner flips.
+
+\begin{table}[tbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Provider$\times$dataset landscape under nominal $B{=}6$. Class~A columns are closed-API
+generators (Frontier diagnostic; L1-/S1-/TALE-style adapters). Class~B columns select over the
+\emph{same} four-generator pool (pool cost $\leq 4B$; $0$ extra model calls). Bold marks the highest
+Class~A count and, separately, the higher of FTA vs.\ Pooled-4---descriptive highlighting, not a
+corrected leaderboard. Trust tiers and the Fireworks$\times$GPQA blocked outcome are defined in
+Section~\ref{sec:setup}.}
+\label{tab:main-matrix}
+\input{tables/table1_main_4x4_matrix}
+\end{table}
+
+\subsection{Does higher discovery predict safer selection?}
+
+Absent-from-pool errors are unrecoverable by pool-only selectors; present-but-misselected errors are
+the only errors a commit rule can still fix (Equation~\eqref{eq:acc-decomp}). Writing $\mathrm{DR}$
+for discovery rate and $\mathrm{CSA}$ for conditional selection accuracy
+(Equation~\eqref{eq:rates}; Figure~\ref{fig:protocol}), higher discovery does not systematically track
+FTA gains: global Pearson $r=-0.185$ (not significant at $n{=}15$; unstable under leave-one-out;
+Figure~\ref{fig:scatter}). Azure$\times$GSM8K has near-ceiling discovery with a large negative FTA
+delta, while Vertex and Azure GPQA share essentially the same discovery rate with opposite selector
+signs (Section~\ref{sec:provider-analysis}). Joint $\mathrm{DR}$/$\mathrm{CSA}$ reporting is
+therefore required before identical-pool tests.
+
+\subsection{What do Class~A adapter counts characterize?}
+
+Descriptively, within the evaluated closed-API adapter surfaces, the reserved-attempt full-expansion
+diagnostic is sole highest in $7/15$ cells and tied highest in one more; remaining adapter surfaces
+occupy fewer cells. We use these counts to characterize the workload surface before the controlled
+selection and accounting analyses. An offline incumbent-only counterfactual loses to full Frontier
+in $9/15$ cells (Section~\ref{sec:ablations}), indicating that challenger expansion is not inert
+under stored traces.
+
+\subsection{What does the single-cell same-model control establish?}
+\label{sec:sc-entitlement-control}
+
+Table~\ref{tab:compute-matched-phase7} is a single-cell supporting control on Azure GPT-4.1-mini
+with GSM8K ($n{=}300$): it matches call/sample budget between Frontier
+($B{=}6$) and true same-model fixed-$N$ self-consistency (SC; six samples). Each obtains $276/300$
+($92.00\%$; marginal exact binomial 95\% CI $88.3304$--$94.8071\%$). Paired records show 298 ties
+and one method-only correct case each (two-sided exact McNemar $p{=}1.0$; paired-bootstrap 95\%
+percentile interval for Frontier$-$SC: $[-1.00,+1.00]$\,pp). No equivalence margin was prespecified.
+Panel~B is contextual only.
+
+\begin{table}[tbp]
+\centering
+\footnotesize
+\caption{Single-cell supporting control on Azure \texttt{gpt-4.1-mini}$\times$GSM8K ($n{=}300$).
+Panel~A matches call/sample budget (Frontier $B{=}6$ vs.\ SC with six samples); rows are not
+token-, latency-, dollar-, or FLOP-matched. Panel~B is contextual adapter/FTA context on the same
+IDs, not a joint cost-matched leaderboard.}
+\label{tab:compute-matched-phase7}
+\resizebox{\textwidth}{!}{\input{tables/table5_compute_matched_phase7}}
+\end{table}

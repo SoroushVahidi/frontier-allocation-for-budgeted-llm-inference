@@ -1,0 +1,2680 @@
+"""Shared frontier-strategy construction and evaluation for the new-paper track.
+
+Used by `scripts/run_cross_strategy_frontier_allocation.py` and
+`scripts/run_new_paper_frontier_matrix.py` so strategy definitions stay in sync.
+"""
+
+from __future__ import annotations
+
+import os
+import random
+from typing import Any, Callable
+
+from experiments.branching import APIBranchGenerator, SimulatedBranchGenerator
+from experiments.controllers import (
+    AdaptiveController,
+    BeamController,
+    BestOfNController,
+    DirectReserveGateRerankController,
+    DirectReserveFrontierGateController,
+    DirectReserveFrontierGateV2Controller,
+    DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller,
+    DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller,
+    DirectReserveFrontierGateV2L1DirectInjectionV1Controller,
+    DirectReserveFrontierGateV2SelectionFixV1Controller,
+    DirectReserveLearnedOverrideController,
+    CalibratedNearDirectFrontierGateController,
+    GlobalDiversityAggregationController,
+    GreedyController,
+    IntermediateTrapAwareNearTieController,
+    TreeOfThoughtMatchedBudgetController,
+    ProgramOfThoughtController,
+    SelfConsistencyFairController,
+    S1BudgetForcingController,
+    SelectiveSelfConsistencyHybridController,
+    L1LengthControlController,
+    NearDirectReserveFrontierGateController,
+    TALEPromptBudgetingController,
+    VerifierGuidedSearchController,
+)
+from experiments.prm_partial_scorer import HeuristicPRMPartialScorer
+from experiments.data import PilotExample, extract_final_answer
+from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
+from experiments.scoring import LearnedBTBranchScorer, ScoreConfig, SimpleBranchScorer
+from experiments.direct_reserve_strategy_seeded_semantic_frontier_v2_final import (
+    DirectReserveStrategySeededSemanticFrontierV2FinalController,
+)
+from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
+    ROOT_STRATEGY_FAMILY_SPECS,
+    DirectReserveDiverseRootFrontierV1Controller,
+    DirectReserveDiverseRootFrontierV1GuardedController,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_TRACK_B_COMMITMENT_V1,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_TARGETED_RETRY_V1,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_ADAPTIVE_ROUTER_V3_FINAL_TARGET_VERIFIER_V1,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_PRODUCTION_EQUIV_V1,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DECOMP_EQ,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_OPCHECK,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_HYBRID,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_L1_STRONG_SEED_V1,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIVERSE_ANCHOR,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_STABILITY_REDUNDANT_ANCHOR,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNCERTAINTY_RETRY,
+    build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4_numeric_leaf,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K2_FRONTIER2,
+    StrategySeededSemanticDiversityFrontierV1Controller,
+    build_strategy_prompt_styles_semantic_frontier_v1,
+    build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4,
+    build_strategy_prompt_styles_semantic_frontier_v1_guarded_k2_frontier2,
+    build_strategy_prompt_styles_semantic_frontier_v1_guarded_k3,
+)
+from experiments.verifiers import LLMVerifyProxyVerifier, SimulatedScorerVerifier
+
+
+def resolve_api_key_for_provider(provider: str) -> str | None:
+    """Return API key from environment for OpenAI / Groq / Gemini-style backends."""
+    p = provider.strip().lower()
+    if p == "openai":
+        return os.getenv("OPENAI_API_KEY")
+    if p == "mistral":
+        return os.getenv("MISTRAL_API_KEY")
+    if p == "cohere":
+        # Prefer COHERE_API_KEY; CO_API_KEY is accepted only as a compatibility fallback (some shells/docs).
+        return os.getenv("COHERE_API_KEY") or os.getenv("CO_API_KEY")
+    if p == "groq":
+        return os.getenv("GROQ_API_KEY")
+    if p == "gemini":
+        return os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    if p == "azure_openai":
+        return os.getenv("AZURE_OPENAI_API_KEY")
+    return None
+
+
+def load_pilot_examples(dataset_name: str, subset_size: int, seed: int) -> list[PilotExample]:
+    spec = resolve_dataset_spec(dataset_name)
+    rows = sample_hf_examples(
+        dataset_name=dataset_name,
+        pilot_size=subset_size,
+        seed=seed,
+        split=spec.default_split,
+        config_name=spec.default_config,
+    )
+    return [
+        PilotExample(
+            example_id=r["example_id"],
+            question=r["question"],
+            answer=extract_final_answer(r["answer"]),
+        )
+        for r in rows
+    ]
+
+
+def generator_factory_for_mode(
+    use_openai_api: bool,
+    rng: random.Random,
+    openai_model: str,
+    temperature: float,
+    max_output_tokens: int,
+    timeout_seconds: int,
+    api_provider: str | None = None,
+    *,
+    expand_prompt_variant: str | None = None,
+) -> Callable[[], Any]:
+    if use_openai_api:
+        provider = (api_provider or "openai").strip().lower()
+        key = resolve_api_key_for_provider(provider)
+
+        def factory() -> APIBranchGenerator:
+            kwargs: dict[str, Any] = {}
+            if expand_prompt_variant:
+                kwargs["expand_prompt_variant"] = expand_prompt_variant
+            return APIBranchGenerator(
+                provider=provider,
+                api_key=key,
+                model=openai_model,
+                temperature=temperature,
+                max_tokens=max_output_tokens,
+                timeout_seconds=timeout_seconds,
+                **kwargs,
+            )
+
+        return factory
+
+    def factory() -> SimulatedBranchGenerator:
+        return SimulatedBranchGenerator(rng=rng, max_depth=7, finish_prob_base=0.16, answer_noise=0.12)
+
+    return factory
+
+
+def estimate_guarded_k3_diverse_root_dr_cost(
+    *,
+    budget: int,
+    root_attempts: int = 3,
+    strategy_seed_max_actions: int = 2,
+) -> dict[str, Any]:
+    """Offline upper-bound for direct-reserve expand calls before strict frontier (no API).
+
+    Each root family may use up to ``strategy_seed_max_actions`` logical ``expand`` calls;
+    the outer budget caps total actions before the strict frontier controller runs.
+    """
+    b = max(1, int(budget))
+    r = max(1, int(root_attempts))
+    s = max(1, int(strategy_seed_max_actions))
+    worst_dr = min(b, r * s)
+    remaining = max(0, b - worst_dr)
+    return {
+        "budget": b,
+        "direct_reserve_attempts_override": r,
+        "strategy_seed_max_actions": s,
+        "max_direct_reserve_expand_calls_worst_case": worst_dr,
+        "min_budget_remaining_after_worst_case_dr": remaining,
+        "frontier_can_run_after_worst_case_dr": remaining > 0,
+        "note": "If some roots finish in one expand, remaining_budget_before_frontier can be > 0 and the strict frontier may run.",
+    }
+
+
+def estimate_guarded_k2_frontier2_diverse_root_dr_cost(
+    *,
+    budget: int,
+    root_attempts: int = 2,
+    strategy_seed_max_actions: int = 2,
+    direct_reserve_phase_max_actions: int | None = None,
+    min_reserved_for_frontier: int = 2,
+) -> dict[str, Any]:
+    """Offline bounds for guarded_k2_frontier2 (hard DR-phase cap; no API)."""
+    b = max(1, int(budget))
+    r = max(1, int(root_attempts))
+    s = max(1, int(strategy_seed_max_actions))
+    cap = max(1, int(budget) - int(min_reserved_for_frontier)) if direct_reserve_phase_max_actions is None else max(1, int(direct_reserve_phase_max_actions))
+    cap = min(cap, b)
+    worst_dr = min(cap, r * s, b)
+    remaining = max(0, b - worst_dr)
+    res = max(0, int(min_reserved_for_frontier))
+    return {
+        "budget": b,
+        "direct_reserve_attempts_override": r,
+        "strategy_seed_max_actions": s,
+        "direct_reserve_phase_max_actions": cap,
+        "max_direct_reserve_expand_calls_worst_case": worst_dr,
+        "min_budget_remaining_after_worst_case_dr": remaining,
+        "frontier_budget_guaranteed_at_least": remaining >= res,
+        "frontier_can_run_after_worst_case_dr": remaining > 0,
+    }
+
+
+def estimate_guarded_k1_frontier4_diverse_root_dr_cost(
+    *,
+    budget: int,
+    root_attempts: int = 1,
+    strategy_seed_max_actions: int = 2,
+    direct_reserve_phase_max_actions: int | None = None,
+    min_reserved_for_frontier: int = 4,
+) -> dict[str, Any]:
+    """Offline bounds for guarded_k1_frontier4 (hard DR-phase cap; no API)."""
+    b = max(1, int(budget))
+    r = max(1, int(root_attempts))
+    s = max(1, int(strategy_seed_max_actions))
+    cap_default = max(1, int(budget) - int(min_reserved_for_frontier))
+    cap = cap_default if direct_reserve_phase_max_actions is None else max(1, int(direct_reserve_phase_max_actions))
+    cap = min(cap, b)
+    worst_dr = min(cap, r * s, b)
+    remaining = max(0, b - worst_dr)
+    res = max(0, int(min_reserved_for_frontier))
+    return {
+        "budget": b,
+        "direct_reserve_attempts_override": r,
+        "strategy_seed_max_actions": s,
+        "direct_reserve_phase_max_actions": cap,
+        "max_direct_reserve_expand_calls_worst_case": worst_dr,
+        "min_budget_remaining_after_worst_case_dr": remaining,
+        "frontier_budget_guaranteed_at_least": remaining >= res,
+        "frontier_can_run_after_worst_case_dr": remaining > 0,
+    }
+
+
+def build_frontier_strategies(
+    generator_factory: Callable[[], Any],
+    budget: int,
+    adaptive_min_expand_grid: list[int],
+    rng: random.Random,
+    *,
+    use_openai_api: bool,
+    vgs_candidates: int = 3,
+    vgs_min_expansions: int = 1,
+    include_budget_guarded_adaptive: bool = False,
+    include_prm_variants: bool = False,
+    prm_early_reject_threshold: float = 0.25,
+    prm_early_reject_min_expansions: int = 2,
+    bt_pairwise_model_path: str | None = None,
+    bt_pairwise_reliability_model_path: str | None = None,
+    bt_pairwise_oracle_model_path: str | None = None,
+    include_external_s1_baseline: bool = False,
+    s1_num_ignore_think_end: int = 1,
+    s1_min_thinking_steps: int = 0,
+    include_external_tale_baseline: bool = False,
+    tale_token_budget_default: int = 256,
+    tale_token_budget_min: int = 64,
+    tale_token_budget_max: int = 512,
+    tale_token_budget_per_question_char: float = 0.75,
+    tale_token_per_action: float = 64.0,
+    include_external_l1_baseline: bool = False,
+    include_external_zhai_cpo_baseline: bool = False,
+    include_selective_sc_hybrid_methods: bool = False,
+    include_broad_diversity_aggregation_methods: bool = False,
+    include_marginal_coverage_diversity_methods: bool = False,
+    include_duplicate_aware_aggregation_commit_methods: bool = False,
+    l1_exact_token_budget: int = 512,
+    l1_max_token_budget: int = 512,
+    l1_token_per_action: float = 64.0,
+    l1_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+    generator_factory_numeric_leaf: Callable[[], Any] | None = None,
+) -> dict[str, Any]:
+    scorer = SimpleBranchScorer(ScoreConfig())
+    gen_nl_factory = generator_factory_numeric_leaf if generator_factory_numeric_leaf is not None else generator_factory
+    prm_scorer = HeuristicPRMPartialScorer()
+    specs: dict[str, Any] = {
+        "reasoning_greedy": GreedyController(generator_factory(), scorer, budget),
+        "self_consistency_3": BestOfNController(generator_factory(), scorer, budget, n_candidates=3),
+        "reasoning_beam2": BeamController(generator_factory(), scorer, budget, width=2),
+        "tot_bfs_matched_budget": TreeOfThoughtMatchedBudgetController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="tot_bfs_matched_budget",
+            search_mode="bfs",
+            frontier_width=3,
+        ),
+        "tot_beam_matched_budget": TreeOfThoughtMatchedBudgetController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="tot_beam_matched_budget",
+            search_mode="beam",
+            frontier_width=3,
+        ),
+        "tot_dfs_matched_budget": TreeOfThoughtMatchedBudgetController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="tot_dfs_matched_budget",
+            search_mode="dfs",
+            frontier_width=3,
+        ),
+    }
+    for min_expand in adaptive_min_expand_grid:
+        specs[f"adaptive_min_expand_{min_expand}"] = AdaptiveController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=min_expand,
+            method_name=f"adaptive_min_expand_{min_expand}",
+        )
+    if bt_pairwise_model_path:
+        bt_scorer = LearnedBTBranchScorer(bt_pairwise_model_path, max_actions_per_problem=budget)
+        specs["adaptive_bt_pairwise"] = AdaptiveController(
+            generator_factory(),
+            bt_scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            method_name="adaptive_bt_pairwise",
+        )
+    if bt_pairwise_reliability_model_path:
+        bt_rel_scorer = LearnedBTBranchScorer(bt_pairwise_reliability_model_path, max_actions_per_problem=budget)
+        specs["adaptive_bt_pairwise_reliability"] = AdaptiveController(
+            generator_factory(),
+            bt_rel_scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            method_name="adaptive_bt_pairwise_reliability",
+        )
+    if bt_pairwise_oracle_model_path:
+        bt_oracle_scorer = LearnedBTBranchScorer(bt_pairwise_oracle_model_path, max_actions_per_problem=budget)
+        specs["adaptive_bt_pairwise_oracle"] = AdaptiveController(
+            generator_factory(),
+            bt_oracle_scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            method_name="adaptive_bt_pairwise_oracle",
+        )
+    if include_budget_guarded_adaptive:
+        specs["adaptive_budget_guarded"] = AdaptiveController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=0,
+            adaptive_min_expand=True,
+            verify_exploration_floor=1,
+            budget_guard_prune_floor=0.40,
+            method_name="adaptive_budget_guarded",
+        )
+
+    if include_prm_variants:
+        specs["adaptive_prm_partial"] = AdaptiveController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            partial_branch_scorer=prm_scorer,
+            enable_prm_early_reject=False,
+            method_name="adaptive_prm_partial",
+        )
+        specs["adaptive_prm_partial_early_reject"] = AdaptiveController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            partial_branch_scorer=prm_scorer,
+            enable_prm_early_reject=True,
+            prm_early_reject_threshold=prm_early_reject_threshold,
+            prm_early_reject_min_expansions=prm_early_reject_min_expansions,
+            method_name="adaptive_prm_partial_early_reject",
+        )
+
+    if use_openai_api:
+        verifier = LLMVerifyProxyVerifier(generator_factory())
+    else:
+        verifier = SimulatedScorerVerifier(rng)
+
+    specs["verifier_guided_search"] = VerifierGuidedSearchController(
+        generator_factory(),
+        scorer,
+        budget,
+        n_candidates=min(vgs_candidates, max(1, budget // 2)),
+        verifier=verifier,
+        min_expansions_per_candidate=vgs_min_expansions,
+        method_name="verifier_guided_search",
+    )
+    if include_prm_variants:
+        specs["verifier_guided_search_prm"] = VerifierGuidedSearchController(
+            generator_factory(),
+            scorer,
+            budget,
+            n_candidates=min(vgs_candidates, max(1, budget // 2)),
+            verifier=verifier,
+            min_expansions_per_candidate=vgs_min_expansions,
+            partial_branch_scorer=prm_scorer,
+            enable_prm_early_reject=False,
+            method_name="verifier_guided_search_prm",
+        )
+        specs["verifier_guided_search_prm_early_reject"] = VerifierGuidedSearchController(
+            generator_factory(),
+            scorer,
+            budget,
+            n_candidates=min(vgs_candidates, max(1, budget // 2)),
+            verifier=verifier,
+            min_expansions_per_candidate=vgs_min_expansions,
+            partial_branch_scorer=prm_scorer,
+            enable_prm_early_reject=True,
+            prm_early_reject_threshold=prm_early_reject_threshold,
+            method_name="verifier_guided_search_prm_early_reject",
+        )
+    specs["program_of_thought"] = ProgramOfThoughtController(
+        generator_factory(),
+        scorer,
+        budget,
+        method_name="program_of_thought",
+    )
+    specs["external_self_consistency_4_fair_v1"] = SelfConsistencyFairController(
+        generator_factory(),
+        scorer,
+        budget,
+        n_samples=4,
+        method_name="external_self_consistency_4_fair_v1",
+    )
+    specs["external_self_consistency_6_fair_v1"] = SelfConsistencyFairController(
+        generator_factory(),
+        scorer,
+        budget,
+        n_samples=6,
+        method_name="external_self_consistency_6_fair_v1",
+    )
+    for _sc_n in (3, 5, 7, 8, 9, 11, 12):
+        specs[f"external_self_consistency_{_sc_n}_fair_v1"] = SelfConsistencyFairController(
+            generator_factory(),
+            scorer,
+            budget,
+            n_samples=_sc_n,
+            method_name=f"external_self_consistency_{_sc_n}_fair_v1",
+        )
+    specs["external_pal_pot_fair_v1"] = ProgramOfThoughtController(
+        generator_factory(),
+        scorer,
+        budget,
+        method_name="external_pal_pot_fair_v1",
+    )
+    if include_external_s1_baseline:
+        specs["external_s1_budget_forcing"] = S1BudgetForcingController(
+            generator_factory(),
+            scorer,
+            budget,
+            num_ignore_think_end=s1_num_ignore_think_end,
+            min_thinking_steps=s1_min_thinking_steps,
+            method_name="external_s1_budget_forcing",
+        )
+        specs["external_s1_budget_forcing_faithful_v1"] = S1BudgetForcingController(
+            generator_factory(),
+            scorer,
+            budget,
+            num_ignore_think_end=s1_num_ignore_think_end,
+            min_thinking_steps=s1_min_thinking_steps,
+            wait_token="Wait",
+            max_forced_continuations=s1_num_ignore_think_end,
+            faithful_mode=True,
+            deviations_from_official=(
+                "Action-budget proxy and branch-level done-boundary detection differ "
+                "from official token-level serving stack."
+            ),
+            method_name="external_s1_budget_forcing_faithful_v1",
+        )
+    if include_external_tale_baseline:
+        specs["external_tale_prompt_budgeting"] = TALEPromptBudgetingController(
+            generator_factory(),
+            scorer,
+            budget,
+            token_budget_default=tale_token_budget_default,
+            token_budget_min=tale_token_budget_min,
+            token_budget_max=tale_token_budget_max,
+            token_budget_per_question_char=tale_token_budget_per_question_char,
+            token_per_action=tale_token_per_action,
+            method_name="external_tale_prompt_budgeting",
+        )
+        specs["external_tale_ep_prompt_budgeting_faithful_v1"] = TALEPromptBudgetingController(
+            generator_factory(),
+            scorer,
+            budget,
+            token_budget_default=tale_token_budget_default,
+            token_budget_min=tale_token_budget_min,
+            token_budget_max=tale_token_budget_max,
+            token_budget_per_question_char=tale_token_budget_per_question_char,
+            token_per_action=tale_token_per_action,
+            prompt_template="Let's think step by step and use less than {budget} tokens.",
+            budget_estimator_type="char_length_linear",
+            faithful_mode=True,
+            tale_variant="EP",
+            deviations_from_official=(
+                "TALE-EP-only adapter; TALE-PT path not reproduced in this runtime."
+            ),
+            method_name="external_tale_ep_prompt_budgeting_faithful_v1",
+        )
+    if include_external_l1_baseline:
+        specs["external_l1_exact"] = L1LengthControlController(
+            generator_factory(),
+            scorer,
+            budget,
+            control_mode="exact",
+            token_budget=l1_exact_token_budget,
+            token_per_action=l1_token_per_action,
+            prompt_style=l1_prompt_style,
+            method_name="external_l1_exact",
+        )
+        specs["external_l1_max"] = L1LengthControlController(
+            generator_factory(),
+            scorer,
+            budget,
+            control_mode="max",
+            token_budget=l1_max_token_budget,
+            token_per_action=l1_token_per_action,
+            prompt_style=l1_prompt_style,
+            method_name="external_l1_max",
+        )
+        specs["external_l1_max_fair_v1"] = L1LengthControlController(
+            generator_factory(),
+            scorer,
+            budget,
+            control_mode="max",
+            token_budget=l1_max_token_budget,
+            token_per_action=l1_token_per_action,
+            prompt_style=l1_prompt_style,
+            fair_mode=True,
+            not_official_external_method=True,
+            deviations_from_official=(
+                "Transparent in-repo fair length-control baseline; not official L1 RL reproduction."
+            ),
+            method_name="external_l1_max_fair_v1",
+        )
+    if include_external_zhai_cpo_baseline:
+        specs["external_zhai_cpo_mode_a"] = AdaptiveController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.70,
+            low_threshold=0.40,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            adaptive_min_expand=True,
+            verify_exploration_floor=1,
+            budget_guard_prune_floor=0.35,
+            method_name="external_zhai_cpo_mode_a",
+        )
+    if include_selective_sc_hybrid_methods:
+        specs["intermediate_trap_aware_near_tie_v1"] = IntermediateTrapAwareNearTieController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            near_tie_gap=0.03,
+            incompleteness_trigger=0.45,
+            method_name="intermediate_trap_aware_near_tie_v1",
+        )
+        specs["selective_sc_hybrid_v1"] = SelectiveSelfConsistencyHybridController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            near_tie_gap=0.03,
+            low_completion_trigger=0.45,
+            disagreement_trigger=0.12,
+            diversity_top_k=3,
+            min_consensus_support=0.56,
+            method_name="selective_sc_hybrid_v1",
+        )
+    if include_broad_diversity_aggregation_methods:
+        specs["broad_diversity_aggregation_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.28,
+            duplicate_penalty=0.12,
+            unknown_answer_bonus=0.06,
+            answer_support_weight=0.45,
+            value_weight=0.55,
+            commit_support_threshold=0.68,
+            commit_delay_min_actions=3,
+            method_name="broad_diversity_aggregation_v1",
+        )
+        specs["broad_diversity_aggregation_strong_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            method_name="broad_diversity_aggregation_strong_v1",
+        )
+        specs["broad_diversity_aggregation_strong_v1_incumbent_challenger_commit_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_incumbent_challenger_commit=True,
+            incumbent_challenger_raw_support_only=False,
+            incumbent_challenger_margin_threshold=0.10,
+            incumbent_challenger_stability_min_steps=2,
+            incumbent_challenger_near_tie_gap=0.05,
+            incumbent_challenger_plausible_gap=0.05,
+            method_name="broad_diversity_aggregation_strong_v1_incumbent_challenger_commit_v1",
+        )
+        specs["broad_diversity_aggregation_strong_v1_incumbent_challenger_raw_support_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_incumbent_challenger_commit=True,
+            incumbent_challenger_raw_support_only=True,
+            incumbent_challenger_margin_threshold=0.10,
+            incumbent_challenger_stability_min_steps=2,
+            incumbent_challenger_near_tie_gap=0.05,
+            incumbent_challenger_plausible_gap=0.05,
+            method_name="broad_diversity_aggregation_strong_v1_incumbent_challenger_raw_support_v1",
+        )
+        specs["broad_diversity_aggregation_strong_v1_incumbent_challenger_commit_late_guard_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.70,
+            commit_delay_min_actions=3,
+            enable_incumbent_challenger_commit=True,
+            incumbent_challenger_raw_support_only=False,
+            incumbent_challenger_margin_threshold=0.08,
+            incumbent_challenger_stability_min_steps=2,
+            incumbent_challenger_near_tie_gap=0.05,
+            incumbent_challenger_plausible_gap=0.06,
+            method_name="broad_diversity_aggregation_strong_v1_incumbent_challenger_commit_late_guard_v1",
+        )
+        specs["broad_diversity_aggregation_strong_v1_incumbent_challenger_commit_switch_persistence_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_incumbent_challenger_commit=True,
+            incumbent_challenger_raw_support_only=False,
+            incumbent_challenger_margin_threshold=0.11,
+            incumbent_challenger_stability_min_steps=3,
+            incumbent_challenger_near_tie_gap=0.05,
+            incumbent_challenger_plausible_gap=0.05,
+            method_name="broad_diversity_aggregation_strong_v1_incumbent_challenger_commit_switch_persistence_v1",
+        )
+        specs["broad_diversity_aggregation_strong_v1_incumbent_challenger_metalevel_v2"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_incumbent_challenger_commit=True,
+            incumbent_challenger_raw_support_only=False,
+            incumbent_challenger_margin_threshold=0.09,
+            incumbent_challenger_stability_min_steps=2,
+            incumbent_challenger_near_tie_gap=0.05,
+            incumbent_challenger_plausible_gap=0.05,
+            incumbent_safety_commit_min=0.62,
+            challenger_upside_commit_max=0.15,
+            challenger_upside_expand_weight=0.35,
+            metalevel_delta_margin=0.00,
+            near_tie_commit_margin_extra=0.00,
+            force_extra_explore_on_near_tie=True,
+            near_tie_force_max_steps=1,
+            near_tie_force_upside_frac_threshold=0.60,
+            intermediate_result_penalty=0.18,
+            method_name="broad_diversity_aggregation_strong_v1_incumbent_challenger_metalevel_v2",
+        )
+        specs["broad_diversity_aggregation_strong_v1_diversity_needed_gate"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            diversity_needed_gate_mode="learned",
+            diversity_needed_gate_positive_threshold=0.12,
+            diversity_needed_gate_negative_threshold=-0.12,
+            method_name="broad_diversity_aggregation_strong_v1_diversity_needed_gate",
+        )
+        specs["broad_diversity_aggregation_strong_v1_heuristic_gate"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            diversity_needed_gate_mode="heuristic",
+            diversity_needed_gate_positive_threshold=0.10,
+            diversity_needed_gate_negative_threshold=-0.10,
+            method_name="broad_diversity_aggregation_strong_v1_heuristic_gate",
+        )
+        specs["answer_group_coverage_floor_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.31,
+            duplicate_penalty=0.12,
+            unknown_answer_bonus=0.06,
+            answer_support_weight=0.48,
+            value_weight=0.52,
+            commit_support_threshold=0.70,
+            commit_delay_min_actions=4,
+            enable_answer_group_coverage_floor=True,
+            min_answer_groups_before_concentration=2,
+            coverage_floor_min_actions=2,
+            coverage_floor_max_actions=7,
+            coverage_floor_plausibility_threshold=0.46,
+            coverage_floor_max_forced_steps=2,
+            method_name="answer_group_coverage_floor_v1",
+        )
+        specs["broad_diversity_aggregation_strong_v1_early_answer_group_preservation_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=5,
+            early_preservation_min_plausible_continuation=0.46,
+            early_preservation_target_alignment_min=0.34,
+            early_preservation_required_group_gap=0.18,
+            early_preservation_challenger_hold_steps=2,
+            method_name="broad_diversity_aggregation_strong_v1_early_answer_group_preservation_v1",
+        )
+        specs["broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=5,
+            early_preservation_min_plausible_continuation=0.46,
+            early_preservation_target_alignment_min=0.34,
+            early_preservation_required_group_gap=0.18,
+            early_preservation_challenger_hold_steps=2,
+            enable_anti_collapse_answer_group_refinement=True,
+            anti_collapse_early_window=6,
+            repeated_same_branch_penalty=0.09,
+            repeated_same_branch_cap=3,
+            monopolization_margin_requirement=0.11,
+            answer_group_distinctness_bonus=0.12,
+            duplicate_answer_group_penalty=0.08,
+            min_followup_steps_for_preserved_alternative=2,
+            alternative_maturity_window=5,
+            protected_alternative_target_alignment_min=0.48,
+            method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_v1",
+        )
+        specs["broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_harmed_tuned_v1"] = (
+            GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                max_branches=4,
+                min_branch_expansions=1,
+                diversity_weight=0.40,
+                duplicate_penalty=0.15,
+                unknown_answer_bonus=0.08,
+                answer_support_weight=0.55,
+                value_weight=0.45,
+                commit_support_threshold=0.72,
+                commit_delay_min_actions=4,
+                enable_early_answer_group_preservation=True,
+                early_preservation_action_window=5,
+                early_preservation_min_plausible_continuation=0.46,
+                early_preservation_target_alignment_min=0.34,
+                early_preservation_required_group_gap=0.18,
+                early_preservation_challenger_hold_steps=2,
+                enable_anti_collapse_answer_group_refinement=True,
+                anti_collapse_early_window=6,
+                repeated_same_branch_penalty=0.085,
+                repeated_same_branch_cap=2,
+                monopolization_margin_requirement=0.09,
+                answer_group_distinctness_bonus=0.13,
+                duplicate_answer_group_penalty=0.08,
+                min_followup_steps_for_preserved_alternative=2,
+                alternative_maturity_window=5,
+                protected_alternative_target_alignment_min=0.48,
+                method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_harmed_tuned_v1",
+            )
+        )
+        specs["broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_v1"] = (
+            GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                max_branches=4,
+                min_branch_expansions=1,
+                diversity_weight=0.40,
+                duplicate_penalty=0.15,
+                unknown_answer_bonus=0.08,
+                answer_support_weight=0.55,
+                value_weight=0.45,
+                commit_support_threshold=0.72,
+                commit_delay_min_actions=4,
+                enable_early_answer_group_preservation=True,
+                early_preservation_action_window=5,
+                early_preservation_min_plausible_continuation=0.46,
+                early_preservation_target_alignment_min=0.34,
+                early_preservation_required_group_gap=0.18,
+                early_preservation_challenger_hold_steps=2,
+                enable_anti_collapse_answer_group_refinement=True,
+                anti_collapse_early_window=6,
+                repeated_same_branch_penalty=0.09,
+                repeated_same_branch_cap=3,
+                repeat_expand_free_steps=3,
+                repeat_expand_penalty_weight=0.07,
+                repeat_expand_family_penalty_weight=0.12,
+                repeat_expand_override_margin=0.10,
+                monopolization_margin_requirement=0.11,
+                answer_group_distinctness_bonus=0.12,
+                duplicate_answer_group_penalty=0.08,
+                min_followup_steps_for_preserved_alternative=2,
+                alternative_maturity_window=5,
+                protected_alternative_target_alignment_min=0.48,
+                method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_v1",
+            )
+        )
+
+        specs["broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1"] = (
+            GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                max_branches=4,
+                min_branch_expansions=1,
+                diversity_weight=0.40,
+                duplicate_penalty=0.15,
+                unknown_answer_bonus=0.08,
+                answer_support_weight=0.55,
+                value_weight=0.45,
+                commit_support_threshold=0.72,
+                commit_delay_min_actions=4,
+                enable_early_answer_group_preservation=True,
+                early_preservation_action_window=5,
+                early_preservation_min_plausible_continuation=0.46,
+                early_preservation_target_alignment_min=0.34,
+                early_preservation_required_group_gap=0.18,
+                early_preservation_challenger_hold_steps=2,
+                enable_anti_collapse_answer_group_refinement=True,
+                anti_collapse_early_window=6,
+                repeated_same_branch_penalty=0.09,
+                repeated_same_branch_cap=3,
+                repeat_expand_free_steps=3,
+                repeat_expand_penalty_weight=0.065,
+                repeat_expand_family_penalty_weight=0.12,
+                repeat_expand_override_margin=0.08,
+                monopolization_margin_requirement=0.11,
+                answer_group_distinctness_bonus=0.12,
+                duplicate_answer_group_penalty=0.08,
+                min_followup_steps_for_preserved_alternative=2,
+                alternative_maturity_window=5,
+                protected_alternative_target_alignment_min=0.48,
+                method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1",
+            )
+        )
+        specs["broad_diversity_aggregation_strong_v1_anti_collapse_repeat_expansion_low_marginal_gain_cooldown_v1"] = (
+            GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                max_branches=4,
+                min_branch_expansions=1,
+                diversity_weight=0.40,
+                duplicate_penalty=0.15,
+                unknown_answer_bonus=0.08,
+                answer_support_weight=0.55,
+                value_weight=0.45,
+                commit_support_threshold=0.72,
+                commit_delay_min_actions=4,
+                enable_early_answer_group_preservation=True,
+                early_preservation_action_window=5,
+                early_preservation_min_plausible_continuation=0.46,
+                early_preservation_target_alignment_min=0.34,
+                early_preservation_required_group_gap=0.18,
+                early_preservation_challenger_hold_steps=2,
+                enable_anti_collapse_answer_group_refinement=True,
+                anti_collapse_early_window=6,
+                repeated_same_branch_penalty=0.09,
+                repeated_same_branch_cap=3,
+                repeat_expand_free_steps=3,
+                repeat_expand_penalty_weight=0.065,
+                repeat_expand_family_penalty_weight=0.12,
+                repeat_expand_override_margin=0.08,
+                enable_low_marginal_gain_family_cooldown=True,
+                low_marginal_gain_window_size=3,
+                low_marginal_gain_min_threshold=0.015,
+                low_marginal_gain_consecutive_family_trigger=4,
+                low_marginal_gain_cooldown_steps=2,
+                low_marginal_gain_penalty_strength=0.14,
+                low_marginal_gain_override_margin=0.12,
+                low_marginal_gain_override_top_support_min=0.74,
+                low_marginal_gain_answer_group_aware=True,
+                low_marginal_gain_hard_block_ablation=False,
+                monopolization_margin_requirement=0.11,
+                answer_group_distinctness_bonus=0.12,
+                duplicate_answer_group_penalty=0.08,
+                min_followup_steps_for_preserved_alternative=2,
+                alternative_maturity_window=5,
+                protected_alternative_target_alignment_min=0.48,
+                method_name="broad_diversity_aggregation_strong_v1_anti_collapse_repeat_expansion_low_marginal_gain_cooldown_v1",
+            )
+        )
+        specs["broad_diversity_aggregation_strong_v1_anti_collapse_repeat_expansion_low_marginal_gain_hard_block_ablation_v1"] = (
+            GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                max_branches=4,
+                min_branch_expansions=1,
+                diversity_weight=0.40,
+                duplicate_penalty=0.15,
+                unknown_answer_bonus=0.08,
+                answer_support_weight=0.55,
+                value_weight=0.45,
+                commit_support_threshold=0.72,
+                commit_delay_min_actions=4,
+                enable_early_answer_group_preservation=True,
+                early_preservation_action_window=5,
+                early_preservation_min_plausible_continuation=0.46,
+                early_preservation_target_alignment_min=0.34,
+                early_preservation_required_group_gap=0.18,
+                early_preservation_challenger_hold_steps=2,
+                enable_anti_collapse_answer_group_refinement=True,
+                anti_collapse_early_window=6,
+                repeated_same_branch_penalty=0.09,
+                repeated_same_branch_cap=3,
+                repeat_expand_free_steps=3,
+                repeat_expand_penalty_weight=0.065,
+                repeat_expand_family_penalty_weight=0.12,
+                repeat_expand_override_margin=0.08,
+                enable_low_marginal_gain_family_cooldown=True,
+                low_marginal_gain_window_size=3,
+                low_marginal_gain_min_threshold=0.015,
+                low_marginal_gain_consecutive_family_trigger=4,
+                low_marginal_gain_cooldown_steps=2,
+                low_marginal_gain_penalty_strength=0.14,
+                low_marginal_gain_override_margin=0.12,
+                low_marginal_gain_override_top_support_min=0.74,
+                low_marginal_gain_answer_group_aware=True,
+                low_marginal_gain_hard_block_ablation=True,
+                monopolization_margin_requirement=0.11,
+                answer_group_distinctness_bonus=0.12,
+                duplicate_answer_group_penalty=0.08,
+                min_followup_steps_for_preserved_alternative=2,
+                alternative_maturity_window=5,
+                protected_alternative_target_alignment_min=0.48,
+                method_name="broad_diversity_aggregation_strong_v1_anti_collapse_repeat_expansion_low_marginal_gain_hard_block_ablation_v1",
+            )
+        )
+        specs["broad_diversity_aggregation_strong_v1_anti_collapse_width_depth_challenger_guard_v1"] = (
+            GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                max_branches=4,
+                min_branch_expansions=1,
+                diversity_weight=0.40,
+                duplicate_penalty=0.15,
+                unknown_answer_bonus=0.08,
+                answer_support_weight=0.55,
+                value_weight=0.45,
+                commit_support_threshold=0.72,
+                commit_delay_min_actions=4,
+                enable_early_answer_group_preservation=True,
+                early_preservation_action_window=5,
+                early_preservation_min_plausible_continuation=0.46,
+                early_preservation_target_alignment_min=0.34,
+                early_preservation_required_group_gap=0.18,
+                early_preservation_challenger_hold_steps=2,
+                enable_anti_collapse_answer_group_refinement=True,
+                anti_collapse_early_window=6,
+                repeated_same_branch_penalty=0.09,
+                repeated_same_branch_cap=3,
+                repeat_expand_free_steps=3,
+                repeat_expand_penalty_weight=0.065,
+                repeat_expand_family_penalty_weight=0.12,
+                repeat_expand_override_margin=0.08,
+                monopolization_margin_requirement=0.11,
+                answer_group_distinctness_bonus=0.12,
+                duplicate_answer_group_penalty=0.08,
+                min_followup_steps_for_preserved_alternative=2,
+                alternative_maturity_window=5,
+                protected_alternative_target_alignment_min=0.48,
+                enable_width_depth_allocation_guard=True,
+                width_depth_repeat_family_trigger=2,
+                width_depth_min_actions=3,
+                width_depth_challenger_maturation_min_expands=2,
+                width_depth_min_relative_continuation=0.78,
+                enable_uncertainty_triggered_verify=True,
+                uncertainty_verify_priority_margin=0.045,
+                uncertainty_verify_max_steps=2,
+                method_name="broad_diversity_aggregation_strong_v1_anti_collapse_width_depth_challenger_guard_v1",
+            )
+        )
+        specs["broad_diversity_aggregation_strong_v1_anti_collapse_near_miss_correction_gate_v1"] = (
+            GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                max_branches=4,
+                min_branch_expansions=1,
+                diversity_weight=0.40,
+                duplicate_penalty=0.15,
+                unknown_answer_bonus=0.08,
+                answer_support_weight=0.55,
+                value_weight=0.45,
+                commit_support_threshold=0.72,
+                commit_delay_min_actions=4,
+                enable_early_answer_group_preservation=True,
+                early_preservation_action_window=5,
+                early_preservation_min_plausible_continuation=0.46,
+                early_preservation_target_alignment_min=0.34,
+                early_preservation_required_group_gap=0.18,
+                early_preservation_challenger_hold_steps=2,
+                enable_anti_collapse_answer_group_refinement=True,
+                anti_collapse_early_window=6,
+                repeated_same_branch_penalty=0.09,
+                repeated_same_branch_cap=3,
+                repeat_expand_free_steps=3,
+                repeat_expand_penalty_weight=0.065,
+                repeat_expand_family_penalty_weight=0.12,
+                repeat_expand_override_margin=0.08,
+                monopolization_margin_requirement=0.11,
+                answer_group_distinctness_bonus=0.12,
+                duplicate_answer_group_penalty=0.08,
+                min_followup_steps_for_preserved_alternative=2,
+                alternative_maturity_window=5,
+                protected_alternative_target_alignment_min=0.48,
+                enable_near_miss_correction_gate=True,
+                near_miss_correction_numeric_gap=3.0,
+                near_miss_correction_min_actions=4,
+                near_miss_correction_max_steps=2,
+                near_miss_correction_repeat_family_trigger=5,
+                near_miss_correction_min_top_support=0.56,
+                enable_uncertainty_triggered_verify=True,
+                uncertainty_verify_priority_margin=0.045,
+                uncertainty_verify_max_steps=2,
+                method_name="broad_diversity_aggregation_strong_v1_anti_collapse_near_miss_correction_gate_v1",
+            )
+        )
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=5,
+            early_preservation_min_plausible_continuation=0.46,
+            early_preservation_target_alignment_min=0.34,
+            early_preservation_required_group_gap=0.18,
+            early_preservation_challenger_hold_steps=2,
+            enable_anti_collapse_answer_group_refinement=True,
+            anti_collapse_early_window=6,
+            repeated_same_branch_penalty=0.09,
+            repeated_same_branch_cap=3,
+            repeat_expand_free_steps=3,
+            repeat_expand_penalty_weight=0.065,
+            repeat_expand_family_penalty_weight=0.12,
+            repeat_expand_override_margin=0.08,
+            monopolization_margin_requirement=0.11,
+            answer_group_distinctness_bonus=0.12,
+            duplicate_answer_group_penalty=0.08,
+            min_followup_steps_for_preserved_alternative=2,
+            alternative_maturity_window=5,
+            protected_alternative_target_alignment_min=0.48,
+            enable_hard_early_root_depth2_coverage_v1=True,
+            hard_early_coverage_min_remaining_actions_to_release=0,
+            method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1",
+        )
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1_low_marginal_gain_cooldown_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=5,
+            early_preservation_min_plausible_continuation=0.46,
+            early_preservation_target_alignment_min=0.34,
+            early_preservation_required_group_gap=0.18,
+            early_preservation_challenger_hold_steps=2,
+            enable_anti_collapse_answer_group_refinement=True,
+            anti_collapse_early_window=6,
+            repeated_same_branch_penalty=0.09,
+            repeated_same_branch_cap=3,
+            repeat_expand_free_steps=3,
+            repeat_expand_penalty_weight=0.065,
+            repeat_expand_family_penalty_weight=0.12,
+            repeat_expand_override_margin=0.08,
+            enable_low_marginal_gain_family_cooldown=True,
+            low_marginal_gain_window_size=3,
+            low_marginal_gain_min_threshold=0.015,
+            low_marginal_gain_consecutive_family_trigger=4,
+            low_marginal_gain_cooldown_steps=2,
+            low_marginal_gain_penalty_strength=0.14,
+            low_marginal_gain_override_margin=0.12,
+            low_marginal_gain_override_top_support_min=0.74,
+            low_marginal_gain_answer_group_aware=True,
+            low_marginal_gain_hard_block_ablation=False,
+            monopolization_margin_requirement=0.11,
+            answer_group_distinctness_bonus=0.12,
+            duplicate_answer_group_penalty=0.08,
+            min_followup_steps_for_preserved_alternative=2,
+            alternative_maturity_window=5,
+            protected_alternative_target_alignment_min=0.48,
+            enable_hard_early_root_depth2_coverage_v1=True,
+            hard_early_coverage_min_remaining_actions_to_release=0,
+            method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1_low_marginal_gain_cooldown_v1",
+        )
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=5,
+            early_preservation_min_plausible_continuation=0.46,
+            early_preservation_target_alignment_min=0.34,
+            early_preservation_required_group_gap=0.18,
+            early_preservation_challenger_hold_steps=2,
+            enable_anti_collapse_answer_group_refinement=True,
+            anti_collapse_early_window=6,
+            repeated_same_branch_penalty=0.09,
+            repeated_same_branch_cap=3,
+            repeat_expand_free_steps=3,
+            repeat_expand_penalty_weight=0.065,
+            repeat_expand_family_penalty_weight=0.12,
+            repeat_expand_override_margin=0.08,
+            monopolization_margin_requirement=0.11,
+            answer_group_distinctness_bonus=0.12,
+            duplicate_answer_group_penalty=0.08,
+            min_followup_steps_for_preserved_alternative=2,
+            alternative_maturity_window=5,
+            protected_alternative_target_alignment_min=0.48,
+            enable_hard_early_root_depth2_coverage_v1=False,
+            hard_early_root_coverage_forced_min_depth=3,
+            hard_early_coverage_min_remaining_actions_to_release=0,
+            method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1",
+        )
+        strict_f3_base_cfg: dict[str, Any] = dict(
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=5,
+            early_preservation_min_plausible_continuation=0.46,
+            early_preservation_target_alignment_min=0.34,
+            early_preservation_required_group_gap=0.18,
+            early_preservation_challenger_hold_steps=2,
+            enable_anti_collapse_answer_group_refinement=True,
+            anti_collapse_early_window=6,
+            repeated_same_branch_penalty=0.09,
+            repeated_same_branch_cap=3,
+            repeat_expand_free_steps=3,
+            repeat_expand_penalty_weight=0.065,
+            repeat_expand_family_penalty_weight=0.12,
+            repeat_expand_override_margin=0.08,
+            monopolization_margin_requirement=0.11,
+            answer_group_distinctness_bonus=0.12,
+            duplicate_answer_group_penalty=0.08,
+            min_followup_steps_for_preserved_alternative=2,
+            alternative_maturity_window=5,
+            protected_alternative_target_alignment_min=0.48,
+            enable_hard_early_root_depth2_coverage_v1=False,
+            hard_early_root_coverage_forced_min_depth=3,
+            hard_early_coverage_min_remaining_actions_to_release=0,
+        )
+        strict_f3_no_answer_cfg = dict(strict_f3_base_cfg)
+        strict_f3_no_answer_cfg.update({"answer_support_weight": 0.0, "value_weight": 1.0})
+        specs["strict_f3_direct_reserve_gate_rerank_v1"] = DirectReserveGateRerankController(
+            generator_factory(),
+            scorer,
+            budget,
+            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="strict_f3_direct_reserve_gate_rerank_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            method_name="strict_f3_direct_reserve_gate_rerank_v1",
+        )
+        specs["direct_reserve_strong_v1"] = DirectReserveGateRerankController(
+            generator_factory(),
+            scorer,
+            budget,
+            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="direct_reserve_strong_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            direct_prompt_style=(
+                "Solve this completely with a full, careful chain of reasoning and arithmetic checks. "
+                "Then output only the final numeric answer in \\boxed{}."
+            ),
+            gate_top_support_threshold=2.0,
+            gate_top2_gap_threshold=2.0,
+            gate_entropy_threshold=-1.0,
+            method_name="direct_reserve_strong_v1",
+        )
+        direct_reserve_plus_diverse_kwargs: dict[str, Any] = {
+            "strict_controller_factory": lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="direct_reserve_strong_plus_diverse_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            "direct_prompt_styles": [
+                "Solve this completely with a full, careful chain of reasoning and arithmetic checks. "
+                "Then output only the final numeric answer in \\boxed{}.",
+                "Use a different decomposition than your first attempt (e.g., equation-first or table-first), "
+                "cross-check the result independently, then output only the final numeric answer in \\boxed{}.",
+            ],
+            "direct_reserve_attempts_override": 2,
+            "direct_token_budget": 640,
+            "gate_top_support_threshold": 2.0,
+            "gate_top2_gap_threshold": 2.0,
+            "gate_entropy_threshold": -1.0,
+        }
+        specs["direct_reserve_strong_plus_diverse_v1"] = DirectReserveGateRerankController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_strong_plus_diverse_v1",
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["direct_reserve_frontier_gate_v1"] = DirectReserveFrontierGateController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_frontier_gate_v1",
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["direct_reserve_frontier_gate_v2"] = DirectReserveFrontierGateV2Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_frontier_gate_v2",
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        strategy_seeded_outer_kwargs = {
+            **direct_reserve_plus_diverse_kwargs,
+            "strict_controller_factory": lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="strategy_seeded_semantic_diversity_frontier_v1_inner_maturation",
+                **strict_f3_base_cfg,
+                diagnostic_semantic_maturation=True,
+                diagnostic_semantic_maturation_min_depth=2,
+                diagnostic_log_semantic_families=True,
+            ),
+            "direct_prompt_styles": build_strategy_prompt_styles_semantic_frontier_v1(),
+            "direct_reserve_attempts_override": len(ROOT_STRATEGY_FAMILY_SPECS),
+            "frontier_override_min_maturity": 3,
+        }
+        specs["strategy_seeded_semantic_diversity_frontier_v1"] = StrategySeededSemanticDiversityFrontierV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strategy_seeded_semantic_diversity_frontier_v1",
+            strategy_seed_max_actions=1,
+            **strategy_seeded_outer_kwargs,
+        )
+        strict_f3_v2_final_inner_cfg: dict[str, Any] = dict(strict_f3_base_cfg)
+        strict_f3_v2_final_inner_cfg.update(
+            {
+                "duplicate_penalty": 0.17,
+                "repeat_expand_family_penalty_weight": 0.15,
+            }
+        )
+        v2_final_outer_kwargs: dict[str, Any] = {
+            "strict_controller_factory": lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="direct_reserve_strategy_seeded_semantic_frontier_v2_final_inner",
+                **strict_f3_v2_final_inner_cfg,
+                diagnostic_semantic_maturation=True,
+                diagnostic_semantic_maturation_min_depth=2,
+                diagnostic_log_semantic_families=True,
+            ),
+            "direct_prompt_style": (
+                "Solve this completely with a full, careful chain of reasoning and arithmetic checks. "
+                "Then output only the final numeric answer in \\boxed{}."
+            ),
+            "direct_prompt_styles": [],
+            "direct_token_budget": 640,
+            "gate_top_support_threshold": 2.0,
+            "gate_top2_gap_threshold": 2.0,
+            "gate_entropy_threshold": -1.0,
+            "frontier_override_min_maturity": 3,
+        }
+        specs["direct_reserve_strategy_seeded_semantic_frontier_v2_final"] = DirectReserveStrategySeededSemanticFrontierV2FinalController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_strategy_seeded_semantic_frontier_v2_final",
+            strategy_seed_min_actions=2,
+            min_actions_reserved_for_frontier=1,
+            **v2_final_outer_kwargs,
+        )
+        specs["direct_reserve_diverse_root_frontier_v1"] = DirectReserveDiverseRootFrontierV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_diverse_root_frontier_v1",
+            # Two expands per root strategy give Cohere room to emit action=final + answer after an initial continue.
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs,
+        )
+        specs["direct_reserve_diverse_root_frontier_v1_guarded"] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_diverse_root_frontier_v1_guarded",
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs,
+        )
+        strategy_seeded_outer_kwargs_k3: dict[str, Any] = {
+            **strategy_seeded_outer_kwargs,
+            "direct_reserve_attempts_override": 3,
+            "direct_prompt_styles": build_strategy_prompt_styles_semantic_frontier_v1_guarded_k3(),
+        }
+        specs["direct_reserve_diverse_root_frontier_v1_guarded_k3"] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_diverse_root_frontier_v1_guarded_k3",
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k3,
+        )
+        strategy_seeded_outer_kwargs_k2_frontier2: dict[str, Any] = {
+            **strategy_seeded_outer_kwargs,
+            "direct_reserve_attempts_override": 2,
+            "direct_prompt_styles": build_strategy_prompt_styles_semantic_frontier_v1_guarded_k2_frontier2(),
+            "direct_reserve_phase_max_actions": max(1, int(budget) - 2),
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K2_FRONTIER2] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K2_FRONTIER2,
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k2_frontier2,
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4: dict[str, Any] = {
+            **strategy_seeded_outer_kwargs,
+            "direct_reserve_attempts_override": 1,
+            "direct_prompt_styles": build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4(),
+            "direct_reserve_phase_max_actions": max(1, int(budget) - 4),
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4,
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k1_frontier4,
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_tb = {
+            **strategy_seeded_outer_kwargs_k1_frontier4,
+            "enable_frontier_max_support_tiebreak": True,
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_pal = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "enable_pal_branch": True,
+            "pal_budget_actions": 1,
+            "pal_selection_policy": "weak_frontier_or_supported_agreement",
+            "enable_pal_empty_code_retry": True,
+            "pal_empty_code_retry_budget_actions": 1,
+            "pal_empty_code_retry_policy": "empty_code_only",
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_pal,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_pal_track_b = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_pal,
+            "enable_track_b_overlay_commitment_gate": True,
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_TRACK_B_COMMITMENT_V1] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_TRACK_B_COMMITMENT_V1,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_pal_track_b,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_pal_structural = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_pal,
+            "enable_structural_commitment_v1": True,
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_pal_structural,
+            )
+        )
+        # Scaffold-only integration registration for structural_commit_v1 + targeted_retry_v1.
+        # In this step targeted retry is allowlisted/no-API replay plumbing only (no live retry calls here).
+        specs[
+            METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_TARGETED_RETRY_V1
+        ] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_TARGETED_RETRY_V1,
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k1_frontier4_pal_structural,
+        )
+        # Production-equivalence bridge alias: runtime wiring remains scaffold-first.
+        specs[
+            METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_ADAPTIVE_ROUTER_V3_FINAL_TARGET_VERIFIER_V1
+        ] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_ADAPTIVE_ROUTER_V3_FINAL_TARGET_VERIFIER_V1,
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k1_frontier4_pal_structural,
+        )
+        specs[
+            METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_PRODUCTION_EQUIV_V1
+        ] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_PRODUCTION_EQUIV_V1,
+            strategy_seed_max_actions=2,
+            enable_production_equiv_v1_runtime_hook=True,
+            production_equiv_targeted_retry_max_extra_calls=1,
+            production_equiv_allowed_targeted_retry_scaffolds=(
+                "quantity_ledger_v2_1",
+                "rate_table_v1",
+                "before_after_state_v1",
+                "target_difference_v1",
+                "final_target_extraction_repair",
+                "l1_style_concise_decomposition",
+            ),
+            production_equiv_enable_percent_base_denominator=False,
+            production_equiv_enable_discovery3_candidate_diversity_selection_v1=False,
+            **strategy_seeded_outer_kwargs_k1_frontier4_pal_structural,
+        )
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_nl = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "direct_prompt_styles": build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4_numeric_leaf(),
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                gen_nl_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_nl,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_unit_track = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "enable_unit_track_seed": True,
+            "unit_track_seed_budget_actions": 1,
+            "unit_track_selection_policy": "weak_frontier_or_supported_agreement",
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_unit_track,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_decomp_eq = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "enable_decomp_eq_branch": True,
+            "decomp_eq_budget_actions": 1,
+            "decomp_eq_selection_policy": "weak_frontier_or_supported_agreement",
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DECOMP_EQ] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DECOMP_EQ,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_decomp_eq,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_opcheck = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "enable_opcheck_branch": True,
+            "opcheck_budget_actions": 1,
+            "opcheck_selection_policy": "weak_frontier_or_supported_agreement",
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_OPCHECK] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_OPCHECK,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_opcheck,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "enable_direct_hybrid_seed": True,
+            "direct_hybrid_seed_budget_actions": 1,
+            "direct_hybrid_seed_source": "l1_style_max_budget_prompt",
+            "direct_hybrid_selection_policy": "defer_frontier_mass_weak_then_seed_incumbent",
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_HYBRID] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_HYBRID,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_direct_l1_strong_seed_v1 = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid,
+            # Opt-in stronger direct-L1 style seed: direct answer, then an independent arithmetic/unit self-check.
+            # This is intentionally only used by the explicit *_direct_l1_strong_seed_v1 method ID.
+            "direct_hybrid_seed_source": "direct_l1_strong_seed_v1",
+            "direct_hybrid_l1_prompt_style": (
+                "Solve the problem directly.\n"
+                "1) State exactly what quantity the problem asks for (include units if applicable).\n"
+                "2) Compute the answer.\n"
+                "3) Independently self-check the arithmetic and unit consistency using a different computation path.\n"
+                "If the check disagrees, fix the solution.\n"
+                "Output only the final numeric answer in \\boxed{}."
+            ),
+        }
+        specs[
+            METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_L1_STRONG_SEED_V1
+        ] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_L1_STRONG_SEED_V1,
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k1_frontier4_direct_l1_strong_seed_v1,
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_diverse_anchor = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid,
+            "enable_diverse_prompt_anchors": True,
+            "diverse_prompt_anchor_budget_actions": 1,
+            "diverse_prompt_anchor_priority_policy": "domain_aware_v1",
+            "enable_diverse_anchor_regression_guard": False,
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIVERSE_ANCHOR] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIVERSE_ANCHOR,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_diverse_anchor,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_stability_redundant_anchor = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_diverse_anchor,
+            "enable_diverse_anchor_stability_policy": True,
+            "diverse_anchor_stability_policy": "stability_redundant_anchor_v1",
+            "diverse_anchor_stability_domain_gate": "multi_step_arithmetic_only_v1",
+            "diverse_anchor_stability_extra_anchor_attempts": 1,
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_STABILITY_REDUNDANT_ANCHOR] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_STABILITY_REDUNDANT_ANCHOR,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_stability_redundant_anchor,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_uncertainty_retry = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_diverse_anchor,
+            "enable_diverse_anchor_uncertainty_retry_policy": True,
+            "diverse_anchor_uncertainty_retry_policy": "uncertainty_triggered_retry_v1",
+            "diverse_anchor_uncertainty_retry_extra_anchor_attempts": 1,
+            "diverse_anchor_uncertainty_retry_reserved_budget_actions": 1,
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNCERTAINTY_RETRY] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNCERTAINTY_RETRY,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_uncertainty_retry,
+            )
+        )
+        specs["direct_reserve_semantic_frontier_v2_selection_fix_v1"] = DirectReserveFrontierGateV2SelectionFixV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_semantic_frontier_v2_selection_fix_v1",
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["direct_reserve_semantic_frontier_v2_l1_direct_injection_v1"] = DirectReserveFrontierGateV2L1DirectInjectionV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_semantic_frontier_v2_l1_direct_injection_v1",
+            enable_injection=os.getenv("DR_V2_ENABLE_L1_DIRECT_INJECTION", "1").strip().lower() not in {"0", "false", "off"},
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1"] = DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+            verifier_backend=os.getenv("DR_V2_OV_RERANK_VERIFIER_BACKEND", "mock"),
+            verifier_model=os.getenv("DR_V2_OV_RERANK_COHERE_MODEL", "command-r-plus-08-2024"),
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1"] = DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1",
+            verifier_backend=os.getenv("DR_V2_PRM_STEP_VERIFIER_BACKEND", "mock"),
+            verifier_model=os.getenv("DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL", "command-r-plus-08-2024"),
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["near_direct_reserve_frontier_gate_v1"] = NearDirectReserveFrontierGateController(
+            generator_factory(),
+            scorer,
+            budget,
+            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="near_direct_reserve_frontier_gate_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            protected_token_budget=l1_max_token_budget,
+            protected_token_per_action=l1_token_per_action,
+            protected_prompt_style=l1_prompt_style,
+            method_name="near_direct_reserve_frontier_gate_v1",
+        )
+        specs["calibrated_near_direct_frontier_gate_v1"] = CalibratedNearDirectFrontierGateController(
+            generator_factory(),
+            scorer,
+            budget,
+            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="calibrated_near_direct_frontier_gate_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            protected_token_budget=l1_max_token_budget,
+            protected_token_per_action=l1_token_per_action,
+            protected_prompt_style=l1_prompt_style,
+            method_name="calibrated_near_direct_frontier_gate_v1",
+        )
+        specs["direct_reserve_strong_plus_diverse_learned_override_v1"] = DirectReserveLearnedOverrideController(
+            base_controller=DirectReserveGateRerankController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name="direct_reserve_strong_plus_diverse_v1",
+                **direct_reserve_plus_diverse_kwargs,
+            ),
+            method_name="direct_reserve_strong_plus_diverse_learned_override_v1",
+        )
+        specs["direct_reserve_strong_plus_diverse_learned_override_v1"] = DirectReserveGateRerankController(
+            generator_factory(),
+            scorer,
+            budget,
+            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="direct_reserve_strong_plus_diverse_learned_override_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            direct_prompt_styles=[
+                "Solve this completely with a full, careful chain of reasoning and arithmetic checks. "
+                "Then output only the final numeric answer in \\boxed{}.",
+                "Use a different decomposition than your first attempt (e.g., equation-first or table-first), "
+                "cross-check the result independently, then output only the final numeric answer in \\boxed{}.",
+            ],
+            direct_reserve_attempts_override=2,
+            direct_token_budget=640,
+            gate_top_support_threshold=2.0,
+            gate_top2_gap_threshold=2.0,
+            gate_entropy_threshold=-1.0,
+            enable_learned_override=True,
+            learned_override_model_path=os.getenv(
+                "DIRECT_RESERVE_LEARNED_OVERRIDE_MODEL_PATH",
+                "outputs/direct_reserve_candidate_scorer_train_20260426T150000Z/selected_model.joblib",
+            ),
+            learned_override_margin=float(os.getenv("DIRECT_RESERVE_LEARNED_OVERRIDE_MARGIN", "0.05")),
+            learned_override_model_type=os.getenv("DIRECT_RESERVE_LEARNED_OVERRIDE_MODEL_TYPE", "random_forest"),
+            method_name="direct_reserve_strong_plus_diverse_learned_override_v1",
+        )
+        specs["direct_reserve_strong_plus_diverse_margin_gated_v1"] = DirectReserveGateRerankController(
+            generator_factory(),
+            scorer,
+            budget,
+            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="direct_reserve_strong_plus_diverse_margin_gated_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            direct_prompt_styles=[
+                "Solve this completely with a full, careful chain of reasoning and arithmetic checks. "
+                "Then output only the final numeric answer in \\boxed{}.",
+                "Use a different decomposition than your first attempt (e.g., equation-first or table-first), "
+                "cross-check the result independently, then output only the final numeric answer in \\boxed{}.",
+            ],
+            direct_reserve_attempts_override=2,
+            direct_token_budget=640,
+            gate_top_support_threshold=2.0,
+            gate_top2_gap_threshold=2.0,
+            gate_entropy_threshold=-1.0,
+            enable_margin_gate_fallback=True,
+            margin_gate_min_support_gap=1,
+            margin_gate_max_entropy=0.95,
+            margin_gate_require_multi_prompt_style=False,
+            method_name="direct_reserve_strong_plus_diverse_margin_gated_v1",
+        )
+        specs["strict_f3_ablation_no_answer_support_aggregation_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_ablation_no_answer_support_aggregation_v1",
+            **strict_f3_no_answer_cfg,
+        )
+        strict_f3_no_anti_cfg = dict(strict_f3_base_cfg)
+        strict_f3_no_anti_cfg.update(
+            {"enable_anti_collapse_answer_group_refinement": False, "enable_low_marginal_gain_family_cooldown": False}
+        )
+        specs["strict_f3_ablation_no_anti_collapse_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_ablation_no_anti_collapse_v1",
+            **strict_f3_no_anti_cfg,
+        )
+        strict_f3_anti_collapse_weak_cfg = dict(strict_f3_base_cfg)
+        strict_f3_anti_collapse_weak_cfg.update(
+            {
+                "anti_collapse_early_window": 5,
+                "repeat_expand_penalty_weight": 0.03,
+                "repeat_expand_family_penalty_weight": 0.06,
+                "repeated_same_branch_penalty": 0.05,
+                "answer_group_distinctness_bonus": 0.07,
+                "duplicate_answer_group_penalty": 0.04,
+                "enable_low_marginal_gain_family_cooldown": False,
+            }
+        )
+        specs["strict_f3_anti_collapse_weak_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_anti_collapse_weak_v1",
+            **strict_f3_anti_collapse_weak_cfg,
+        )
+        early_answer_diversity_maturation_cfg = dict(strict_f3_base_cfg)
+        early_answer_diversity_maturation_cfg.update(
+            {
+                "enable_early_answer_diversity_maturation_v1": True,
+                "early_answer_diversity_recent_group_window": 2,
+            }
+        )
+        specs["early_answer_diversity_maturation_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="early_answer_diversity_maturation_v1",
+            **early_answer_diversity_maturation_cfg,
+        )
+        early_answer_diversity_maturation_gated_cfg = dict(strict_f3_base_cfg)
+        early_answer_diversity_maturation_gated_cfg.update(
+            {
+                "enable_early_answer_diversity_maturation_gated_v1": True,
+                "early_answer_diversity_recent_group_window": 2,
+            }
+        )
+        specs["early_answer_diversity_maturation_gated_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="early_answer_diversity_maturation_gated_v1",
+            **early_answer_diversity_maturation_gated_cfg,
+        )
+        specs["strict_f3_anti_collapse_default_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_anti_collapse_default_v1",
+            **strict_f3_base_cfg,
+        )
+        strict_f3_direction_combinatorics_guard_cfg = dict(strict_f3_base_cfg)
+        strict_f3_direction_combinatorics_guard_cfg.update(
+            {
+                "enable_direction_combinatorics_guard_v1": True,
+                "direction_family_cap_share_precoverage": 0.60,
+                "direction_support_weight": 1.0,
+                "direction_process_weight": 0.5,
+                "direction_verifier_weight": 1.0,
+                "direction_strategy_diversity_weight": 0.5,
+                "direction_single_family_penalty_weight": 0.5,
+                "direction_commit_guard_top2_gap_threshold": 0.12,
+            }
+        )
+        specs["strict_f3_direction_combinatorics_guard_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_direction_combinatorics_guard_v1",
+            **strict_f3_direction_combinatorics_guard_cfg,
+        )
+        strict_f3_reasoning_diversity_bonus_v1_cfg = dict(strict_f3_base_cfg)
+        strict_f3_reasoning_diversity_bonus_v1_cfg.update(
+            {
+                "enable_reasoning_diversity_bonus_v1": True,
+                "reasoning_diversity_lambda_strategy": 0.40,
+                "reasoning_diversity_lambda_operation": 0.30,
+                "reasoning_diversity_lambda_intermediate": 0.25,
+                "reasoning_diversity_lambda_answer": 0.20,
+                "reasoning_diversity_lambda_role": 0.20,
+                "reasoning_diversity_lambda_redundancy": 0.50,
+            }
+        )
+        specs["strict_f3_reasoning_diversity_bonus_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_reasoning_diversity_bonus_v1",
+            **strict_f3_reasoning_diversity_bonus_v1_cfg,
+        )
+        strict_f3_typed_strategy_seeded_cfg = dict(strict_f3_direction_combinatorics_guard_cfg)
+        strict_f3_typed_strategy_seeded_cfg.update(
+            {
+                "enable_typed_strategy_seeded_v1": True,
+            }
+        )
+        specs["strict_f3_typed_strategy_seeded_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_typed_strategy_seeded_v1",
+            **strict_f3_typed_strategy_seeded_cfg,
+        )
+        strict_f3_typed_strategy_family_normalized_rerank_cfg = dict(strict_f3_typed_strategy_seeded_cfg)
+        strict_f3_typed_strategy_family_normalized_rerank_cfg.update(
+            {
+                "enable_family_normalized_rerank_v1": True,
+                "family_rerank_selection_mode": "family_normalized_full",
+                "family_rerank_support_weight": 1.0,
+                "family_rerank_process_weight": 0.5,
+                "family_rerank_verifier_weight": 1.0,
+                "family_rerank_diversity_weight": 0.4,
+                "family_rerank_single_family_penalty_weight": 0.5,
+                "family_rerank_dominant_family_penalty_weight": 0.3,
+            }
+        )
+        specs["strict_f3_typed_strategy_family_normalized_rerank_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_typed_strategy_family_normalized_rerank_v1",
+            **strict_f3_typed_strategy_family_normalized_rerank_cfg,
+        )
+        strict_f3_exhaustive_depth2_probe_cfg = dict(strict_f3_base_cfg)
+        strict_f3_exhaustive_depth2_probe_cfg.update(
+            {
+                "enable_hard_early_root_depth2_coverage_v1": True,
+                "hard_early_root_coverage_forced_min_depth": 2,
+                "hard_early_coverage_min_remaining_actions_to_release": 0,
+            }
+        )
+        specs["strict_f3_exhaustive_depth2_probe"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_exhaustive_depth2_probe",
+            **strict_f3_exhaustive_depth2_probe_cfg,
+        )
+        strict_f3_exhaustive_depth3_probe_cfg = dict(strict_f3_base_cfg)
+        strict_f3_exhaustive_depth3_probe_cfg.update(
+            {
+                "enable_hard_early_root_depth2_coverage_v1": True,
+                "hard_early_root_coverage_forced_min_depth": 3,
+                "hard_early_coverage_min_remaining_actions_to_release": 0,
+            }
+        )
+        specs["strict_f3_exhaustive_depth3_probe"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_exhaustive_depth3_probe",
+            **strict_f3_exhaustive_depth3_probe_cfg,
+        )
+        strict_f3_case_split_direction_aware_cfg = dict(strict_f3_base_cfg)
+        strict_f3_case_split_direction_aware_cfg.update(
+            {
+                "enable_case_split_direction_aware_v1": True,
+                "case_split_direction_aware_labels": ("counting_combinatorics", "case_split"),
+                "case_split_direction_aware_min_distinct_families": 3,
+                "case_split_direction_aware_early_window_actions": 5,
+                "case_split_direction_aware_delay_commit_until_families": 2,
+                "case_split_direction_aware_repeat_penalty_multiplier": 1.8,
+                "case_split_direction_aware_unresolved_branch_bonus": 0.08,
+            }
+        )
+        specs["strict_f3_case_split_direction_aware_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_case_split_direction_aware_v1",
+            **strict_f3_case_split_direction_aware_cfg,
+        )
+        ablations: list[tuple[str, dict[str, Any]]] = [
+            (
+                "strict_f3_case_split_direction_aware_v1_no_delayed_commit",
+                {"case_split_direction_aware_disable_delay_commit_ablation": True},
+            ),
+            (
+                "strict_f3_case_split_direction_aware_v1_no_stronger_repeat_family_penalty",
+                {"case_split_direction_aware_disable_repeat_penalty_ablation": True},
+            ),
+            (
+                "strict_f3_case_split_direction_aware_v1_no_unresolved_branch_preservation",
+                {"case_split_direction_aware_disable_unresolved_preservation_ablation": True},
+            ),
+            (
+                "strict_f3_case_split_direction_aware_v1_detector_off",
+                {"case_split_direction_aware_detector_off": True},
+            ),
+        ]
+        for name, overrides in ablations:
+            cfg = dict(strict_f3_case_split_direction_aware_cfg)
+            cfg.update(overrides)
+            specs[name] = GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=name,
+                **cfg,
+            )
+        strict_f3_anti_collapse_strong_cfg = dict(strict_f3_base_cfg)
+        strict_f3_anti_collapse_strong_cfg.update(
+            {
+                "anti_collapse_early_window": 8,
+                "repeat_expand_penalty_weight": 0.09,
+                "repeat_expand_family_penalty_weight": 0.16,
+                "repeated_same_branch_penalty": 0.12,
+                "answer_group_distinctness_bonus": 0.16,
+                "duplicate_answer_group_penalty": 0.12,
+                "enable_low_marginal_gain_family_cooldown": True,
+                "low_marginal_gain_penalty_strength": 0.18,
+            }
+        )
+        specs["strict_f3_anti_collapse_strong_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_anti_collapse_strong_v1",
+            **strict_f3_anti_collapse_strong_cfg,
+        )
+        strict_f3_anti_collapse_conditional_cfg = dict(strict_f3_base_cfg)
+        strict_f3_anti_collapse_conditional_cfg.update(
+            {
+                "enable_conditional_anti_collapse_activation": True,
+                "conditional_anti_collapse_min_actions": 2,
+                "conditional_anti_collapse_max_family_share_trigger": 0.60,
+                "conditional_anti_collapse_max_active_groups_for_low_coverage": 1,
+                "conditional_anti_collapse_min_consecutive_family_expands": 3,
+            }
+        )
+        specs["strict_f3_anti_collapse_conditional_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_anti_collapse_conditional_v1",
+            **strict_f3_anti_collapse_conditional_cfg,
+        )
+        strict_f3_no_repeat_cfg = dict(strict_f3_base_cfg)
+        strict_f3_no_repeat_cfg.update(
+            {
+                "repeat_expand_penalty_weight": 0.0,
+                "repeat_expand_family_penalty_weight": 0.0,
+                "repeated_same_branch_penalty": 0.0,
+                "enable_low_marginal_gain_family_cooldown": False,
+            }
+        )
+        specs["strict_f3_ablation_no_repeat_expansion_control_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_ablation_no_repeat_expansion_control_v1",
+            **strict_f3_no_repeat_cfg,
+        )
+        strict_f3_upstream_cfg = dict(strict_f3_base_cfg)
+        strict_f3_upstream_cfg.update(
+            {"enable_anti_collapse_answer_group_refinement": False, "enable_low_marginal_gain_family_cooldown": False}
+        )
+        specs["strict_f3_ablation_upstream_only_core_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_ablation_upstream_only_core_v1",
+            **strict_f3_upstream_cfg,
+        )
+        strict_f3_conditional_early_cap_cfg = dict(strict_f3_base_cfg)
+        strict_f3_conditional_early_cap_cfg.update(
+            {
+                "enable_hard_max_family_expansions_cap": True,
+                "hard_max_family_expansions_base_cap": 2,
+                "hard_max_family_expansions_relax_cap": 6,
+                "hard_max_family_expansions_relax_cap_high": 6,
+                "hard_max_family_expansions_conditional_early_window_actions": 6,
+                "hard_max_family_expansions_conditional_risk_family_share_trigger": 0.60,
+                "hard_max_family_expansions_conditional_risk_consecutive_run_trigger": 3,
+                "hard_max_family_expansions_conditional_min_rival_maturity_expansions": 2,
+            }
+        )
+        specs["strict_f3_conditional_early_risk_cap_k2_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="conditional_early_risk_cap",
+            method_name="strict_f3_conditional_early_risk_cap_k2_v1",
+            **strict_f3_conditional_early_cap_cfg,
+        )
+        specs["strict_f3_conditional_early_risk_cap_k2_rival_maturation_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="conditional_early_risk_cap_with_rival_maturation",
+            method_name="strict_f3_conditional_early_risk_cap_k2_rival_maturation_v1",
+            **strict_f3_conditional_early_cap_cfg,
+        )
+        strict_f3_conditional_sensitivity: list[tuple[str, dict[str, Any]]] = [
+            (
+                "strict_f3_conditional_early_risk_cap_k2_window5_v1",
+                {"hard_max_family_expansions_conditional_early_window_actions": 5},
+            ),
+            (
+                "strict_f3_conditional_early_risk_cap_k2_window7_v1",
+                {"hard_max_family_expansions_conditional_early_window_actions": 7},
+            ),
+            (
+                "strict_f3_conditional_early_risk_cap_k2_share55_v1",
+                {"hard_max_family_expansions_conditional_risk_family_share_trigger": 0.55},
+            ),
+            (
+                "strict_f3_conditional_early_risk_cap_k2_share65_v1",
+                {"hard_max_family_expansions_conditional_risk_family_share_trigger": 0.65},
+            ),
+            (
+                "strict_f3_conditional_early_risk_cap_k3_v1",
+                {"hard_max_family_expansions_base_cap": 3},
+            ),
+        ]
+        for name, overrides in strict_f3_conditional_sensitivity:
+            cfg = dict(strict_f3_conditional_early_cap_cfg)
+            cfg.update(overrides)
+            specs[name] = GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                hard_max_family_expansions_relax_mode="conditional_early_risk_cap",
+                method_name=name,
+                **cfg,
+            )
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1_low_marginal_gain_cooldown_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=5,
+            early_preservation_min_plausible_continuation=0.46,
+            early_preservation_target_alignment_min=0.34,
+            early_preservation_required_group_gap=0.18,
+            early_preservation_challenger_hold_steps=2,
+            enable_anti_collapse_answer_group_refinement=True,
+            anti_collapse_early_window=6,
+            repeated_same_branch_penalty=0.09,
+            repeated_same_branch_cap=3,
+            repeat_expand_free_steps=3,
+            repeat_expand_penalty_weight=0.065,
+            repeat_expand_family_penalty_weight=0.12,
+            repeat_expand_override_margin=0.08,
+            enable_low_marginal_gain_family_cooldown=True,
+            low_marginal_gain_window_size=3,
+            low_marginal_gain_min_threshold=0.015,
+            low_marginal_gain_consecutive_family_trigger=4,
+            low_marginal_gain_cooldown_steps=2,
+            low_marginal_gain_penalty_strength=0.14,
+            low_marginal_gain_override_margin=0.12,
+            low_marginal_gain_override_top_support_min=0.74,
+            low_marginal_gain_answer_group_aware=True,
+            low_marginal_gain_hard_block_ablation=False,
+            monopolization_margin_requirement=0.11,
+            answer_group_distinctness_bonus=0.12,
+            duplicate_answer_group_penalty=0.08,
+            min_followup_steps_for_preserved_alternative=2,
+            alternative_maturity_window=5,
+            protected_alternative_target_alignment_min=0.48,
+            enable_hard_early_root_depth2_coverage_v1=False,
+            hard_early_root_coverage_forced_min_depth=3,
+            hard_early_coverage_min_remaining_actions_to_release=0,
+            method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1_low_marginal_gain_cooldown_v1",
+        )
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_conditional_depth3_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=5,
+            early_preservation_min_plausible_continuation=0.46,
+            early_preservation_target_alignment_min=0.34,
+            early_preservation_required_group_gap=0.18,
+            early_preservation_challenger_hold_steps=2,
+            enable_anti_collapse_answer_group_refinement=True,
+            anti_collapse_early_window=6,
+            repeated_same_branch_penalty=0.09,
+            repeated_same_branch_cap=3,
+            repeat_expand_free_steps=3,
+            repeat_expand_penalty_weight=0.065,
+            repeat_expand_family_penalty_weight=0.12,
+            repeat_expand_override_margin=0.08,
+            monopolization_margin_requirement=0.11,
+            answer_group_distinctness_bonus=0.12,
+            duplicate_answer_group_penalty=0.08,
+            min_followup_steps_for_preserved_alternative=2,
+            alternative_maturity_window=5,
+            protected_alternative_target_alignment_min=0.48,
+            enable_hard_early_root_depth2_coverage_v1=False,
+            hard_early_root_coverage_forced_min_depth=2,
+            hard_early_coverage_min_remaining_actions_to_release=0,
+            enable_hard_early_root_depth2_then_conditional_depth3_v1=True,
+            method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_conditional_depth3_v1",
+        )
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_conditional_depth3_v1_low_marginal_gain_cooldown_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=5,
+            early_preservation_min_plausible_continuation=0.46,
+            early_preservation_target_alignment_min=0.34,
+            early_preservation_required_group_gap=0.18,
+            early_preservation_challenger_hold_steps=2,
+            enable_anti_collapse_answer_group_refinement=True,
+            anti_collapse_early_window=6,
+            repeated_same_branch_penalty=0.09,
+            repeated_same_branch_cap=3,
+            repeat_expand_free_steps=3,
+            repeat_expand_penalty_weight=0.065,
+            repeat_expand_family_penalty_weight=0.12,
+            repeat_expand_override_margin=0.08,
+            enable_low_marginal_gain_family_cooldown=True,
+            low_marginal_gain_window_size=3,
+            low_marginal_gain_min_threshold=0.015,
+            low_marginal_gain_consecutive_family_trigger=4,
+            low_marginal_gain_cooldown_steps=2,
+            low_marginal_gain_penalty_strength=0.14,
+            low_marginal_gain_override_margin=0.12,
+            low_marginal_gain_override_top_support_min=0.74,
+            low_marginal_gain_answer_group_aware=True,
+            low_marginal_gain_hard_block_ablation=False,
+            monopolization_margin_requirement=0.11,
+            answer_group_distinctness_bonus=0.12,
+            duplicate_answer_group_penalty=0.08,
+            min_followup_steps_for_preserved_alternative=2,
+            alternative_maturity_window=5,
+            protected_alternative_target_alignment_min=0.48,
+            enable_hard_early_root_depth2_coverage_v1=False,
+            hard_early_root_coverage_forced_min_depth=2,
+            hard_early_coverage_min_remaining_actions_to_release=0,
+            enable_hard_early_root_depth2_then_conditional_depth3_v1=True,
+            method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_conditional_depth3_v1_low_marginal_gain_cooldown_v1",
+        )
+        strict_gate1_base = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first"
+        strict_gate1_common: dict[str, Any] = dict(
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=5,
+            early_preservation_min_plausible_continuation=0.46,
+            early_preservation_target_alignment_min=0.34,
+            early_preservation_required_group_gap=0.18,
+            early_preservation_challenger_hold_steps=2,
+            enable_anti_collapse_answer_group_refinement=True,
+            anti_collapse_early_window=6,
+            repeated_same_branch_penalty=0.09,
+            repeated_same_branch_cap=3,
+            repeat_expand_free_steps=3,
+            repeat_expand_penalty_weight=0.065,
+            repeat_expand_family_penalty_weight=0.12,
+            repeat_expand_override_margin=0.08,
+            enable_low_marginal_gain_family_cooldown=True,
+            low_marginal_gain_window_size=3,
+            low_marginal_gain_min_threshold=0.015,
+            low_marginal_gain_consecutive_family_trigger=4,
+            low_marginal_gain_cooldown_steps=2,
+            low_marginal_gain_penalty_strength=0.14,
+            low_marginal_gain_override_margin=0.12,
+            low_marginal_gain_override_top_support_min=0.74,
+            low_marginal_gain_answer_group_aware=True,
+            low_marginal_gain_hard_block_ablation=False,
+            monopolization_margin_requirement=0.11,
+            answer_group_distinctness_bonus=0.12,
+            duplicate_answer_group_penalty=0.08,
+            min_followup_steps_for_preserved_alternative=2,
+            alternative_maturity_window=5,
+            protected_alternative_target_alignment_min=0.48,
+            enable_hard_early_root_depth2_coverage_v1=False,
+            hard_early_root_coverage_forced_min_depth=2,
+            hard_early_coverage_min_remaining_actions_to_release=0,
+            enable_hard_early_root_depth2_then_conditional_depth3_v1=True,
+            enable_hard_max_family_expansions_cap=True,
+            hard_max_family_expansions_base_cap=6,
+            hard_max_family_expansions_relax_cap=8,
+            hard_max_family_expansions_relax_cap_high=10,
+        )
+        for relax_mode in (
+            "fixed_k6_control",
+            "relax_on_cross_family_coverage_complete",
+            "relax_on_low_marginal_gain_absence_false",
+            "relax_on_multi_family_maturity",
+            "relax_on_high_confidence_incumbent_but_no_challenger_gap",
+        ):
+            name = f"{strict_gate1_base}_hard_max_family_expansions_cap_k6_v1_{relax_mode}"
+            specs[name] = GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                hard_max_family_expansions_relax_mode=relax_mode,
+                method_name=name,
+                **strict_gate1_common,
+            )
+        # Canonical component-ablation variants for strict_gate1_cap_k6.
+        no_answer_support_cfg = dict(strict_gate1_common)
+        no_answer_support_cfg.update(
+            {
+                "answer_support_weight": 0.0,
+                "value_weight": 1.0,
+            }
+        )
+        specs[
+            "strict_gate1_cap_k6_ablation_no_answer_support_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="fixed_k6_control",
+            method_name="strict_gate1_cap_k6_ablation_no_answer_support_v1",
+            **no_answer_support_cfg,
+        )
+        no_anti_cfg = dict(strict_gate1_common)
+        no_anti_cfg.update(
+            {
+                "enable_anti_collapse_answer_group_refinement": False,
+                "enable_low_marginal_gain_family_cooldown": False,
+            }
+        )
+        specs[
+            "strict_gate1_cap_k6_ablation_no_anti_collapse_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="fixed_k6_control",
+            method_name="strict_gate1_cap_k6_ablation_no_anti_collapse_v1",
+            **no_anti_cfg,
+        )
+        no_repeat_cfg = dict(strict_gate1_common)
+        no_repeat_cfg.update(
+            {
+                "repeat_expand_penalty_weight": 0.0,
+                "repeat_expand_family_penalty_weight": 0.0,
+                "repeated_same_branch_penalty": 0.0,
+                "enable_low_marginal_gain_family_cooldown": False,
+            }
+        )
+        specs[
+            "strict_gate1_cap_k6_ablation_no_repeat_expansion_control_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="fixed_k6_control",
+            method_name="strict_gate1_cap_k6_ablation_no_repeat_expansion_control_v1",
+            **no_repeat_cfg,
+        )
+        alloc_only_cfg = dict(strict_gate1_common)
+        alloc_only_cfg.update(
+            {
+                "enable_anti_collapse_answer_group_refinement": False,
+                "enable_low_marginal_gain_family_cooldown": False,
+            }
+        )
+        specs[
+            "strict_gate1_cap_k6_ablation_allocation_only_core_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="fixed_k6_control",
+            method_name="strict_gate1_cap_k6_ablation_allocation_only_core_v1",
+            **alloc_only_cfg,
+        )
+    if include_marginal_coverage_diversity_methods:
+        specs["marginal_coverage_diversity_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.30,
+            duplicate_penalty=0.12,
+            unknown_answer_bonus=0.05,
+            use_marginal_coverage_overlap=True,
+            coverage_weight=0.24,
+            overlap_weight=0.16,
+            answer_support_weight=0.46,
+            value_weight=0.54,
+            commit_support_threshold=0.66,
+            commit_delay_min_actions=3,
+            method_name="marginal_coverage_diversity_v1",
+        )
+    if include_duplicate_aware_aggregation_commit_methods:
+        specs["duplicate_aware_aggregation_commit_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.31,
+            duplicate_penalty=0.12,
+            unknown_answer_bonus=0.05,
+            use_marginal_coverage_overlap=True,
+            coverage_weight=0.22,
+            overlap_weight=0.15,
+            use_duplicate_aware_aggregation=True,
+            duplicate_discount_strength=0.75,
+            duplicate_discount_floor=0.22,
+            support_quality_weight=0.40,
+            use_answer_group_commit_margin=True,
+            commit_margin_threshold=0.17,
+            commit_top_support_threshold=0.61,
+            commit_readiness_threshold=0.57,
+            continue_one_step_value_threshold=0.64,
+            min_actions_before_commit_check=3,
+            answer_support_weight=0.48,
+            value_weight=0.52,
+            commit_support_threshold=0.66,
+            commit_delay_min_actions=3,
+            method_name="duplicate_aware_aggregation_commit_v1",
+        )
+    return specs
+
+
+def evaluate_strategies_on_examples(
+    examples: list[PilotExample], strategies: dict[str, Any]
+) -> tuple[dict[str, dict[str, float]], list[dict[str, Any]]]:
+    rows: list[dict[str, Any]] = []
+    by_strategy: dict[str, list[dict[str, Any]]] = {k: [] for k in strategies}
+    for ex in examples:
+        for name, controller in strategies.items():
+            r = controller.run(ex.question, ex.answer)
+            row = {
+                "example_id": ex.example_id,
+                "strategy": name,
+                "is_correct": r.is_correct,
+                "actions_used": r.actions_used,
+                "expansions": r.expansions,
+                "verifications": r.verifications,
+                "budget_exhausted": r.budget_exhausted,
+                "metadata": r.metadata,
+            }
+            rows.append(row)
+            by_strategy[name].append(row)
+
+    metrics: dict[str, dict[str, float]] = {}
+    for name, srows in by_strategy.items():
+        n = max(1, len(srows))
+        metrics[name] = {
+            "n_examples": n,
+            "accuracy": sum(1 for r in srows if r["is_correct"]) / n,
+            "avg_actions": sum(float(r["actions_used"]) for r in srows) / n,
+            "avg_expansions": sum(float(r["expansions"]) for r in srows) / n,
+            "avg_verifications": sum(float(r["verifications"]) for r in srows) / n,
+            "budget_exhaustion_rate": sum(1 for r in srows if r["budget_exhausted"]) / n,
+        }
+    return metrics, rows
+
+
+def adaptive_anti_collapse_stats(rows: list[dict[str, Any]], strategy_prefix: str = "adaptive_min_expand_") -> dict[str, dict[str, float]]:
+    """Aggregate prune vs forced-expand signals from AdaptiveController metadata."""
+    by_k: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        s = str(row["strategy"])
+        if not s.startswith(strategy_prefix):
+            continue
+        k = s[len(strategy_prefix) :] if s.startswith(strategy_prefix) else s
+        by_k.setdefault(k, []).append(row)
+
+    out: dict[str, dict[str, float]] = {}
+    for k, krows in by_k.items():
+        prune_fracs: list[float] = []
+        forced_fracs: list[float] = []
+        trace_lens: list[float] = []
+        for row in krows:
+            meta = row.get("metadata") or {}
+            trace = meta.get("action_trace") or []
+            if not trace:
+                continue
+            n = len(trace)
+            n_prune = sum(1 for t in trace if t.get("action") == "prune")
+            n_forced = sum(1 for t in trace if t.get("forced_expand"))
+            prune_fracs.append(n_prune / n)
+            forced_fracs.append(n_forced / n)
+            trace_lens.append(float(n))
+        m = max(1, len(krows))
+        out[k] = {
+            "n": float(len(krows)),
+            "mean_prune_share_of_actions": sum(prune_fracs) / max(1, len(prune_fracs)) if prune_fracs else 0.0,
+            "mean_forced_expand_share": sum(forced_fracs) / max(1, len(forced_fracs)) if forced_fracs else 0.0,
+            "mean_action_trace_length": sum(trace_lens) / max(1, len(trace_lens)) if trace_lens else 0.0,
+            "examples_with_trace": float(len(prune_fracs)),
+        }
+    return out
+
+
+def build_semantic_diversity_diagnostic_registry(
+    generator_factory: Callable[[], Any],
+    scorer: Any,
+    budget: int,
+) -> dict[str, Any]:
+    """Experimental diagnostic methods for semantic-diversity / maturation (not canonical)."""
+    from experiments.semantic_diversity_diagnostic_strategies import build_semantic_diversity_diagnostic_strategies
+
+    return build_semantic_diversity_diagnostic_strategies(generator_factory, scorer, budget)

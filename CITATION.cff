@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the accompanying manuscript."
+title: "Nominal Budgets and Realized Resources in Closed-API Large-Language-Model Inference: A Performance Evaluation Protocol"
+authors:
+  - family-names: Vahidi
+    given-names: Soroush
+repository-code: "https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference"
+url: "https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference"
+date-released: "2026-08-01"
+version: "1.0.0"
+license: MIT
+

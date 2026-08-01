@@ -1,0 +1,98 @@
+{
+  "blocked_cells": [
+    "fireworks::accounts/fireworks/models/deepseek-v4-pro::gpqa_diamond"
+  ],
+  "fta_available_cells": 15,
+  "fta_vs_frontier_behavior": {
+    "completed_comparable_cells": 15,
+    "fta_improvements": 8,
+    "fta_regressions": 6,
+    "fta_ties": 1
+  },
+  "paid_api_calls_made": false,
+  "timestamp": "20260717T223631Z",
+  "tmux_jobs_used": [],
+  "validated_complete_cells": 15,
+  "winner_counts": [
+    {
+      "category": "strict_sole_method_wins",
+      "count": 4,
+      "name": "direct_reserve_semantic_frontier_v2"
+    },
+    {
+      "category": "strict_sole_method_wins",
+      "count": 6,
+      "name": "FTA"
+    },
+    {
+      "category": "strict_sole_method_wins",
+      "count": 1,
+      "name": "external_l1_max"
+    },
+    {
+      "category": "strict_sole_method_wins",
+      "count": 1,
+      "name": "external_s1_budget_forcing"
+    },
+    {
+      "category": "strict_sole_method_wins",
+      "count": 2,
+      "name": "external_tale_prompt_budgeting"
+    },
+    {
+      "category": "method_wins_or_ties",
+      "count": 5,
+      "name": "direct_reserve_semantic_frontier_v2"
+    },
+    {
+      "category": "method_wins_or_ties",
+      "count": 7,
+      "name": "FTA"
+    },
+    {
+      "category": "method_wins_or_ties",
+      "count": 1,
+      "name": "external_l1_max"
+    },
+    {
+      "category": "method_wins_or_ties",
+      "count": 1,
+      "name": "external_s1_budget_forcing"
+    },
+    {
+      "category": "method_wins_or_ties",
+      "count": 3,
+      "name": "external_tale_prompt_budgeting"
+    },
+    {
+      "category": "frontier_family_sole_wins",
+      "count": 10,
+      "name": "Frontier_or_FTA"
+    },
+    {
+      "category": "frontier_family_wins_or_ties",
+      "count": 11,
+      "name": "Frontier_or_FTA"
+    },
+    {
+      "category": "fta_sole_wins",
+      "count": 6,
+      "name": "FTA"
+    },
+    {
+      "category": "frontier_sole_wins",
+      "count": 4,
+      "name": "Frontier"
+    },
+    {
+      "category": "external_baseline_sole_wins",
+      "count": 4,
+      "name": "L1_or_S1_or_TALE"
+    },
+    {
+      "category": "ties_involving_our_and_external",
+      "count": 1,
+      "name": "OUR_and_EXT"
+    }
+  ]
+}

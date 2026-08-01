@@ -1,0 +1,67 @@
+\section{Experimental Protocol}
+\label{sec:setup}
+
+\subsection{Providers, datasets, and shared protocol}
+
+Providers and exact hosted model IDs:
+\begin{itemize}
+\item Cohere: \texttt{command-r-plus-08-2024}.
+\item Azure OpenAI: \texttt{gpt-4.1-mini}.
+\item Google Vertex Gemini: \texttt{gemini-2.5-flash}.
+\item Fireworks: \texttt{accounts/fireworks/models/deepseek-v4-pro}.
+\end{itemize}
+
+Datasets and sizes per completed cell:
+\begin{itemize}
+\item GSM8K \citep{gsm8k}: $n{=}300$ examples under seed~$71$ and nominal $B{=}6$.
+\item MATH-500 \citep{math500,letsverify}: the 500-problem MATH subset popularized in process-supervision
+work; we evaluate $n{=}300$ examples under the same seed/$B$ protocol.
+\item GPQA-Diamond \citep{gpqa}: $n{=}198$ (full Diamond set under our MCQ scoring protocol).
+\item StrategyQA \citep{strategyqa}: $n{=}100$. This sample is lower-powered for detecting small
+effects; we treat small StrategyQA deltas as descriptive, not as strong evidence.
+\end{itemize}
+Total paired examples across completed cells: $3{,}394$. The evaluated protocol uses a single
+nominal budget $B{=}6$.
+
+\textbf{Answer scoring.} Final answers use dataset-appropriate normalization. Gold labels are
+offline-only. Closed commercial APIs; public-benchmark contamination cannot be ruled out, so
+absolute accuracies are protocol snapshots. Defaults unless overridden: temperature $0.1$, max output
+tokens $220$, up to $5$ API retries (base $1$s, backoff $\times 2$, max $20$s, jitter $0.5$s).
+
+\subsection{Matrix completeness and protocol-blocked outcome}
+
+Fifteen of sixteen provider$\times$dataset cells completed. Fireworks$\times$GPQA-Diamond is
+\texttt{BLOCKED\_PROTOCOL\_NONCONVERGENCE}: after parser/schema and token-floor repairs, the
+Fireworks-hosted model still exhausted its bounded generation budget on a material subset without
+producing a scorable MCQ answer. We record this as a protocol-level outcome: it is not treated as
+zero accuracy, not imputed, and not silently omitted (Section~\ref{sec:results}).
+
+\subsection{Adapter fidelity and provenance}
+\label{sec:setup-baselines}
+
+L1/S1/TALE comparisons use closed-API adapters, not official training/serving reproductions
+(Table~\ref{tab:baseline-fidelity}; \ref{app:baselines}). Class~A numerical attributions
+are to the named adapters. Azure$\times$GPQA FTA is offline selector replay on stored generations.
+Trust tiers (\ref{app:provenance}): Tier~A denotes Cohere/Azure/Vertex$\times$GSM8K cells
+with the strongest draw and scoring provenance; Tier~B denotes the remaining completed cells. An
+earlier fallback-prompt SC attempt is excluded from all results; the corrected Azure true same-model
+SC path records question-source hashes (Section~\ref{sec:sc-entitlement-control}).
+
+\begin{table}[h]
+\centering
+\caption{Baseline fidelity disclosure. None is an official training/serving reproduction.}
+\label{tab:baseline-fidelity}
+\input{tables/table4_baseline_fidelity}
+\end{table}
+
+\subsection{Reproducibility levels}
+\label{sec:setup-repro}
+
+We distinguish three reproducibility claims. \emph{Record replay:} released frozen per-example
+records and manifests support deterministic re-derivation of scoring, aggregation, paired tests, and
+the reported tables. \emph{Historical API-output regeneration:} proprietary, stochastic closed-API
+services need not reproduce identical completions under the same public model ID.
+\emph{Historical subset reconstruction:} for some Tier~B cells the frozen evaluated subset is
+preserved, but the complete original draw procedure cannot be reconstructed from the maintained
+codebase; that incompleteness limits independent regeneration of the sampling step, not replay of
+the analyzed records (\ref{app:artifact-map}).

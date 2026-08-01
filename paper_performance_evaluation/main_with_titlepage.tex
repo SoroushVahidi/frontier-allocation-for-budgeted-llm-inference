@@ -1,0 +1,88 @@
+\documentclass[preprint,12pt]{elsarticle}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\hypersetup{hidelinks}
+\pdfstringdefDisableCommands{%
+  \def\corref#1{}%
+  \def\fnref#1{}%
+}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\setlength{\emergencystretch}{2em}
+
+\journal{Performance Evaluation}
+
+\begin{document}
+
+\begin{frontmatter}
+\input{title_page}
+\end{frontmatter}
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_problem_formulation}
+\input{sections/04_method}
+\input{sections/05_experimental_setup}
+\input{sections/06_main_results}
+\input{sections/07_search_vs_selection}
+\input{sections/08_provider_analysis}
+\input{sections/09_compute_accounting}
+\input{sections/10_ablations}
+\input{sections/11_limitations}
+\input{sections/12_discussion}
+\input{sections/13_conclusion}
+
+\section*{Acknowledgments}
+[AUTHOR CONFIRMATION REQUIRED: keep personal support, academic/advisory assistance, software
+support, and company-provided API credits distinct. Insert exact names and wording only after
+author confirmation.]
+
+\section*{Funding}
+[AUTHOR CONFIRMATION REQUIRED: provide funder names and grant numbers, or state that this research
+received no specific grant from funding agencies in the public, commercial, or not-for-profit
+sectors.]
+
+\subsubsection*{Broader Impact Statement}
+This work studies evaluation of budgeted LLM reasoning on standard benchmarks. We are not aware of
+a direct negative societal impact beyond general considerations for LLM inference research; more
+selective or more expensive multi-generator protocols can increase or decrease aggregate compute
+depending on deployment choices (Section~\ref{sec:discussion}).
+
+\subsubsection*{Reproducibility Statement}
+Frozen per-example records and manifests support deterministic replay of scoring, aggregation,
+paired tests, and the reported tables for all 15 completed cells; provenance tiers and known replay
+limits are documented in \ref{app:artifact-map}. The package does not guarantee
+regeneration of identical proprietary API outputs, and live regeneration may incur API charges. The
+submission package is asserted only to the extent documented by its manifests.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+During the preparation of this work, the author used AI-assisted tools for drafting and revising
+prose, inspecting and modifying research code, organizing analyses, and preparing reproducibility
+and consistency checks. After using these tools, the author reviewed and edited the content as
+needed and takes full responsibility for the content of the published article.
+
+\section*{Declaration of competing interest}
+[AUTHOR CONFIRMATION REQUIRED: insert explicit competing-interest declaration.]
+
+\section*{Data availability}
+GSM8K, MATH-500, GPQA-Diamond, and StrategyQA are publicly available datasets. Code, manuscript
+source, and release artifacts are available in the public GitHub repository
+\href{https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference}{SoroushVahidi/frontier-allocation-for-budgeted-llm-inference}.
+
+\bibliographystyle{elsarticle-num}
+\bibliography{refs}
+
+\newpage
+\appendix
+\input{sections/appendix}
+
+\end{document}

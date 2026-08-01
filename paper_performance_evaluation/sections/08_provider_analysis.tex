@@ -1,0 +1,40 @@
+\section{Provider Heterogeneity and Transfer}
+\label{sec:provider-analysis}
+
+Section~\ref{sec:identical-pool} showed that FTA trails identical-pool plurality in aggregate. Here
+we ask whether that gap is explained by unreliable transfer of FTA's failure-mined gates across
+providers. Table~\ref{tab:provider-fix} reports per-cell rescue/regression counts for the two
+constituent gates (Low-Depth Guard / FIX-2; External-Consensus Fallback / FIX-4;
+Section~\ref{sec:method-classb}).
+
+\begin{table}[tbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Per-cell rescue/regression counts for FTA's gates (FIX-2 / FIX-4). Applied switches:
+FIX-2~$606$, FIX-4~$21$, overlap~$0$. The table characterizes transfer of this failure-mined commit
+rule.}
+\label{tab:provider-fix}
+\input{tables/table2_provider_fix_analysis}
+\end{table}
+
+\subsection{Provider-stratified sign patterns}
+
+Mean FTA$-$Frontier deltas by provider: Cohere positive, Azure negative, Vertex and Fireworks
+mildly positive (Fireworks has three completed cells). Azure is the only provider with a negative
+mean; within Azure, harm concentrates on GSM8K/MATH-500 rather than StrategyQA or GPQA.
+
+\subsection{Which gate drives the movement?}
+
+Offline gate-only replay confirms FIX-2 accounts for essentially all FTA movement ($606$ applied
+switches vs.\ $21$ for FIX-4; zero overlap; FIX-2-only accuracy matching FTA globally;
+\ref{app:gates}). Cell-level counts diverge: Azure$\times$GSM8K FIX-2 yields $2$ rescues
+against $18$ regressions, and Azure$\times$MATH-500 FIX-2 yields $7$ rescues against $31$
+regressions, whereas the same Low-Depth Guard is net-positive on development-adjacent
+Cohere$\times$GSM8K and on Fireworks$\times$MATH-500 (Table~\ref{tab:provider-fix}).
+
+Thus FTA is mechanistically FIX-2-dominated, and Azure mathematics cells are concrete transfer
+failures for this failure-mined commit rule under the evaluated provider shifts. FIX-2/FIX-4 were
+developed from Cohere$\times$GSM8K failure diagnostics and frozen before the remaining cells;
+Cohere$\times$GSM8K FTA gains are development-adjacent, while Azure and other non-development cells
+are the stronger transfer evidence (\ref{app:chronology}).

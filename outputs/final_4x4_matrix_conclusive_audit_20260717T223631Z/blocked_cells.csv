@@ -1,0 +1,2 @@
+cell,status,decision,reason,evidence
+fireworks::accounts/fireworks/models/deepseek-v4-pro::gpqa_diamond,BLOCKED_PROTOCOL_NONCONVERGENCE,KEEP_BLOCKED,Existing forensic evidence shows bounded-inference non-convergence after parser/schema/token-floor fixes; larger output/budget or provider/model changes would alter comparability.,outputs/interpretable_fireworks_gpqa_blocked_cell_forensic_20260717T181636Z/

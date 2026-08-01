@@ -1,0 +1,72 @@
+\section{Evaluation Framework}
+\label{sec:problem}
+
+\paragraph{Setting} The protocol deliverable is a set of accounting and attribution rules for
+budgeted closed-API inference. An instance $x_i$ has gold answer $g_i$, used offline only for
+evaluation. A single-generator method may issue at most $B$ logical reasoning actions (provider
+calls) while producing a committed answer. We call $B$ the \emph{nominal budget}: the logical
+entitlement specified by the experiment, not an observed resource total. A candidate pool
+$C_i=\{y_{i,1},\ldots,y_{i,m}\}$ is a multiset of extracted final answers under a shared protocol. A
+selector $f$ maps $C_i$ and optional gold-free metadata to a prediction $\hat y_i$.
+
+\paragraph{Discovery and selection}
+Following coverage / pass@$k$ analyses \citep{passatk,ll_monkeys} and fixed-pool recoverable-mass
+diagnostics \citep{oracle_gap}, define the discovery indicator
+\begin{equation}
+\label{eq:Di}
+D_i \;=\; \mathbf{1}\{\exists\, y\in C_i:\; y\equiv g_i\},
+\end{equation}
+i.e., whether a correct candidate is present in the evaluated pool. With $n$ scored instances and
+$N_D=\sum_i D_i$, define discovery rate ($\mathrm{DR}$), unrecoverable failure rate ($\mathrm{UFR}$),
+conditional selection accuracy ($\mathrm{CSA}_f$), and selection failure rate ($\mathrm{SFR}_f$):
+\begin{equation}
+\label{eq:rates}
+\begin{aligned}
+\mathrm{DR} &= \tfrac1n\sum_i D_i, &
+\mathrm{UFR} &= 1-\mathrm{DR}, \\
+\mathrm{CSA}_f &= \frac{\sum_i \mathbf{1}\{\hat y_i\equiv g_i\}\,D_i}{N_D}
+\quad (N_D>0), &
+\mathrm{SFR}_f &= 1-\mathrm{CSA}_f.
+\end{aligned}
+\end{equation}
+Blocked or unscorable instances are excluded from $n$ rather than counted as $D_i=0$
+(Section~\ref{sec:setup}). For pool-only selectors under exact-match scoring,
+\begin{equation}
+\label{eq:acc-decomp}
+\mathrm{Acc}_f \;=\; \mathrm{DR}\times\mathrm{CSA}_f,
+\end{equation}
+because such a selector can be correct only when $D_i=1$.
+
+\paragraph{Identical-pool consensus}
+Let $\mathrm{Cons}(C_i)$ denote plurality over $C_i$, with ties broken by a fixed documented rule.
+An \emph{identical-pool control} holds $C_i$ fixed and changes only the commit rule. Consensus regret
+$\mathrm{CR}(f)=\mathrm{Acc}(\mathrm{Cons})-\mathrm{Acc}(f)$ is positive when consensus beats $f$ on
+the same pools. We report $\mathrm{CR}$ whenever a nontrivial selector is compared
+\citep{selfconsistency,universal_sc}. Offline oracles over $C_i$ are Class~C upper bounds only
+\citep{oracle_gap}.
+
+\paragraph{Realized compute vector}
+Nominal budget $B$ is an experimental contract, not a realized-resource metric. It counts logical
+Class~A reasoning actions, not dollars or FLOPs. A \emph{successful completion} is a provider call
+that returns a usable model output on the reported path; a \emph{retry} is an internal repeated HTTP
+attempt after a transient or malformed response. Under the nominal budget we record a componentwise
+realized resource vector
+\begin{equation}
+\label{eq:r}
+\mathbf{r} \;=\; (\mathrm{calls},\;\mathrm{generated\ tokens},\;\mathrm{latency},\;\$),
+\end{equation}
+distinguishing successful completions from retries, generated-token fields, observed latency, and
+estimated dollar cost. We do not collapse $\mathbf{r}$ to one scalar. For
+post-generation selectors, pool cost is the joint cost of the generators that form $C$, plus zero
+marginal selector calls. Equal $B$ equalizes Class~A opportunity, not tokens, latency, or dollars
+(Section~\ref{sec:compute}).
+
+\subsection{Evaluation objects}
+\label{sec:relation-oracle}
+
+Equations~\eqref{eq:Di}--\eqref{eq:r} reuse established constructs. The evaluation objects of this
+study are the joint reporting of $\mathrm{DR}$, $\mathrm{CSA}$, $\mathrm{CR}$, and componentwise
+$\mathbf{r}$; the separation of Class~A (allocation under $B$) from Class~B (selection over a shared
+pool); development-environment labels for failure-mined rules; and blocked cells as
+\emph{protocol-blocked outcomes}, meaning bounded-protocol failures reported separately from scored
+accuracy. Section~\ref{sec:method} specifies the procedures used to instantiate those objects.

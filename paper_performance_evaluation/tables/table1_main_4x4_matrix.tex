@@ -1,0 +1,25 @@
+% Class A: Frontier plus L1/S1/TALE adapters (nominal B=6 each).
+% Class B: FTA replay and Pooled-4 (same shared pool; zero marginal selection calls).
+% Bold = max Class A count; separately, higher of FTA vs Pooled-4 (both if tie).
+\begin{tabular}{@{}llrrrrrr@{}}
+\toprule
+Provider & Data & Front. & L1 & S1 & TALE & FTA & Pooled-4 \\
+\midrule
+Cohere & GSM8K & 230/300 & \textbf{249/300} & 246/300 & 235/300 & 260/300 & \textbf{261/300} \\
+Cohere & MATH-500 & \textbf{87/300} & 73/300 & 84/300 & 76/300 & 92/300 & \textbf{98/300} \\
+Cohere & GPQA-D & 68/198 & 74/198 & 69/198 & \textbf{77/198} & \textbf{72/198} & \textbf{72/198} \\
+Cohere & StrategyQA & 78/100 & 69/100 & 77/100 & \textbf{83/100} & \textbf{76/100} & \textbf{76/100} \\
+Azure & GSM8K & \textbf{276/300} & 269/300 & 246/300 & 204/300 & 260/300 & \textbf{276/300} \\
+Azure & MATH-500 & \textbf{167/300} & 142/300 & 161/300 & 112/300 & 143/300 & \textbf{164/300} \\
+Azure & GPQA-D & 103/198 & \textbf{105/198} & 104/198 & 94/198 & 102/198 & \textbf{104/198} \\
+Azure & StrategyQA & 70/100 & 72/100 & \textbf{76/100} & 74/100 & \textbf{72/100} & \textbf{72/100} \\
+Vertex & GSM8K & \textbf{279/300} & 262/300 & 244/300 & 255/300 & 272/300 & \textbf{278/300} \\
+Vertex & MATH-500 & 217/300 & 220/300 & 210/300 & \textbf{223/300} & \textbf{228/300} & 224/300 \\
+Vertex & GPQA-D & \textbf{113/198} & 106/198 & 108/198 & 110/198 & \textbf{125/198} & 123/198 \\
+Vertex & StrategyQA & \textbf{84/100} & 82/100 & 83/100 & \textbf{84/100} & \textbf{84/100} & \textbf{84/100} \\
+Fireworks & GSM8K & \textbf{223/300} & 210/300 & 160/300 & 191/300 & 224/300 & \textbf{230/300} \\
+Fireworks & MATH-500 & 100/300 & 105/300 & 94/300 & \textbf{114/300} & \textbf{117/300} & \textbf{117/300} \\
+Fireworks & GPQA-D & \multicolumn{6}{c}{BLOCKED\_PROTOCOL\_NONCONVERGENCE} \\
+Fireworks & StrategyQA & \textbf{81/100} & 80/100 & 80/100 & 80/100 & \textbf{79/100} & \textbf{79/100} \\
+\bottomrule
+\end{tabular}

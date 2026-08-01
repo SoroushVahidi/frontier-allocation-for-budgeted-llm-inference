@@ -1,0 +1,24 @@
+\section{Offline Counterfactuals}
+\label{sec:ablations}
+
+Frozen-trace counterfactuals isolate attribution questions that aggregate accuracy cannot answer:
+whether challenger expansion changes outcomes relative to the incumbent, and whether repair
+scoring---orthogonal to allocation---moves commits or external rankings
+(Section~\ref{sec:results}). Gate-level transfer evidence remains in
+Section~\ref{sec:provider-analysis}; unavailable current-path grids and historical diagnostics are
+in Section~\ref{sec:limitations} and \ref{app:historical-components}.
+
+\subsection{Incumbent versus full Frontier}
+
+Using stored incumbent answers from controller metadata, full Frontier beats the incumbent-only
+counterfactual in $9/15$ cells and loses in $2/15$ (\ref{app:incumbent}). This is a
+discovery-side non-inertness check under stored traces, not a matched-cost ``no expansion'' ablation.
+
+\subsection{Repair scoring counterfactual}
+
+Bounded repair is not credited to Frontier allocation. On the completed 15-cell matrix, Frontier's
+scored answer differs from its repair-related field on $151/3394$ rows; forcing the repair field for
+Frontier would yield 0 rescues and 68 regressions in the available counterfactual, while a
+repair-based external ranking counterfactual flips 0 external winners (\ref{app:repair}).
+These outcomes separate scoring convention from selection and accounting; primary tables retain the
+historical scoring convention.

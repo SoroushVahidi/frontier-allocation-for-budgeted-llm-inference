@@ -1,0 +1,16 @@
+cell,method_a,method_b,n,a_correct,b_correct,a_acc_pct,b_acc_pct,delta_pp,bootstrap_ci_low_pp,bootstrap_ci_high_pp,wins,losses,ties,mcnemar_p_raw,mcnemar_p_holm_within_cell_family,significant_raw_0_05,significant_holm_0_05
+cohere::command-r-plus-08-2024::openai/gsm8k,Frontier,FTA,300,230,260,76.666667,86.666667,-10.0,-14.333333,-5.666667,9,39,252,1.522e-05,4.566e-05,True,True
+cohere::command-r-plus-08-2024::HuggingFaceH4/MATH-500,Frontier,FTA,300,87,92,29.0,30.666667,-1.666667,-5.333333,2.0,15,20,265,0.49955983,0.99911966,False,False
+cohere::command-r-plus-08-2024::gpqa_diamond,Frontier,FTA,198,68,72,34.343434,36.363636,-2.020202,-6.565657,2.525253,9,13,176,0.52346706,0.88413668,False,False
+cohere::command-r-plus-08-2024::ChilleD/StrategyQA,Frontier,FTA,100,78,76,78.0,76.0,2.0,0.0,5.0,2,0,98,0.5,0.60351562,False,False
+azure_openai::gpt-4.1-mini::openai/gsm8k,Frontier,FTA,300,276,260,92.0,86.666667,5.333333,2.666667,8.333333,18,2,280,0.00040245,0.00120735,True,True
+azure_openai::gpt-4.1-mini::HuggingFaceH4/MATH-500,Frontier,FTA,300,167,143,55.666667,47.666667,8.0,4.0,12.0,31,7,262,0.00011617,0.00034851,True,True
+azure_openai::gpt-4.1-mini::gpqa_diamond,Frontier,FTA,198,103,102,52.020202,51.515152,0.505051,-4.040404,5.050505,10,9,179,1.0,1.0,False,False
+azure_openai::gpt-4.1-mini::ChilleD/StrategyQA,Frontier,FTA,100,70,72,70.0,72.0,-2.0,-6.0,2.0,1,3,96,0.625,0.625,False,False
+vertex_gemini::gemini-2.5-flash::openai/gsm8k,Frontier,FTA,300,279,272,93.0,90.666667,2.333333,0.0,5.0,11,4,285,0.11846924,0.11846924,False,False
+vertex_gemini::gemini-2.5-flash::HuggingFaceH4/MATH-500,Frontier,FTA,300,217,228,72.333333,76.0,-3.666667,-6.0,-1.666667,0,11,289,0.00097656,0.00292968,True,True
+vertex_gemini::gemini-2.5-flash::gpqa_diamond,Frontier,FTA,198,113,125,57.070707,63.131313,-6.060606,-10.606061,-2.020202,4,16,178,0.01181793,0.02363586,True,True
+vertex_gemini::gemini-2.5-flash::ChilleD/StrategyQA,Frontier,FTA,100,84,84,84.0,84.0,0.0,0.0,0.0,0,0,100,1.0,1.0,False,False
+fireworks::accounts/fireworks/models/deepseek-v4-pro::openai/gsm8k,Frontier,FTA,300,223,224,74.333333,74.666667,-0.333333,-4.333333,3.666667,18,19,263,1.0,1.0,False,False
+fireworks::accounts/fireworks/models/deepseek-v4-pro::HuggingFaceH4/MATH-500,Frontier,FTA,300,100,117,33.333333,39.0,-5.666667,-9.666667,-2.0,9,26,265,0.00598812,0.01796436,True,True
+fireworks::accounts/fireworks/models/deepseek-v4-pro::ChilleD/StrategyQA,Frontier,FTA,100,81,79,81.0,79.0,2.0,-2.0,6.0,3,1,96,0.625,1.0,False,False

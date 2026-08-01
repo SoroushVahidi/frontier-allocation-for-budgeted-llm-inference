@@ -1,0 +1,2 @@
+sed -n '1,260p' docs/current/CANONICAL_STATE.md
+python scripts/run_final_4x4_conclusive_audit.py

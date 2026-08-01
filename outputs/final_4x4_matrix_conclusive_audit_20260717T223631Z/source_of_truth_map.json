@@ -1,0 +1,158 @@
+{
+  "azure_openai::gpt-4.1-mini::ChilleD/StrategyQA": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/interpretable_cross_model_completion_batch2_20260716T225834Z/cells/azure_openai__gpt-4_1-mini__StrategyQA/cohere_real_model_cost_normalized_validation_batch2_azure_openai_ChilleD_StrategyQA_20260717T103027Z/per_example_records.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "azure_openai::gpt-4.1-mini::HuggingFaceH4/MATH-500": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/interpretable_core4x4_final_repair_plan_20260717T180003Z/canonical_cell_views/azure_math500.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": "azure_math500",
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "azure_openai::gpt-4.1-mini::gpqa_diamond": {
+    "offline_fta_replay": true,
+    "raw_source_files": [
+      "outputs/interpretable_gpqa_final_completion_20260717T141507Z/azure/cohere_real_model_cost_normalized_validation_azure_gpqa_full198_20260717T141507Z/per_example_records.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED_OFFLINE_FTA",
+    "trust_tier": "B"
+  },
+  "azure_openai::gpt-4.1-mini::openai/gsm8k": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/interpretable_core4x4_final_repair_plan_20260717T180003Z/canonical_cell_views/azure_gsm8k.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": "azure_gsm8k",
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "A"
+  },
+  "cohere::command-r-plus-08-2024::ChilleD/StrategyQA": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/interpretable_cross_model_completion_batch2_20260716T225834Z/cells/cohere__command-r-plus-08-2024__StrategyQA/cohere_real_model_cost_normalized_validation_batch2_cohere_ChilleD_StrategyQA_20260717T104624Z/per_example_records.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "cohere::command-r-plus-08-2024::HuggingFaceH4/MATH-500": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/interpretable_core4x4_final_repair_plan_20260717T180003Z/canonical_cell_views/cohere_math500.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": "cohere_math500",
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "cohere::command-r-plus-08-2024::gpqa_diamond": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/cohere_gpqa_complete198_sanitized_view_20260705/per_example_records.sanitized.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "cohere::command-r-plus-08-2024::openai/gsm8k": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/final_fix24_all_external_validation_20260519_20260520T000902Z/runner_output/cohere_real_model_cost_normalized_validation_final_fix24_live_20260519/per_example_records.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "A"
+  },
+  "fireworks::accounts/fireworks/models/deepseek-v4-pro::ChilleD/StrategyQA": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/interpretable_cross_model_completion_batch2_20260716T225834Z/cells/fireworks__accounts_fireworks_models_deepseek-v4-pro__StrategyQA/cohere_real_model_cost_normalized_validation_batch2_fireworks_ChilleD_StrategyQA_20260716T230301Z/per_example_records.jsonl.deduped.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "fireworks::accounts/fireworks/models/deepseek-v4-pro::HuggingFaceH4/MATH-500": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/interpretable_cross_model_completion_batch2_20260716T225834Z/cells/fireworks__accounts_fireworks_models_deepseek-v4-pro__MATH-500/cohere_real_model_cost_normalized_validation_batch2_fireworks_HuggingFaceH4_MATH-500_20260717T025316Z/per_example_records.jsonl.deduped.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "fireworks::accounts/fireworks/models/deepseek-v4-pro::gpqa_diamond": {
+    "dataset": "gpqa_diamond",
+    "evidence": "outputs/interpretable_fireworks_gpqa_blocked_cell_forensic_20260717T181636Z/",
+    "provider": "fireworks",
+    "status": "BLOCKED_PROTOCOL_NONCONVERGENCE"
+  },
+  "fireworks::accounts/fireworks/models/deepseek-v4-pro::openai/gsm8k": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/interpretable_cross_model_completion_batch2_20260716T225834Z/cells/fireworks__accounts_fireworks_models_deepseek-v4-pro__openai_gsm8k/cohere_real_model_cost_normalized_validation_batch2_fireworks_openai_gsm8k_20260717T062958Z/per_example_records.jsonl.deduped.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "vertex_gemini::gemini-2.5-flash::ChilleD/StrategyQA": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/interpretable_cross_model_completion_batch2_20260716T225834Z/cells/vertex_gemini__gemini-2_5-flash__StrategyQA/cohere_real_model_cost_normalized_validation_batch2_vertex_gemini_ChilleD_StrategyQA_20260717T112219Z/per_example_records.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "vertex_gemini::gemini-2.5-flash::HuggingFaceH4/MATH-500": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/vertex_gemini_math500_full300_sanitized_view_20260705/per_example_records.sanitized.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "vertex_gemini::gemini-2.5-flash::gpqa_diamond": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/vertex_gemini_gpqa_full198_sanitized_view_20260705/per_example_records.sanitized.jsonl"
+    ],
+    "raw_unsanitized_path": "outputs/vertex_gemini_gpqa_mcq_full198_20260705/cohere_real_model_cost_normalized_validation_vertex_gemini_gpqa_mcq_full198_20260705/per_example_records.jsonl",
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "B"
+  },
+  "vertex_gemini::gemini-2.5-flash::openai/gsm8k": {
+    "offline_fta_replay": false,
+    "raw_source_files": [
+      "outputs/vertex_gemini_gsm8k_full300_20260705/cohere_real_model_cost_normalized_validation_vertex_gemini_gsm8k_full300_20260705/per_example_records.jsonl"
+    ],
+    "raw_unsanitized_path": null,
+    "repair_manifest_key": null,
+    "status": "COMPLETE_VALIDATED",
+    "trust_tier": "A"
+  }
+}

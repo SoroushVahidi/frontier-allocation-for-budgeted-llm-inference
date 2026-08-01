@@ -1,0 +1,52 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Performance-measurement and benchmarking methodology}
+Performance-evaluation practice emphasizes construct validity, measurement semantics, and protocol
+transparency: reported rankings depend on what is counted, at what layer, and under what workload
+definition \citep{jain1991,lilja2000,georges2007}. In budgeted LLM inference, the analogous
+construct-validity issue is whether a nominal action budget measures the resource whose performance
+claim is being made. We therefore separate the nominal budget from successful completions, HTTP
+retries, generated tokens, observed latency, and estimated dollars. Recent surveys of
+test-time scaling likewise recommend reporting resource dimensions beyond final accuracy under
+nominal budgets \citep{ttc_budget_survey,snell_ttc}. Our protocol follows that measurement view by
+reporting componentwise realized resources and by auditing instrumentation artifacts that can alter
+efficiency interpretation without altering correctness outcomes.
+
+\paragraph{Workload characterization and test-time controls}
+Workload characterization asks whether compared systems face the same demand process and observable
+resource contract. Adaptive compute-allocation work shows that how budget is spent can matter as
+much as model size \citep{snell_ttc,adaptive_ttc_cpo,adactrl,ava}. Length-controlled and
+budget-forcing approaches intervene directly on inference trajectories \citep{l1,s1,tale}. We treat
+these mechanisms as workload controls in a shared nominal-$B$ environment and evaluate them under
+common extraction and scoring conventions (Table~\ref{tab:baseline-fidelity}).
+
+\paragraph{Discovery, consensus, and selection attribution}
+Pass@$k$ analyses separate whether any sample is correct from whether a system selects it
+\citep{passatk,ll_monkeys}. Majority vote is the standard same-model self-consistency (SC)
+aggregator \citep{selfconsistency}; universal SC extends aggregation beyond extractable answers
+\citep{universal_sc}. Adaptive and early-stopping SC variants exist
+\citep{adaptive_consistency,esc,difficulty_adaptive_sc,reasc}. Best-of-$N$ and process verifiers
+supply alternative selection signals \citep{self_certainty,letsverify}. Fixed-pool oracle-gap
+diagnostics decompose recoverable mass and harm \citep{oracle_gap}. Cascades and routers choose
+among models \citep{frugalgpt,hybrid_llm,routellm}. Relative to this literature, we keep the
+generation--selection distinction as inherited, and instead ask how identical-pool plurality,
+failure-mined deferral, and componentwise realized resources interact under one closed-API
+multi-generator protocol. Pooled-4 targets a \emph{heterogeneous} four-generator pool---a different
+axis from same-model SC---with one Azure$\times$GSM8K SC-$N{=}6$ budget cell as a supporting
+control (Section~\ref{sec:sc-entitlement-control}).
+
+\paragraph{Resource accounting in distributed/closed inference services}
+Closed inference services expose partial telemetry: successful calls, retries, token fields,
+latency, and billable cost may not align perfectly. This complicates cross-policy efficiency
+comparisons even under matched nominal call budgets, and it creates a distributed-service
+benchmarking problem rather than only an LLM-algorithm problem. Our instrumentation treatment aligns
+with the performance-measurement principle that metrics must be interpreted at the layer where they
+are observed, with reconstruction status disclosed explicitly.
+
+\paragraph{Tree search and stopping}
+Tree-of-Thoughts expands intermediate states under search heuristics \citep{tot}; classical
+metareasoning frames stopping as value-of-computation \citep{metareasoning}. The evaluated Frontier
+configuration does not test adaptive early stopping (Section~\ref{sec:method-frontier}). Historical
+ToT-style adapters and older component sweeps appear only as diagnostics
+(\ref{app:historical-components}).

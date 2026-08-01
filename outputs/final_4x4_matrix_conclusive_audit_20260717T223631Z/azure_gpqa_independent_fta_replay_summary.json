@@ -1,0 +1,17 @@
+{
+  "aggregation_method_1_sum_vector": 102,
+  "aggregation_method_2_count_rows": 102,
+  "fix2_trigger_count": 33,
+  "fix4_trigger_count": 3,
+  "frontier_correct": 103,
+  "fta_correct": 102,
+  "missing_selector_metadata": 0,
+  "n": 198,
+  "paired_unique_examples": 198,
+  "prior_comparison_note": "No separate per-example prior investigative replay artifact was found by repository path search; aggregate numbers match the user's stated prior investigation.",
+  "prior_investigative_replay_artifact_found": false,
+  "replay_errors": 0,
+  "source": [
+    "outputs/interpretable_gpqa_final_completion_20260717T141507Z/azure/cohere_real_model_cost_normalized_validation_azure_gpqa_full198_20260717T141507Z/per_example_records.jsonl"
+  ]
+}

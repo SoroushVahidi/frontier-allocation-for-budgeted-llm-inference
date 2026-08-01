@@ -1,0 +1,20 @@
+% Auto-generated from validated corrected resource-accounting summaries.
+% Class A generators only. Class B (FTA, Pooled-4) add 0 marginal calls; pool cost = sum of generators.
+% Frontier calls column corrected from reconstructed successful-call counts.
+% (accounting-instrumentation fix + historical reconstruction from existing raw records; no
+% accuracy/answer/statistical result changed). Tokens/cost remain a documented Frontier lower
+% bound; see footnote in Section~\ref{sec:compute}.
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Class~A method & Tokens/ex.$^\dagger$ & Latency (s) & Calls (nom.=6) & Cost/ex.$^\dagger$ (\$) \\
+\midrule
+Frontier & 1287.0$^\dagger$ & 16.87 & 5.38 & 0.00258$^\dagger$ \\
+L1-style adapter & 728.7 & 5.48 & 1.61 & 0.00133 \\
+S1-inspired adapter & 1236.0 & 8.80 & 2.85 & 0.00234 \\
+TALE-EP-style adapter & 727.3 & 5.33 & 1.66 & 0.00129 \\
+\bottomrule
+\end{tabular}
+
+{\scriptsize $^\dagger$Frontier tokens/cost are a documented lower bound (challenger-expansion-phase
+tokens are not recoverable from historical records without fabrication); calls, latency, and all
+adapter figures are complete. See Section~\ref{sec:compute}.}

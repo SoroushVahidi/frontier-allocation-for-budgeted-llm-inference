@@ -1,0 +1,25 @@
+\section{Discussion}
+\label{sec:discussion}
+
+For settings like the one studied---multi-sample candidate pools, trace-conditioned selectors,
+provider transfer, or closed-API resource accounting---the protocol implies four minimum reporting
+practices for performance-measurement validity.
+
+\paragraph{Compare nontrivial selectors to identical-pool plurality}
+Report accuracy against plurality on the same extracted answers and disclose pool-construction cost
+(Sections~\ref{sec:identical-pool} and~\ref{sec:heldout-calibrated-selector}).
+
+\paragraph{Validate failure-mined rules across environments}
+Label development-environment cells and report provider-stratified rescue/regression for the
+evaluated commit rule (Section~\ref{sec:provider-analysis}).
+
+\paragraph{Report nominal $B$ alongside componentwise $\mathbf{r}$}
+Equal nominal budgets need not equalize calls, tokens, latency, or dollars; mark reconstruction
+status and lower-bound fields (Section~\ref{sec:compute}).
+
+\paragraph{Separate discovery from selection, and keep blocked cells}
+Jointly report $\mathrm{DR}$ and $\mathrm{CSA}$, and retain protocol-blocked cells rather than
+imputing scores (Sections~\ref{sec:results} and~\ref{sec:setup}).
+
+The common theme is semantic separation: nominal budgets, pool-construction cost, selector marginal
+cost, and measured token/USD fields answer different performance questions.

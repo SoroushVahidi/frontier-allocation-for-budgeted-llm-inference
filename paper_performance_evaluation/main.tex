@@ -1,0 +1,108 @@
+\documentclass[preprint,12pt]{elsarticle}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\hypersetup{hidelinks}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\setlength{\emergencystretch}{2em}
+
+\journal{Performance Evaluation}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Nominal Budgets and Realized Resources in Closed-API Large-Language-Model Inference: A Performance Evaluation Protocol}
+
+\author{Anonymous Author(s)}
+\address{Anonymous Institution}
+
+\begin{abstract}
+Nominal inference budgets are convenient for large language model (LLM) systems, but equal logical
+entitlement need not imply equal successful completions, retries, tokens, latency, cost, or selector
+attribution. We present a protocol for closed-API, budgeted inference that separates discovery from
+commit-rule selection, evaluates identical-pool controls, records a componentwise realized resource
+vector, labels provider-transfer evidence, and preserves protocol-blocked outcomes. On a 15-cell
+provider-by-dataset matrix ($n{=}3394$; Fireworks$\times$GPQA-Diamond protocol-blocked),
+identical-pool plurality over four generators (Pooled-4) exceeds a failure-trace gated selector
+(FTA): $66.53\%$ versus $65.00\%$ (McNemar $p{=}0.00027$). The dominant FTA gate reverses sign under
+provider transfer, including $2/18$ and $7/31$ rescue/regression patterns on Azure mathematics
+cells. A resource audit changes efficiency interpretation without changing accuracy: reconstructed
+Frontier successful completions rise from $2.78$ to $5.38$ of nominal budget $B{=}6$, while token/USD
+fields remain lower bounds. The contribution is the protocol: nominal budgets alone are insufficient
+for defensible closed-API inference-performance conclusions.
+\end{abstract}
+
+\begin{keyword}
+budgeted inference \sep performance measurement \sep resource accounting \sep closed-API inference \sep large language models
+\end{keyword}
+
+\end{frontmatter}
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_problem_formulation}
+\input{sections/04_method}
+\input{sections/05_experimental_setup}
+\input{sections/06_main_results}
+\input{sections/07_search_vs_selection}
+\input{sections/08_provider_analysis}
+\input{sections/09_compute_accounting}
+\input{sections/10_ablations}
+\input{sections/11_limitations}
+\input{sections/12_discussion}
+\input{sections/13_conclusion}
+
+\section*{Acknowledgments}
+[AUTHOR CONFIRMATION REQUIRED: insert acknowledgments, keeping personal support,
+academic/advisory assistance, software support, and company-provided API credits distinct.]
+
+\section*{Funding}
+[AUTHOR CONFIRMATION REQUIRED: provide funder names and grant numbers, or state that this research
+received no specific grant from funding agencies in the public, commercial, or not-for-profit
+sectors.]
+
+\subsubsection*{Broader Impact Statement}
+This work studies evaluation of budgeted LLM reasoning on standard benchmarks. We are not aware of
+a direct negative societal impact beyond general considerations for LLM inference research; more
+selective or more expensive multi-generator protocols can increase or decrease aggregate compute
+depending on deployment choices (Section~\ref{sec:discussion}).
+
+\subsubsection*{Reproducibility Statement}
+Frozen per-example records and manifests support deterministic replay of scoring, aggregation,
+paired tests, and the reported tables for all 15 completed cells; provenance tiers and known replay
+limits are documented in \ref{app:artifact-map}. The package does not guarantee
+regeneration of identical proprietary API outputs, and live regeneration may incur API charges. The
+anonymous submission package is asserted only to the extent documented by its manifests.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+During the preparation of this work, the author used AI-assisted tools for drafting and revising
+prose, inspecting and modifying research code, organizing analyses, and preparing reproducibility
+and consistency checks. After using these tools, the author reviewed and edited the content as
+needed and takes full responsibility for the content of the published article.
+
+\section*{Declaration of competing interest}
+[AUTHOR CONFIRMATION REQUIRED: insert explicit competing-interest declaration.]
+
+\section*{Data availability}
+GSM8K, MATH-500, GPQA-Diamond, and StrategyQA are publicly available datasets. Code, manuscript
+source, and release artifacts are available in the public GitHub repository
+\href{https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference}{SoroushVahidi/frontier-allocation-for-budgeted-llm-inference}.
+
+\bibliographystyle{elsarticle-num}
+\bibliography{refs}
+
+\newpage
+\appendix
+\input{sections/appendix}
+
+\end{document}

@@ -1,0 +1,66 @@
+\section{Measurement Instruments}
+\label{sec:method}
+
+The procedures below instantiate the evaluation questions of Sections~\ref{sec:intro}
+and~\ref{sec:problem}: how nominal budgets map to realized resources; how much of a result
+is discovery versus commit-rule selection; and whether failure-mined commit semantics transfer
+across providers. The hierarchy is evaluation question $\rightarrow$ control/instrument
+$\rightarrow$ evidence. Names such as Frontier, FTA, Pooled-4, and the adapters identify those
+controls in tables.
+
+\subsection{Taxonomy}
+\label{sec:method-taxonomy}
+
+\begin{itemize}
+\item \textbf{Class~A --- single-generator methods (nominal $B{=}6$ each):}
+Frontier; the L1-style, S1-inspired, and TALE-EP-style closed-API adapters.
+\item \textbf{Class~B --- selectors over the shared multi-generator pool:}
+Pooled-4 (plurality); FTA (failure-trace gated deferral). Zero \emph{additional} model calls after
+pool generation; pool construction may cost up to $4B$ nominal generator actions.
+\item \textbf{Class~C --- offline oracles:}
+coverage upper bounds. Never treated as peer winners.
+\end{itemize}
+Nominal budget $B$ is the logical entitlement of Section~\ref{sec:problem}; realized
+$\mathbf{r}$ is tracked separately.
+
+\subsection{Frontier (Class~A diagnostic)}
+\label{sec:method-frontier}
+
+Frontier is the Class~A accounting diagnostic: a reserved-attempt full-expansion policy with fixed
+parameters across cells. It runs two direct-chain attempts, forms a gold-free incumbent by plurality,
+then uses the remaining nominal budget for challenger expansion/verification before applying a
+fixed gold-free override rule. On preserved validated records, reconstructed successful calls
+average $5.38$ of nominal $6$ (Section~\ref{sec:compute}).
+
+The implementation template retained an early-commit gate with sentinel thresholds
+$(2.0,2.0,-1.0)$. Because top support is a vote-share in $[0,1]$, the gate never fires; reported
+runs therefore do not evaluate adaptive early stopping. Full pseudocode and action semantics appear
+in \ref{app:frontier-pseudo}.
+
+\subsection{Class~B selectors}
+\label{sec:method-classb}
+
+\paragraph{Pooled-4}
+Plurality over $\{\mathrm{Frontier},\mathrm{L1},\mathrm{S1},\mathrm{TALE}\}$ (agreement $\geq 2$;
+ties fall back to Frontier). Same extracted answers as FTA; no model calls.
+
+\paragraph{FTA (gated deferral diagnostic)}
+FTA retains Frontier's answer or defers using Frontier trace metadata. Gates fire in precedence
+order; at most one per instance (\ref{app:gates}):
+\begin{itemize}
+\item \textbf{Low-Depth Guard (FIX-2).} On a single-weak-branch (or support-zero) signature, replace
+Frontier by majority among $\{\mathrm{L1},\mathrm{S1},\mathrm{TALE}\}$.
+\item \textbf{External-Consensus Fallback (FIX-4).} Else, if Frontier committed via direct incumbent
+agreement and all three externals unanimously disagree, adopt that unanimous answer.
+\end{itemize}
+FTA is the transfer diagnostic for failure-mined commit semantics. Gate rules were developed on
+Cohere$\times$GSM8K failure analysis; that cell is development-adjacent
+(Section~\ref{sec:provider-analysis}). Runtime features are gold-free (\ref{app:leakage}).
+
+\subsection{Bounded answer repair}
+\label{sec:method-scope}
+
+A deterministic support-based re-ranking is computed for every method but overridden by Frontier's
+controller-committed answer when present, while L1/S1/TALE typically score the repair layer. Offline
+quantification and winner-stability checks appear in \ref{app:repair}; primary tables retain
+the historical scoring convention.

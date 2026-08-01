@@ -1,0 +1,29 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\paragraph{Environments and budget}
+Evidence covers four closed-API providers and four reasoning datasets at one nominal budget
+$B{=}6$, with $15/16$ cells completed and Fireworks$\times$GPQA protocol-blocked
+(Section~\ref{sec:setup}). Aggregate identical-pool tests use $n{=}3394$ paired examples, but
+transfer and cell-level policy claims rest on fewer independent environments; StrategyQA is
+underpowered for small deltas. Algorithm rankings at other budgets are not claimed. Natural Plan
+appears only as a historical pilot (\ref{app:non-math-pilot}).
+
+\paragraph{Baseline fidelity and development adjacency}
+L1/S1/TALE rows are closed-API adapters, not official reproductions
+(Table~\ref{tab:baseline-fidelity}). The main provenance qualifications are stated in
+Section~\ref{sec:setup}; \ref{app:chronology} gives the chronology and replay details.
+Metrics assume extractable, normalizable final answers.
+
+\paragraph{Resource telemetry}
+Section~\ref{sec:compute} gives the resource-accounting detail. Token/USD fields remain lower
+bounds, paid retries are incomplete, and the study does not report FLOP matching or a full
+resource-matched matrix. Public-benchmark contamination in proprietary training data cannot be
+audited.
+
+\paragraph{Reproducibility and temporal validity}
+Released artifacts support deterministic record replay (Section~\ref{sec:setup-repro}). They do not
+guarantee regeneration of identical proprietary outputs. Closed-API model identifiers do not
+necessarily provide immutable weight-level versioning, so provider-side updates may limit exact
+longitudinal regeneration. Historical component diagnostics
+(\ref{app:historical-components}) are not current-path ablations.

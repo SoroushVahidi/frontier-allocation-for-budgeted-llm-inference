@@ -1,0 +1,15 @@
+% Baseline fidelity; TALE authorship Han et al. (arXiv:2412.18547).
+\resizebox{\textwidth}{!}{\begin{tabular}{@{}llll@{}}
+\toprule
+Evaluated label & Original paper & Code & Classification \\
+\midrule
+L1 adapter & Aggarwal \& Welleck (2025) & \texttt{cmu-l3/l1} & Prompt surface only; no LCPO training/model \\
+S1 adapter & Muennighoff et al.\ (2025) & \texttt{simplescaling/s1} & Chat ``Wait'' continuation vs.\ token-stream forcing \\
+TALE-EP adapter & Han et al.\ (2024) & \texttt{GeniusHTX/TALE} & Character heuristic vs.\ zero-shot budget estimator \\
+\bottomrule
+\end{tabular}}
+
+\vspace{0.25cm}
+\noindent\textit{Repair asymmetry:} bounded repair is overridden by Frontier's controller-committed
+answer but typically surfaces for L1/S1/TALE. Frontier scored$\neq$repair-field on 151/3394 rows;
+external winner flips under repair counterfactual: 0 (\ref{app:repair}).

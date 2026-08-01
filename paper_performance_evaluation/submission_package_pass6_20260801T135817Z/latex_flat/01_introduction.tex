@@ -1,0 +1,61 @@
+\section{Introduction}
+\label{sec:intro}
+
+Budgeted test-time inference is often summarized by one performance number: final accuracy under a
+shared nominal budget of samples, branches, or reasoning actions. That number becomes ambiguous when
+the nominal budget is treated as the resource measure itself and when discovery, selection, and
+accounting are collapsed into a single outcome:
+\begin{itemize}
+\item Did any correct answer enter the candidate pool?
+\item Did the commit rule select a correct answer when one was present?
+\item Did compared methods share an identical pool, or did one simply receive more diverse
+candidates?
+\item Does a failure-derived selection rule that helps under one commercial API transfer to another?
+\item Does a matched nominal budget $B$ imply comparable calls, tokens, latency, or cost?
+\end{itemize}
+
+These questions matter especially for closed-API, multi-generator evaluation: providers differ,
+telemetry fields may be incomplete, and post-generation rules can appear effective until compared
+to plurality on the \emph{same} extracted answers. Prior work already separates coverage from
+selection and studies consensus aggregators
+\citep{passatk,ll_monkeys,oracle_gap,selfconsistency}, routers, and resource reporting
+\citep{snell_ttc}. The measurement gap is their
+\emph{joint} operationalization under one closed-API, multi-provider, budgeted protocol with paired
+identical-pool controls, transfer analysis, provenance labels, and instrumentation audit.
+
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{\input{figure1_protocol_schematic}}
+\caption{Protocol schematic. Nominal budget $B$ defines the logical action contract; realized
+resources are measured separately. Selection claims are attributed after candidate availability is
+fixed, and provider$\times$dataset cells may be completed, transfer-labeled, or protocol-blocked.}
+\label{fig:protocol}
+\end{figure}
+
+\paragraph{Contribution}
+The deliverable is a protocol-level measurement specification for budgeted closed-API inference
+(Figure~\ref{fig:protocol}). It defines what must be counted separately (nominal actions,
+successful completions, retries, tokens, latency, and dollars), how post-generation selectors should
+be attributed on identical pools, how provider-transfer evidence should be labeled, and how
+blocked/non-convergent cells should be reported as performance outcomes. The empirical sections use
+that protocol to show four consequences: identical-pool plurality is a required selector control,
+failure-mined rules need transfer labels, nominal budgets are not realized resource vectors, and
+provenance/blocked cells affect interpretation even when accuracy values are unchanged.
+
+\paragraph{Roadmap}
+Section~\ref{sec:related} positions the work relative to performance measurement, test-time
+compute, routing, consensus, and verifier literature. Sections~\ref{sec:problem}--\ref{sec:setup}
+define the evaluation objects and closed-API workload. Sections~\ref{sec:results}--\ref{sec:compute}
+report the matrix, identical-pool selection tests, provider transfer, and resource accounting.
+Section~\ref{sec:ablations} reports offline counterfactuals, and
+Sections~\ref{sec:limitations}--\ref{sec:conclusion} summarize scope and implications for
+performance-evaluation practice.
+
+\paragraph{Measurement objects}
+The named procedures are controlled objects for exercising the protocol, not promoted inference
+algorithms (Section~\ref{sec:method}). Class~A single-generator policies under $B{=}6$ include a
+reserved-attempt full-expansion diagnostic (Frontier) and closed-API adapters inspired by L1, S1,
+and TALE \citep{l1,s1,tale}. Class~B post-generation selectors over the shared pool include
+Pooled-4 and FTA. Offline oracles are upper bounds only. A single-cell Azure$\times$GSM8K
+call/sample-budget control compares Frontier to same-model self-consistency with $N{=}6$
+(SC-$N{=}6$; Section~\ref{sec:sc-entitlement-control}).

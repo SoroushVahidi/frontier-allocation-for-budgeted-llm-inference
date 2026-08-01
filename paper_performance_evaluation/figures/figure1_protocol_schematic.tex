@@ -1,0 +1,29 @@
+\begin{tikzpicture}[
+  font=\small,
+  node distance=0.9cm and 0.55cm,
+  box/.style={draw, rounded corners=1.5pt, align=center, inner sep=5pt, minimum height=1.05cm},
+  wide/.style={box, text width=0.19\linewidth},
+  smallbox/.style={box, text width=0.17\linewidth},
+  arrow/.style={-{Latex[length=2mm]}, line width=0.45pt}
+]
+\node[wide] (instance) {Benchmark\\instance};
+\node[wide, right=of instance] (generation) {Class A generation\\nominal budget $B$};
+\node[wide, right=of generation] (pool) {Extracted candidate\\pool};
+\node[wide, right=of pool] (selection) {Class B selection\\same pool, $0$ extra calls};
+
+\draw[arrow] (instance) -- (generation);
+\draw[arrow] (generation) -- (pool);
+\draw[arrow] (pool) -- (selection);
+
+\node[smallbox, below=of generation] (resources) {Realized resource\\vector $\mathbf{r}$:\\calls, tokens,\\latency, cost};
+\node[smallbox, below=of pool] (discovery) {Discovery\\correct answer present?};
+\node[smallbox, below=of selection] (commit) {Commit outcome\\selected answer correct?};
+
+\draw[arrow] (generation) -- (resources);
+\draw[arrow] (pool) -- (discovery);
+\draw[arrow] (selection) -- (commit);
+
+\node[box, text width=0.31\linewidth, below=1.0cm of discovery] (cells) {Provider $\times$ dataset cells:\\completed, transfer-labeled, or protocol-blocked};
+\draw[arrow] (resources.south) |- (cells.west);
+\draw[arrow] (commit.south) |- (cells.east);
+\end{tikzpicture}
