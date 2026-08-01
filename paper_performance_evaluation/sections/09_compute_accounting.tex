@@ -20,8 +20,20 @@ note.}
 \input{tables/table3_resource_accounting}
 \end{table}
 
-Table~\ref{tab:resource} reports unweighted means of per-cell means. Class~B end-to-end cost
-inherits up to four Class~A pipelines.
+\begin{table}[tbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Accounting status for resource fields used in Table~\ref{tab:resource} and
+Figure~\ref{fig:tradeoff}. The status labels distinguish exact, reconstructed, incomplete, and
+lower-bound quantities; no missing token, retry, or dollar fields are imputed.}
+\label{tab:accounting-status}
+\input{tables/table9_accounting_status}
+\end{table}
+
+Table~\ref{tab:resource} reports unweighted means of per-cell means, and
+Table~\ref{tab:accounting-status} records which resource fields support exact versus lower-bound
+interpretations. Class~B end-to-end cost inherits up to four Class~A pipelines.
 
 \paragraph{Instrumentation audit and successful-call reconstruction}
 A harness gap reset/read usage on Frontier's outer generator only, omitting the challenger-expansion
@@ -41,8 +53,8 @@ matched realized call allocations (\ref{app:compute-detail}).
 \includegraphics[width=0.86\linewidth,trim=8 8 8 8,clip]{figures/figure4_accuracy_vs_cost_tradeoff}
 \caption{Incomplete-telemetry diagnostic for Class~A accuracy and mean estimated cost per example
 (milli-USD). Open Frontier markers with rightward arrows indicate that challenger-phase token
-fields were not persisted, so Frontier cost positions are lower bounds rather than definitive
-Pareto or cost-efficiency rankings.}
+fields were not persisted, so Frontier cost positions are lower bounds. This diagnostic should not
+be read as a Pareto frontier: policies are not resource-matched, and paid retries are incomplete.}
 \label{fig:tradeoff}
 \end{figure}
 

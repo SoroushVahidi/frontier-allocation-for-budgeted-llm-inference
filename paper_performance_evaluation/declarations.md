@@ -28,8 +28,10 @@ GSM8K, MATH-500, GPQA-Diamond, and StrategyQA are publicly available from their 
 The public repository contains the evaluation code, frozen aggregate audit records, analysis scripts,
 manifests, and reproducibility instructions:
 https://github.com/SoroushVahidi/frontier-allocation-for-budgeted-llm-inference.
-The fixed public artifact commit is `dfc9997d803199d699e23ee42cfe0777e6d78155`; the later
-public-release finalization commit is `b5c8b1032205007ae5fd5fbc1fb4665e5aff0177`.
+Underlying per-example proprietary API outputs and complete historical subset records are not publicly
+shareable or fully reconstructable; the released aggregate records therefore support verification of
+reported aggregates rather than live output regeneration.
+The fixed public artifact commit is `dfc9997d803199d699e23ee42cfe0777e6d78155`.
 
 ## Declaration of generative AI and AI-assisted technologies in the manuscript preparation process
 

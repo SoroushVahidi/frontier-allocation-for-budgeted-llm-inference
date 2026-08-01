@@ -32,6 +32,11 @@ switches vs.\ $21$ for FIX-4; zero overlap; FIX-2-only accuracy matching FTA glo
 against $18$ regressions, and Azure$\times$MATH-500 FIX-2 yields $7$ rescues against $31$
 regressions, whereas the same Low-Depth Guard is net-positive on development-adjacent
 Cohere$\times$GSM8K and on Fireworks$\times$MATH-500 (Table~\ref{tab:provider-fix}).
+Aggregating the same frozen cell summaries localizes the transfer failure: FIX-2 is modestly
+net-positive overall ($161$ rescues, $131$ regressions over $606$ switches) but nearly neutral after
+removing the development-adjacent Cohere$\times$GSM8K cell ($125$ rescues, $122$ regressions over
+$543$ switches). The two Azure mathematics cells account for most of the harm ($9$ rescues,
+$49$ regressions over $86$ switches; rescue/regression rates $10.5\%/57.0\%$).
 
 Thus FTA is mechanistically FIX-2-dominated, and Azure mathematics cells are concrete transfer
 failures for this failure-mined commit rule under the evaluated provider shifts. FIX-2/FIX-4 were

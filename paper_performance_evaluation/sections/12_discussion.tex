@@ -1,29 +1,38 @@
 \section{Discussion}
 \label{sec:discussion}
 
-For settings like the one studied---multi-sample candidate pools, trace-conditioned selectors,
-provider transfer, or closed-API resource accounting---the protocol implies four minimum reporting
-practices for performance-measurement validity.
+The protocol is intended for evaluations where the performance object is broader than final
+accuracy: multi-provider API studies, candidate-pool and selector studies, router or cascade
+studies, closed commercial APIs, incomplete telemetry, failed or unscorable cells, and cost- or
+latency-sensitive inference. In those settings, the central practical lesson is to report the layer
+at which each claim is measured. A nominal call budget, the realized resource vector, the cost of
+constructing a candidate pool, and the marginal cost of a selector are different performance
+objects.
 
-\paragraph{Compare nontrivial selectors to identical-pool plurality}
-Report accuracy against plurality on the same extracted answers and disclose pool-construction cost
+\paragraph{Compare selectors on fixed candidate pools}
+When a study evaluates a nontrivial commit rule, report accuracy against plurality on the same
+extracted answers and disclose the pool-construction cost. This separates selection from discovery
+and prevents generator-relative gains from being mistaken for selector progress
 (Sections~\ref{sec:identical-pool} and~\ref{sec:heldout-calibrated-selector}).
 
-\paragraph{Validate failure-mined rules across environments}
-Label development-environment cells and report provider-stratified rescue/regression for the
-evaluated commit rule (Section~\ref{sec:provider-analysis}).
+\paragraph{Treat failure-mined rules as transfer claims}
+Rules developed from one provider or workload should carry a development-environment label and be
+reported with provider-stratified rescue/regression counts. The relevant question is not only
+whether the rule helps somewhere, but whether its failure signature transfers under the evaluated
+provider shifts (Section~\ref{sec:provider-analysis}).
 
-\paragraph{Report nominal $B$ alongside componentwise $\mathbf{r}$}
-Equal nominal budgets need not equalize calls, tokens, latency, or dollars; mark reconstruction
-status and lower-bound fields (Section~\ref{sec:compute}).
+\paragraph{Report nominal budget with componentwise realized resources}
+Equal nominal budgets do not by themselves equalize successful completions, retries, generated
+tokens, latency, or dollars. Resource fields should therefore be reported componentwise, with
+reconstruction status and lower-bound fields marked explicitly (Section~\ref{sec:compute}).
 
-\paragraph{Separate discovery from selection, and keep blocked cells}
-Jointly report $\mathrm{DR}$ and $\mathrm{CSA}$, and retain protocol-blocked cells rather than
-imputing scores (Sections~\ref{sec:results} and~\ref{sec:setup}).
+\paragraph{Preserve blocked outcomes and discovery--selection structure}
+Protocol-blocked cells should remain visible rather than being scored as zero or silently removed.
+For completed cells, joint reporting of discovery rate and conditional selection accuracy identifies
+whether errors are absent-from-pool failures or present-but-misselected failures
+(Sections~\ref{sec:results} and~\ref{sec:setup}).
 
-The common theme is semantic separation: nominal budgets, pool-construction cost, selector marginal
-cost, and measured token/USD fields answer different performance questions.
-Because this study is an evaluation of budgeted LLM reasoning on standard public benchmarks, its
-direct societal risks are those of LLM inference research generally; the most immediate operational
-impact is that selective multi-generator protocols can increase or decrease aggregate compute
-depending on deployment choices.
+These practices are actionable for future closed-API evaluations because they do not require access
+to provider internals. They require disciplined accounting: the evaluation must say which resources
+were observed, which were reconstructed, which remain lower bounds, which cells failed the bounded
+protocol, and which selector comparisons share the same candidate pool.

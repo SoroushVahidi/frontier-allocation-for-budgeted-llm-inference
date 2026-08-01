@@ -1,15 +1,20 @@
 % Baseline fidelity; TALE authorship Han et al. (arXiv:2412.18547).
 \resizebox{\textwidth}{!}{\begin{tabular}{@{}llll@{}}
 \toprule
-Evaluated label & Original paper & Code & Classification \\
+Evaluated label & Source & Evaluated surface & Missing original component \\
 \midrule
-L1 adapter & Aggarwal \& Welleck (2025) & \texttt{cmu-l3/l1} & Prompt surface only; no LCPO training/model \\
-S1 adapter & Muennighoff et al.\ (2025) & \texttt{simplescaling/s1} & Chat ``Wait'' continuation vs.\ token-stream forcing \\
-TALE-EP adapter & Han et al.\ (2024) & \texttt{GeniusHTX/TALE} & Character heuristic vs.\ zero-shot budget estimator \\
+L1-style adapter & Aggarwal \& Welleck (2025) & Length-instruction prompt surface & No LCPO training/model \\
+s1-inspired adapter & Muennighoff et al.\ (2025) & Chat ``Wait'' continuations & No local token-stream forcing \\
+TALE-EP-style adapter & Han et al.\ (2025) & Prompt-budget injection with character heuristic & No zero-shot budget estimator; no TALE-PT \\
 \bottomrule
 \end{tabular}}
 
 \vspace{0.25cm}
+\noindent These rows are useful measurement objects because they expose budget-control surfaces
+under the same closed-API scoring protocol; they are not official reproductions of the source
+systems.
+
+\vspace{0.15cm}
 \noindent\textit{Repair asymmetry:} bounded repair is overridden by Frontier's controller-committed
 answer but typically surfaces for L1/S1/TALE. Frontier's scored answer differs from its repair
 field on 151/3394 rows; external winner flips under the repair counterfactual: 0

@@ -39,9 +39,11 @@ zero accuracy, not imputed, and not silently omitted (Section~\ref{sec:results})
 \subsection{Adapter fidelity and provenance}
 \label{sec:setup-baselines}
 
-L1/S1/TALE comparisons use closed-API adapters, not official training/serving reproductions
-(Table~\ref{tab:baseline-fidelity}; \ref{app:baselines}). Class~A numerical attributions
-are to the named adapters. Azure$\times$GPQA FTA is offline selector replay on stored generations.
+L1/S1/TALE comparisons use closed-API adapters, not official training, model, or serving
+reproductions (Table~\ref{tab:baseline-fidelity}; \ref{app:baselines}). Each adapter preserves one
+budget-control surface that can be exercised through hosted APIs; Class~A numerical attributions are
+therefore to the named adapters, not to the original systems. Azure$\times$GPQA FTA is offline
+selector replay on stored generations.
 Trust tiers (\ref{app:provenance}): Tier~A denotes Cohere/Azure/Vertex$\times$GSM8K cells
 with the strongest draw and scoring provenance; Tier~B denotes the remaining completed cells. An
 earlier fallback-prompt SC attempt is excluded from all results; the Azure true same-model SC
@@ -49,7 +51,8 @@ control records question-source hashes (Section~\ref{sec:sc-entitlement-control}
 
 \begin{table}[h]
 \centering
-\caption{Baseline fidelity disclosure. None is an official training/serving reproduction.}
+\caption{Baseline fidelity disclosure for closed-API adapters. Numerical claims in this manuscript
+apply to the evaluated adapter surfaces, not to the original L1, s1, or TALE systems.}
 \label{tab:baseline-fidelity}
 \input{tables/table4_baseline_fidelity}
 \end{table}

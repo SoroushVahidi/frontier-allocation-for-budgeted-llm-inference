@@ -26,11 +26,12 @@ $\mathbf{r}$ is tracked separately.
 \subsection{Frontier (Class~A diagnostic)}
 \label{sec:method-frontier}
 
-Frontier is the Class~A accounting diagnostic: a reserved-attempt full-expansion policy with fixed
-parameters across cells. It runs two direct-chain attempts, forms a gold-free incumbent by plurality,
-then uses the remaining nominal budget for challenger expansion/verification before applying a
-fixed gold-free override rule. On preserved validated records, reconstructed successful calls
-average $5.38$ of nominal $6$ (Section~\ref{sec:compute}).
+Frontier is the Class~A accounting diagnostic, not a production algorithm recommendation: a
+reserved-attempt full-expansion policy with fixed parameters across cells. It runs two direct-chain
+attempts, forms a gold-free incumbent by plurality, then uses the remaining nominal budget for
+challenger expansion/verification before applying a fixed gold-free override rule. On preserved
+validated records, reconstructed successful calls average $5.38$ of nominal $6$
+(Section~\ref{sec:compute}).
 
 The implementation template retained an early-commit gate with sentinel thresholds
 $(2.0,2.0,-1.0)$. Because top support is a vote-share in $[0,1]$, the gate never fires; reported
@@ -42,7 +43,8 @@ in \ref{app:frontier-pseudo}.
 
 \paragraph{Pooled-4}
 Plurality over $\{\mathrm{Frontier},\mathrm{L1},\mathrm{S1},\mathrm{TALE}\}$ (agreement $\geq 2$;
-ties fall back to Frontier). Same extracted answers as FTA; no model calls.
+ties fall back to Frontier). Same extracted answers as FTA; no additional model calls after pool
+generation. Its role is selector attribution, not a same-model SC replacement.
 
 \paragraph{FTA (gated deferral diagnostic)}
 FTA retains Frontier's answer or defers using Frontier trace metadata. Gates fire in precedence
@@ -53,8 +55,8 @@ Frontier by majority among $\{\mathrm{L1},\mathrm{S1},\mathrm{TALE}\}$.
 \item \textbf{External-Consensus Fallback (FIX-4).} Else, if Frontier committed via direct incumbent
 agreement and all three externals unanimously disagree, adopt that unanimous answer.
 \end{itemize}
-FTA is the transfer diagnostic for failure-mined commit semantics. Gate rules were developed on
-Cohere$\times$GSM8K failure analysis; that cell is development-adjacent
+FTA is the transfer diagnostic for failure-mined commit semantics, not a learned router. Gate rules
+were developed on Cohere$\times$GSM8K failure analysis; that cell is development-adjacent
 (Section~\ref{sec:provider-analysis}). Runtime features are gold-free (\ref{app:leakage}).
 
 \subsection{Bounded answer repair}

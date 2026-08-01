@@ -2,9 +2,10 @@
 \label{sec:intro}
 
 Budgeted test-time inference is often summarized by one performance number: final accuracy under a
-shared nominal budget of samples, branches, or reasoning actions. That number becomes ambiguous when
-the nominal budget is treated as the resource measure itself and when discovery, selection, and
-accounting are collapsed into a single outcome:
+shared nominal budget of samples, branches, or reasoning actions. For performance evaluation, that
+summary is incomplete because the nominal budget is an experimental entitlement, not an observed
+resource measurement. Accuracy under the same entitlement can therefore conflate several distinct
+questions:
 \begin{itemize}
 \item Did any correct answer enter the candidate pool?
 \item Did the commit rule select a correct answer when one was present?
@@ -14,14 +15,26 @@ candidates?
 \item Does a matched nominal budget $B$ imply comparable calls, tokens, latency, or cost?
 \end{itemize}
 
-These questions matter especially for closed-API, multi-generator evaluation: providers differ,
-telemetry fields may be incomplete, and post-generation rules can appear effective until compared
-to plurality on the \emph{same} extracted answers. Prior work already separates coverage from
-selection and studies consensus aggregators
-\citep{passatk,ll_monkeys,oracle_gap,selfconsistency}, routers, and resource reporting
-\citep{snell_ttc}. The measurement gap is their
-\emph{joint} operationalization under one closed-API, multi-provider, budgeted protocol with paired
-identical-pool controls, transfer analysis, provenance labels, and instrumentation audit.
+The distinction matters because equal nominal budgets need not induce equal realized resources.
+A method may spend the same logical budget while producing different numbers of successful
+completions, retries, generated tokens, observed latency, or estimated cost. When those quantities
+are collapsed into final accuracy, a selector improvement can be confused with better candidate
+discovery, and a budget-matched comparison can be mistaken for a resource-matched one.
+
+Closed commercial APIs make the measurement problem harder. Providers expose different operational
+behavior, telemetry fields may be incomplete, and hosted model identifiers do not guarantee
+immutable weight-level versions. A post-generation rule can also look effective when compared only
+to a single generator, then lose to plurality on the \emph{same} extracted answers. Failed or
+unscorable provider--dataset cells create another reporting choice: they can be imputed, dropped, or
+preserved as protocol outcomes.
+
+Prior work contains several relevant ingredients individually: coverage and pass@$k$ analyses,
+fixed-pool diagnostics, and self-consistency or other consensus aggregators
+\citep{passatk,ll_monkeys,oracle_gap,selfconsistency}. Router and test-time-compute work also
+motivates resource reporting under budgeted inference \citep{snell_ttc}. The measurement gap is not
+the absence of any one ingredient. It is the lack of one executable and auditable closed-API
+protocol that forces these separations to be reported together for the same provider--dataset
+matrix.
 
 \begin{figure}[t]
 \centering
@@ -32,14 +45,35 @@ fixed, and provider$\times$dataset cells may be completed, transfer-labeled, or 
 \label{fig:protocol}
 \end{figure}
 
-\paragraph{Contribution}
+\paragraph{Contributions}
 This article contributes a controlled performance-evaluation protocol for budgeted closed-API
-inference (Figure~\ref{fig:protocol}). The protocol combines identical-pool attribution,
-provider-transfer analysis, protocol-blocked outcomes, and componentwise realized-resource
-accounting under incomplete closed-API telemetry. The empirical sections use that protocol to show
-four consequences: identical-pool plurality is a required selector control, failure-mined rules need
-transfer labels, nominal budgets are not realized resource vectors, and provenance/blocked cells
-affect interpretation even when accuracy values are unchanged.
+inference (Figure~\ref{fig:protocol}). The contribution is the joint accounting contract: the same
+evaluation records nominal entitlements, realized resources, discovery, selector attribution,
+provider-transfer labels, provenance tiers, protocol-blocked cells, and telemetry completeness, so
+each performance conclusion has an explicit measurement layer. Specifically:
+\begin{itemize}
+\item \textbf{Protocol formulation.} We define nominal budget, candidate-pool discovery,
+conditional selection accuracy, consensus regret, realized resource vectors, and protocol-blocked
+outcomes for closed-API inference.
+\item \textbf{Selector attribution and transfer analysis.} We compare nontrivial commit rules to an
+identical-pool plurality control and label failure-mined rules by development and transfer
+environment.
+\item \textbf{Realized-resource accounting.} We separate successful completions, retries, tokens,
+latency, and estimated dollars, while marking incomplete telemetry and reconstruction status.
+\item \textbf{Released evidence boundary.} We report the blocked cell rather than imputing it and
+provide aggregate-record verification artifacts for the reported tables and numerical invariants.
+\end{itemize}
+
+The empirical study exercises the protocol on four providers and four reasoning workloads at one
+nominal budget, with 15 completed cells and one protocol-blocked cell. It demonstrates that
+identical-pool plurality can change selector conclusions, that a failure-mined gate can transfer
+poorly across providers, and that reconstructed successful completions can change efficiency
+interpretation even when accuracy and paired tests are unchanged.
+
+The study does not claim a general algorithm ranking, a complete cost-efficiency or Pareto analysis,
+official reproductions of L1/S1/TALE, or guaranteed regeneration of identical proprietary API
+outputs. Frontier, FTA, Pooled-4, and the adapters are measurement objects used to exercise the
+protocol, not the central contribution.
 
 \paragraph{Roadmap}
 Section~\ref{sec:related} positions the work relative to performance measurement, test-time

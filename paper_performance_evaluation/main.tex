@@ -27,19 +27,19 @@
 \address{Anonymous Institution}
 
 \begin{abstract}
-Nominal inference budgets are convenient for large language model (LLM) systems, but equal logical
-entitlement need not imply equal successful completions, retries, tokens, latency, cost, or selector
-attribution. We present a protocol for closed-API, budgeted inference that separates discovery from
-commit-rule selection, evaluates identical-pool controls, records a componentwise realized resource
-vector, labels provider-transfer evidence, and preserves protocol-blocked outcomes. On a 15-cell
-provider-by-dataset matrix ($n{=}3394$; Fireworks$\times$GPQA-Diamond protocol-blocked),
-identical-pool plurality over four generators (Pooled-4) exceeds a failure-trace gated selector
-(FTA): $66.53\%$ versus $65.00\%$ (McNemar $p{=}0.00027$). The dominant FTA gate reverses sign under
-provider transfer, including $2/18$ and $7/31$ rescue/regression patterns on Azure mathematics
-cells. A resource audit changes efficiency interpretation without changing accuracy: reconstructed
-Frontier successful completions rise from $2.78$ to $5.38$ of nominal budget $B{=}6$, while token/USD
-fields remain lower bounds. The contribution is the protocol: nominal budgets alone are insufficient
-for defensible closed-API inference-performance conclusions.
+Closed-API large language model (LLM) evaluations often match systems by nominal inference budget,
+but equal nominal budgets need not imply equal realized resources or fair attribution between answer
+discovery and final-answer selection. We present a unified protocol for closed-API, budgeted
+inference that records componentwise resources, evaluates identical-pool selector controls, labels
+provider transfer for failure-mined rules, preserves protocol-blocked outcomes, and discloses
+incomplete telemetry. We exercise it on 15 completed provider-by-dataset cells with $3{,}394$ paired
+examples; Fireworks$\times$GPQA-Diamond is one protocol-blocked cell. On the shared four-generator
+pool, identical-pool plurality (Pooled-4) exceeds the failure-trace gated selector (FTA), $66.53\%$
+versus $65.00\%$ (McNemar $p{=}0.00027$). FTA's dominant gate transfers poorly in Azure mathematics
+cells ($2/18$ and $7/31$ rescue/regression patterns). Resource reconstruction changes efficiency
+interpretation: Frontier successful completions rise from $2.78$ to $5.38$ of nominal budget
+$B{=}6$, while token and dollar fields remain lower bounds. Nominal budget alone is therefore
+insufficient for defensible closed-API inference-performance conclusions.
 \end{abstract}
 
 \begin{keyword}

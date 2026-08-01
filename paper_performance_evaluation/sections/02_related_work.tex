@@ -1,70 +1,75 @@
 \section{Related Work}
 \label{sec:related}
 
-\paragraph{Performance-measurement and benchmarking methodology}
+\paragraph{Performance measurement and cloud benchmarking}
 Performance-evaluation practice emphasizes construct validity, measurement semantics, and protocol
-transparency: reported rankings depend on what is counted, at what layer, and under what workload
-definition \citep{jain1991,lilja2000,georges2007}. In budgeted LLM inference, the analogous
-construct-validity issue is whether a nominal action budget measures the resource whose performance
-claim is being made. We therefore separate the nominal budget from successful completions, HTTP
-retries, generated tokens, observed latency, and estimated dollars. Recent surveys of
-test-time scaling likewise recommend reporting resource dimensions beyond final accuracy under
-nominal budgets \citep{ttc_budget_survey,snell_ttc}. Our protocol follows that measurement view by
-reporting componentwise realized resources and by auditing instrumentation artifacts that can alter
-efficiency interpretation without altering correctness outcomes.
+transparency: rankings depend on what is counted, at what layer, and under what workload definition
+\citep{jain1991,lilja2000,georges2007}. Standardized inference benchmarking makes the same point at
+systems scale: MLPerf Inference specifies workloads, metrics, and reproducibility rules so
+architecture-neutral comparisons remain meaningful \citep{mlperf_inference}. Cloud benchmarking
+methodology similarly calls for explicit measurement and reporting practice, while recent PEVA work
+on microservices and serverless ML treats latency, scaling, and cost as part of the performance
+object \citep{papadopoulos2021cloudmethodology,guo2023pobo,ali2025serverlessmltraining}. We inherit
+that measurement view but apply it to closed-API LLM inference, where the nominal budget is a
+logical entitlement and not the realized resource vector.
 
-Recent systems-performance work reinforces the same scope for cloud and AI services: cloud
-benchmarking methodology calls for explicit measurement and reporting practice; PEVA work on cloud
-microservices studies uncertain latency--resource relationships under dynamic workloads; and PEVA
-work on serverless ML treats public-cloud scaling and cost as part of the performance object
-\citep{papadopoulos2021cloudmethodology,guo2023pobo,ali2025serverlessmltraining}. We adapt that
-systems-performance view to closed-API LLM inference, where providers expose incomplete telemetry
-and nominal budgets are not realized resource vectors.
-
-\paragraph{Benchmark validity and serving-resource context}
+\paragraph{Benchmark validity and evaluation infrastructure}
 LLM evaluation infrastructure such as HELM emphasizes scenario coverage, multi-metric reporting, and
-released evaluation artifacts, while LiveBench addresses benchmark drift and contamination through
-frequently updated, objectively scored workloads \citep{helm,livebench}. GSM-Symbolic further shows
-that GSM8K-style math scores can be sensitive to symbolic perturbations of the same underlying
-problem templates \citep{gsm_symbolic}. These works motivate our workload-validity caveats rather
-than serving as direct experimental baselines. In parallel, open serving-stack work such as
-vLLM/PagedAttention optimizes KV-cache memory and throughput under instrumented serving systems
-\citep{vllm_pagedattention}; our setting instead measures closed APIs whose telemetry is partial and
-whose nominal call budgets do not expose a complete resource vector.
+released evaluation artifacts; its evaluation object is broad model behavior under documented
+scenarios rather than budget attribution \citep{helm}. LiveBench addresses benchmark drift and
+contamination with frequently updated, objectively scored tasks \citep{livebench}. GSM-Symbolic
+shows that GSM8K-style math scores can be sensitive to symbolic perturbations of the same underlying
+problem templates \citep{gsm_symbolic}. These works motivate our workload-validity caveats and our
+choice to treat absolute accuracies as protocol snapshots. They are not direct baselines for the
+closed-API accounting protocol.
 
-\paragraph{Workload characterization and test-time controls}
-Workload characterization asks whether compared systems face the same demand process and observable
-resource contract. Adaptive compute-allocation work shows that how budget is spent can matter as
-much as model size \citep{snell_ttc,adaptive_ttc_cpo,adactrl,ava}. Length-controlled and
-budget-forcing approaches intervene directly on inference trajectories \citep{l1,s1,tale}. We treat
-these mechanisms as workload controls in a shared nominal-$B$ environment and evaluate them under
-common extraction and scoring conventions (Table~\ref{tab:baseline-fidelity}).
+\paragraph{Test-time compute and adaptive inference}
+Test-time-compute work studies how inference budget affects accuracy, often by controlling
+generation length, sample count, or input-adaptive allocation. Surveys distinguish fixed-budget
+controllability from adaptive allocation, and recent methods formalize or learn budget policies
+under finite compute constraints \citep{ttc_budget_survey,snell_ttc,adaptive_ttc_cpo,adactrl}.
+Length-control and budget-forcing systems such as L1, s1, and TALE intervene directly on model
+inference trajectories through training, local token-stream control, or token-budget prompting
+\citep{l1,s1,tale}. Our evaluated L1-/S1-/TALE-style rows are closed-API adapters used as Class~A
+measurement objects under the same nominal-$B$ contract, not official reproductions of those
+systems (Table~\ref{tab:baseline-fidelity}).
 
-\paragraph{Discovery, consensus, and selection attribution}
-Pass@$k$ analyses separate whether any sample is correct from whether a system selects it
-\citep{passatk,ll_monkeys}. Majority vote is the standard same-model self-consistency (SC)
-aggregator \citep{selfconsistency}; universal SC extends aggregation beyond extractable answers
-\citep{universal_sc}. Adaptive and early-stopping SC variants exist
-\citep{adaptive_consistency,esc,difficulty_adaptive_sc,reasc}. Best-of-$N$ and process verifiers
-supply alternative selection signals \citep{self_certainty,letsverify}. Fixed-pool oracle-gap
-diagnostics decompose recoverable mass and harm \citep{oracle_gap}. Cascades and routers choose
-among models \citep{frugalgpt,hybrid_llm,routellm}. Relative to this literature, we keep the
-generation--selection distinction as inherited, and instead ask how identical-pool plurality,
-failure-mined deferral, and componentwise realized resources interact under one closed-API
-multi-generator protocol. Pooled-4 targets a \emph{heterogeneous} four-generator pool---a different
-axis from same-model SC---with one Azure$\times$GSM8K SC-$N{=}6$ budget cell as a supporting
-control (Section~\ref{sec:sc-entitlement-control}).
+\paragraph{Self-consistency, consensus, and fixed-pool selection}
+Pass@$k$ analyses measure whether at least one generated sample is correct, separating candidate
+availability from final selection \citep{passatk,ll_monkeys}. Same-model self-consistency selects a
+majority answer from multiple samples of one model, and Universal Self-Consistency replaces
+extractive majority with model-mediated comparison for freer-form outputs
+\citep{selfconsistency,universal_sc}. Adaptive self-consistency methods reduce sample cost by
+stopping or allocating samples based on agreement, difficulty, or reliability signals
+\citep{adaptive_consistency,esc,difficulty_adaptive_sc,reasc}. We inherit the discovery/selection
+distinction from this line of work. Pooled-4 differs in evaluation object: it is a heterogeneous
+four-generator plurality control over the same extracted answers used by FTA, while the Azure
+GSM8K SC-$N{=}6$ experiment is a single-cell supporting control rather than a full SC benchmark.
 
-\paragraph{Resource accounting in distributed/closed inference services}
-Closed inference services expose partial telemetry: successful calls, retries, token fields,
-latency, and billable cost may not align perfectly. This complicates cross-policy efficiency
-comparisons even under matched nominal call budgets, and it creates a distributed-service
-benchmarking problem rather than only an LLM-algorithm problem. Our instrumentation treatment aligns
-with the performance-measurement principle that metrics must be interpreted at the layer where they
-are observed, with reconstruction status disclosed explicitly.
+\paragraph{Best-of-\texorpdfstring{$N$}{N}, verifier selection, routing, and cascades}
+Best-of-$N$ and verifier-based methods use additional signals to choose among candidates; process
+supervision and self-certainty are examples of such selection layers \citep{letsverify,self_certainty}.
+Fixed-pool oracle-gap diagnostics decompose recoverable mass, signal coverage, conditional selection
+quality, and harm, making the candidate pool itself the evaluation object \citep{oracle_gap}.
+Routing and cascade systems such as FrugalGPT, Hybrid LLM, and RouteLLM choose among models to trade
+cost against quality \citep{frugalgpt,hybrid_llm,routellm}. This study does not introduce a new
+consensus algorithm, verifier, or learned router. It integrates identical-pool attribution,
+provider-transfer labels, and realized-resource accounting into one closed-API evaluation protocol.
 
-\paragraph{Tree search and stopping}
-Tree-of-Thoughts expands intermediate states under search heuristics \citep{tot}; classical
-metareasoning frames stopping as value-of-computation \citep{metareasoning}. The evaluated Frontier
-configuration does not test adaptive early stopping (Section~\ref{sec:method-frontier}). Historical
-explorations outside the evaluated protocol are documented only in the supplementary material.
+\paragraph{Closed-API resource and telemetry accounting}
+Open serving-stack systems expose resource layers unavailable in black-box APIs. Orca studies
+iteration-level scheduling and selective batching for Transformer serving, while vLLM/PagedAttention
+optimizes KV-cache memory management and throughput in instrumented serving systems
+\citep{orca,vllm_pagedattention}. Closed commercial services instead expose partial telemetry:
+successful calls, retries, token fields, latency, and billable cost may not align perfectly. Hosted
+LLM services can also change over time, making exact longitudinal regeneration difficult
+\citep{chatgpt_drift}. Our protocol therefore reports reconstruction status, lower-bound token/USD
+fields, provider/model identifiers, and aggregate-record verification boundaries.
+
+\paragraph{Search, stopping, and metareasoning}
+Tree-of-Thoughts expands intermediate states under search heuristics, and classical metareasoning
+frames stopping as a value-of-computation decision \citep{tot,metareasoning}. The evaluated
+Frontier configuration is not an adaptive early-stopping algorithm: its retained early-commit gate is
+disabled by sentinel thresholds, and the policy is used here as a Class~A accounting diagnostic
+(Section~\ref{sec:method-frontier}). Historical search variants outside the evaluated protocol are
+documented only in the supplementary material.
