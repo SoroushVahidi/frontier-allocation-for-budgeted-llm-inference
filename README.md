@@ -11,6 +11,12 @@ large language model (LLM) evaluation. It separates discovery from final-answer 
 records successful completions, retries, tokens, latency, and cost where available, and reports
 blocked outcomes instead of silently dropping them.
 
+> **Note:** this is a separate project/manuscript from
+> [-adaptive-llm-inference](https://github.com/SoroushVahidi/-adaptive-llm-inference)
+> (adaptive test-time compute routing, submitted to Knowledge-Based Systems). This
+> repository studies nominal-vs-realized budget accounting for closed-API inference,
+> submitted to *Performance Evaluation*.
+
 ## What Is Included
 
 - `experiments/`: core controller, selector, normalization, and accounting code.
